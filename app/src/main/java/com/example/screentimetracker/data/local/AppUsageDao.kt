@@ -1,0 +1,32 @@
+package com.example.screentimetracker.data.local
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface AppUsageDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAppUsageEvent(event: AppUsageEvent)
+
+    // Example query: Get all usage events for a specific package
+    @Query("SELECT * FROM app_usage_events WHERE packageName = :packageName ORDER BY timestamp DESC")
+    fun getUsageEventsForApp(packageName: String): Flow<List<AppUsageEvent>>
+
+    // Example query: Get all app open events (could be refined)
+    @Query("SELECT * FROM app_usage_events WHERE eventName = 'opened' ORDER BY timestamp DESC")
+    fun getAllAppOpenEvents(): Flow<List<AppUsageEvent>>
+
+    // More specific queries for dashboard will be needed, e.g., counts per app
+    @Query("SELECT packageName, COUNT(id) as openCount, MAX(timestamp) as lastOpenedTimestamp FROM app_usage_events WHERE eventName = 'opened' AND timestamp >= :sinceTimestamp GROUP BY packageName")
+    fun getAppOpenCountsSince(sinceTimestamp: Long): Flow<List<AppOpenData>>
+}
+
+// Data class for the result of the grouped query
+data class AppOpenData(
+    val packageName: String,
+    val openCount: Int,
+    val lastOpenedTimestamp: Long
+)
