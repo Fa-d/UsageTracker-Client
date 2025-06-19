@@ -7,10 +7,12 @@ import com.example.screentimetracker.data.local.AppSessionDao
 import com.example.screentimetracker.data.local.AppSessionEvent
 import com.example.screentimetracker.data.local.AppUsageDao
 import com.example.screentimetracker.data.local.AppUsageEvent
-import com.example.screentimetracker.data.local.DailyAppSummary // Import DailyAppSummary
-import com.example.screentimetracker.data.local.DailyAppSummaryDao // Import DailyAppSummaryDao
-import com.example.screentimetracker.data.local.DailyScreenUnlockSummary // Import DailyScreenUnlockSummary
-import com.example.screentimetracker.data.local.DailyScreenUnlockSummaryDao // Import DailyScreenUnlockSummaryDao
+import com.example.screentimetracker.data.local.DailyAppSummary
+import com.example.screentimetracker.data.local.DailyAppSummaryDao
+import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
+import com.example.screentimetracker.data.local.DailyScreenUnlockSummaryDao
+import com.example.screentimetracker.data.local.LimitedApp // Import LimitedApp
+import com.example.screentimetracker.data.local.LimitedAppDao // Import LimitedAppDao
 import com.example.screentimetracker.data.local.ScreenUnlockDao
 import com.example.screentimetracker.data.local.ScreenUnlockEvent
 import com.example.screentimetracker.domain.repository.TrackerRepository
@@ -26,8 +28,9 @@ class TrackerRepositoryImpl @Inject constructor(
     private val screenUnlockDao: ScreenUnlockDao = db.screenUnlockDao()
     private val appUsageDao: AppUsageDao = db.appUsageDao()
     private val appSessionDao: AppSessionDao = db.appSessionDao()
-    private val dailyAppSummaryDao: DailyAppSummaryDao = db.dailyAppSummaryDao() // New
-    private val dailyScreenUnlockSummaryDao: DailyScreenUnlockSummaryDao = db.dailyScreenUnlockSummaryDao() // New
+    private val dailyAppSummaryDao: DailyAppSummaryDao = db.dailyAppSummaryDao()
+    private val dailyScreenUnlockSummaryDao: DailyScreenUnlockSummaryDao = db.dailyScreenUnlockSummaryDao()
+    private val limitedAppDao: LimitedAppDao = db.limitedAppDao() // Initialize LimitedAppDao
 
     // Screen Unlock Methods
     override suspend fun insertScreenUnlockEvent(event: ScreenUnlockEvent) {
@@ -74,20 +77,42 @@ class TrackerRepositoryImpl @Inject constructor(
         return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis)
     }
 
-    // --- New Daily Summary Method Implementations ---
+    // Daily Summary Methods
     override suspend fun insertDailyAppSummaries(summaries: List<DailyAppSummary>) {
         dailyAppSummaryDao.insertAll(summaries)
     }
-
     override suspend fun insertDailyScreenUnlockSummary(summary: DailyScreenUnlockSummary) {
         dailyScreenUnlockSummaryDao.insert(summary)
     }
-
     override fun getDailyAppSummaries(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyAppSummary>> {
         return dailyAppSummaryDao.getAllSummariesInRange(startDateMillis, endDateMillis)
     }
-
     override fun getDailyScreenUnlockSummaries(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyScreenUnlockSummary>> {
         return dailyScreenUnlockSummaryDao.getSummariesInRange(startDateMillis, endDateMillis)
+    }
+
+    // --- New Limited App Method Implementations ---
+    override suspend fun insertLimitedApp(limitedApp: LimitedApp) {
+        limitedAppDao.insertLimitedApp(limitedApp)
+    }
+
+    override suspend fun deleteLimitedApp(limitedApp: LimitedApp) {
+        limitedAppDao.deleteLimitedApp(limitedApp)
+    }
+
+    override fun getLimitedApp(packageName: String): Flow<LimitedApp?> {
+        return limitedAppDao.getLimitedApp(packageName)
+    }
+
+    override suspend fun getLimitedAppOnce(packageName: String): LimitedApp? {
+        return limitedAppDao.getLimitedAppOnce(packageName)
+    }
+
+    override fun getAllLimitedApps(): Flow<List<LimitedApp>> {
+        return limitedAppDao.getAllLimitedApps()
+    }
+
+    override suspend fun getAllLimitedAppsOnce(): List<LimitedApp> {
+        return limitedAppDao.getAllLimitedAppsOnce()
     }
 }

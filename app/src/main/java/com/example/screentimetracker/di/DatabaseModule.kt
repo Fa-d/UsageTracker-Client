@@ -7,6 +7,7 @@ import com.example.screentimetracker.data.local.AppSessionDao
 import com.example.screentimetracker.data.local.AppUsageDao
 import com.example.screentimetracker.data.local.DailyAppSummaryDao
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummaryDao
+import com.example.screentimetracker.data.local.LimitedAppDao // Import LimitedAppDao
 import com.example.screentimetracker.data.local.ScreenUnlockDao
 import com.example.screentimetracker.data.repository.TrackerRepositoryImpl
 import com.example.screentimetracker.domain.repository.TrackerRepository
@@ -68,5 +69,11 @@ object DatabaseModule {
     @Singleton
     fun provideDailyScreenUnlockSummaryDao(db: AppDatabase): DailyScreenUnlockSummaryDao {
         return db.dailyScreenUnlockSummaryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLimitedAppDao(db: AppDatabase): LimitedAppDao { // Provide LimitedAppDao
+        return db.limitedAppDao()
     }
 }
