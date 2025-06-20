@@ -160,7 +160,7 @@ fun AppLimitSettingDialog(
                     OutlinedTextField(
                         value = newLimitTimeMinutes,
                         onValueChange = onTimeChanged,
-                        label = { Text("Time limit (minutes)") },
+                        label = { Text("Continuous time limit (minutes)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
