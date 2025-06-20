@@ -28,6 +28,18 @@ fun LimiterConfigScreen(
     // onNavigateBack: () -> Unit // For navigation
 ) {
     val state by viewModel.uiState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Short,
+                actionLabel = "Dismiss"
+            )
+            viewModel.clearError()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -40,25 +52,13 @@ fun LimiterConfigScreen(
             FloatingActionButton(onClick = { viewModel.onAddAppClicked() }) {
                 Icon(Icons.Filled.Add, "Add new app limit")
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
             if (state.isLoading && state.limitedApps.isEmpty() && state.installedAppsForSelection.isEmpty()) { // More specific loading condition
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { // Centered loading
                     CircularProgressIndicator()
-                }
-            }
-
-            if (state.error != null) {
-                SnackbarHost(hostState = remember { SnackbarHostState() } ).apply {
-                    LaunchedEffect(state.error) {
-                        showSnackbar(
-                            message = state.error!!,
-                            duration = SnackbarDuration.Short,
-                            actionLabel = "Dismiss"
-                        )
-                        viewModel.clearError() // Clear error after shown
-                    }
                 }
             }
 
@@ -186,6 +186,7 @@ fun AppLimitSettingDialog(
 }
 
 // --- Previews ---
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun LimiterConfigScreenPreview_Empty() {
@@ -206,6 +207,7 @@ fun LimiterConfigScreenPreview_Empty() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun LimiterConfigScreenPreview_WithData() {

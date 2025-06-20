@@ -18,12 +18,11 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
     @Inject
     lateinit var workerFactory: HiltWorkerFactory // Inject HiltWorkerFactory
 
-    override fun getWorkManagerConfiguration(): Configuration { // Provide WorkManager configuration
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .setMinimumLoggingLevel(android.util.Log.INFO) // Optional: for debugging
             .build()
-    }
 
     override fun onCreate() {
         super.onCreate()

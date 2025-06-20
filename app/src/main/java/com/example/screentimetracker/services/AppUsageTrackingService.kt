@@ -176,8 +176,10 @@ class AppUsageTrackingService : Service() {
         while (usageEvents.hasNextEvent()) {
             usageEvents.getNextEvent(tempEvent)
             if (tempEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED || tempEvent.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                if (latestForegroundEvent == null || tempEvent.timeStamp > latestForegroundEvent!!.timeStamp) {
-                    latestForegroundEvent = UsageEvents.Event(); latestForegroundEvent!!.copyFrom(tempEvent)
+                if (latestForegroundEvent == null || tempEvent.timeStamp > latestForegroundEvent.timeStamp) {
+                    latestForegroundEvent = UsageEvents.Event();
+                    Log.d(TAG, "New foreground event: ${tempEvent.packageName}")
+                  //  latestForegroundEvent!!.copyFrom(tempEvent)
                 }
             }
         }
