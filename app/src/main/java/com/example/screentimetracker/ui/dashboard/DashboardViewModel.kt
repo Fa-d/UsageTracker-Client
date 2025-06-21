@@ -26,7 +26,7 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DashboardState(isLoading = true))
     val uiState: StateFlow<DashboardState> = _uiState.asStateFlow()
 
-    private fun loadData() { // Removed suspend, as flow collection is main async part
+    fun loadData() { // Removed suspend, as flow collection is main async part
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {

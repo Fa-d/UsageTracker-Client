@@ -32,6 +32,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,116 +46,122 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.min
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
+
+val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
 @Composable
-fun ScreenTimeTracker() {
-    var activeTab by remember { mutableStateOf("dashboard") }
-    var darkMode by remember { mutableStateOf(false) }
-    var focusMode by remember { mutableStateOf(false) }
-    var privacyMode by remember { mutableStateOf(false) }
-    var syncEnabled by remember { mutableStateOf(true) }
-    var selectedDate by remember { mutableStateOf("today") }
-    var expandedCategory by remember { mutableStateOf<Int?>(null) }
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = if (darkMode) Color(0xFF18181B) else Color(0xFFF9FAFB)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Status Bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(if (darkMode) Color(0xFF27272A) else Color.White)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("9:41", fontSize = 14.sp)
-                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    repeat(3) {
+fun ScreenTimeTracker(viewModel: DashboardViewModel) {
+    CompositionLocalProvider(LocalDashboardViewModel provides viewModel) {
+        val state by viewModel.uiState.collectAsStateWithLifecycle()
+        LaunchedEffect(Unit) { viewModel.loadData() }
+        var activeTab by remember { mutableStateOf("dashboard") }
+        var darkMode by remember { mutableStateOf(false) }
+        var focusMode by remember { mutableStateOf(false) }
+        var privacyMode by remember { mutableStateOf(false) }
+        var syncEnabled by remember { mutableStateOf(true) }
+        var selectedDate by remember { mutableStateOf("today") }
+        var expandedCategory by remember { mutableStateOf<Int?>(null) }
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = if (darkMode) Color(0xFF18181B) else Color(0xFFF9FAFB)
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Status Bar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (darkMode) Color(0xFF27272A) else Color.White)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("9:41", fontSize = 14.sp)
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        repeat(3) {
+                            Box(
+                                Modifier
+                                    .size(width = 16.dp, height = 8.dp)
+                                    .background(Color(0xFF22C55E), shape = MaterialTheme.shapes.small)
+                            )
+                        }
                         Box(
                             Modifier
                                 .size(width = 16.dp, height = 8.dp)
-                                .background(Color(0xFF22C55E), shape = MaterialTheme.shapes.small)
+                                .background(Color(0xFFD1D5DB), shape = MaterialTheme.shapes.small)
                         )
                     }
-                    Box(
-                        Modifier
-                            .size(width = 16.dp, height = 8.dp)
-                            .background(Color(0xFFD1D5DB), shape = MaterialTheme.shapes.small)
+                    Text("100%", fontSize = 14.sp)
+                }
+
+                // Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (darkMode) Color(0xFF27272A) else Color.White)
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Screen Time", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    // Add focus mode indicator and eye icon here if needed
+                }
+
+                // Content
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                ) {
+                    when (activeTab) {
+                        "dashboard" -> DashboardView(state)
+                        "apps" -> AppsView(expandedCategory) { expandedCategory = it }
+                        "timeline" -> TimelineScreen()
+                        "goals" -> GoalsView(focusMode) { focusMode = it }
+                        "settings" -> SettingsView(
+                            darkMode,
+                            { darkMode = it },
+                            privacyMode,
+                            { privacyMode = it },
+                            syncEnabled,
+                            { syncEnabled = it })
+                    }
+                }
+
+                // Bottom Navigation
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (darkMode) Color(0xFF27272A) else Color.White)
+                        .padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    val tabs = listOf(
+                        "dashboard" to "Dashboard",
+                        "apps" to "Apps",
+                        "timeline" to "Timeline",
+                        "goals" to "Goals",
+                        "settings" to "Settings"
                     )
-                }
-                Text("100%", fontSize = 14.sp)
-            }
-
-            // Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(if (darkMode) Color(0xFF27272A) else Color.White)
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Screen Time", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                // Add focus mode indicator and eye icon here if needed
-            }
-
-            // Content
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
-            ) {
-                when (activeTab) {
-                    "dashboard" -> DashboardView()
-                    "apps" -> AppsView(expandedCategory) { expandedCategory = it }
-                    // "timeline" -> TimelineView(selectedDate) { selectedDate = it }
-                    "timeline" -> TimelineScreen()
-                    "goals" -> GoalsView(focusMode) { focusMode = it }
-                    "settings" -> SettingsView(
-                        darkMode,
-                        { darkMode = it },
-                        privacyMode,
-                        { privacyMode = it },
-                        syncEnabled,
-                        { syncEnabled = it })
-                    // TODO: Add other views
-                }
-            }
-
-            // Bottom Navigation
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(if (darkMode) Color(0xFF27272A) else Color.White)
-                    .padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                val tabs = listOf(
-                    "dashboard" to "Dashboard",
-                    "apps" to "Apps",
-                    "timeline" to "Timeline",
-                    "goals" to "Goals",
-                    "settings" to "Settings"
-                )
-                tabs.forEach { (id, label) ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .background(
-                                if (activeTab == id) Color(0xFFE0E7FF) else Color.Transparent,
-                                shape = MaterialTheme.shapes.small
+                    tabs.forEach { (id, label) ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .background(
+                                    if (activeTab == id) Color(0xFFE0E7FF) else Color.Transparent,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(8.dp)
+                                .clickable { activeTab = id }) {
+                            // TODO: Add icons
+                            Text(
+                                label,
+                                fontSize = 12.sp,
+                                color = if (activeTab == id) Color(0xFF2563EB) else Color.Gray
                             )
-                            .padding(8.dp)
-                            .clickable { activeTab = id }) {
-                        // TODO: Add icons
-                        Text(
-                            label,
-                            fontSize = 12.sp,
-                            color = if (activeTab == id) Color(0xFF2563EB) else Color.Gray
-                        )
+                        }
                     }
                 }
             }
@@ -163,7 +170,8 @@ fun ScreenTimeTracker() {
 }
 
 @Composable
-fun DashboardView() {
+fun DashboardView(state: DashboardState) {
+    val viewModel = LocalDashboardViewModel.current
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         // Today's Overview
         Card(
@@ -179,7 +187,7 @@ fun DashboardView() {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    todayStats.screenTime,
+                    millisToReadableTime(state.totalScreenTimeTodayMillis),
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
                     color = Color.White
@@ -187,12 +195,12 @@ fun DashboardView() {
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
-                        "${todayStats.unlocks} unlocks",
+                        "${state.totalScreenUnlocksToday} unlocks",
                         color = Color.White.copy(alpha = 0.9f),
                         fontSize = 14.sp
                     )
                     Text(
-                        "${todayStats.appOpens} app opens",
+                        "${state.appUsagesToday.sumOf { it.openCount }} app opens",
                         color = Color.White.copy(alpha = 0.9f),
                         fontSize = 14.sp
                     )
@@ -211,12 +219,13 @@ fun DashboardView() {
                     Box(
                         Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(todayStats.goalProgress / 100f)
+                            .fillMaxWidth((state.totalScreenTimeTodayMillis / (6 * 60 * 60 * 1000f)).coerceAtMost(1f)) // Example: 6h goal
                             .background(Color.White, shape = MaterialTheme.shapes.extraLarge)
                     )
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Text("${todayStats.goalProgress}%", color = Color.White, fontSize = 13.sp)
+                    val progress = ((state.totalScreenTimeTodayMillis / (6 * 60 * 60 * 1000f)) * 100).toInt().coerceAtMost(100)
+                    Text("${progress}%", color = Color.White, fontSize = 13.sp)
                 }
             }
         }
@@ -236,7 +245,7 @@ fun DashboardView() {
                             .background(Color(0xFF2563EB), shape = MaterialTheme.shapes.small)
                     ) {}
                     Spacer(Modifier.height(8.dp))
-                    Text("${todayStats.unlocks}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("${state.totalScreenUnlocksToday}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text("Phone Unlocks", fontSize = 13.sp, color = Color.Gray)
                 }
             }
@@ -254,7 +263,7 @@ fun DashboardView() {
                             .background(Color(0xFF22C55E), shape = MaterialTheme.shapes.small)
                     ) {}
                     Spacer(Modifier.height(8.dp))
-                    Text("${todayStats.appOpens}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("${state.appUsagesToday.sumOf { it.openCount }}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text("App Opens", fontSize = 13.sp, color = Color.Gray)
                 }
             }
@@ -267,7 +276,7 @@ fun DashboardView() {
             Column(Modifier.padding(16.dp)) {
                 Text("Weekly Trend", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 Spacer(Modifier.height(8.dp))
-                // TODO: Add BarChart composable here
+                // TODO: Replace with real bar chart using state.historicalAppSummaries
                 Box(
                     Modifier
                         .fillMaxWidth()
@@ -287,11 +296,12 @@ fun DashboardView() {
             Column(Modifier.padding(16.dp)) {
                 Text("Category Breakdown", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 Spacer(Modifier.height(8.dp))
-                // Pie chart for category breakdown
-                PieChartCategoryBreakdown(categories = categoryData)
+                // Use real data for categories
+                val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
+                PieChartCategoryBreakdown(categories = categories)
                 Spacer(Modifier.height(8.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    categoryData.forEach { category ->
+                    categories.forEach { category ->
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -351,6 +361,10 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
 fun AppsView(
     expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit
 ) {
+    val viewModel = LocalDashboardViewModel.current
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
+    val appUsageData = state.appUsagesToday
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(
             Modifier.fillMaxWidth(),
@@ -363,7 +377,7 @@ fun AppsView(
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            categoryData.forEachIndexed { index, category ->
+            categories.forEachIndexed { index, category ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -400,7 +414,7 @@ fun AppsView(
                                 Modifier.padding(start = 24.dp, end = 16.dp, bottom = 12.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                appUsageData.filter { it.category == category.name }
+                                appUsageData.filter { it.appName == category.name }
                                     .forEach { app ->
                                         Row(
                                             Modifier.fillMaxWidth(),
@@ -408,19 +422,20 @@ fun AppsView(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text(app.icon, fontSize = 22.sp)
+                                                // TODO: Replace with real app icon if available
+                                                Text("\uD83D\uDCF1", fontSize = 22.sp)
                                                 Spacer(Modifier.width(8.dp))
                                                 Column {
-                                                    Text(app.app, fontWeight = FontWeight.Medium)
+                                                    Text(app.appName, fontWeight = FontWeight.Medium)
                                                     Text(
-                                                        "${app.opens} opens",
+                                                        "${app.openCount} opens",
                                                         fontSize = 12.sp,
                                                         color = Color.Gray
                                                     )
                                                 }
                                             }
                                             Column(horizontalAlignment = Alignment.End) {
-                                                Text(app.time, fontWeight = FontWeight.Medium)
+                                                Text(millisToReadableTime(app.totalDurationMillisToday), fontWeight = FontWeight.Medium)
                                                 Button(
                                                     onClick = { /* TODO: Tag action */ },
                                                     contentPadding = PaddingValues(0.dp),
@@ -441,6 +456,25 @@ fun AppsView(
                 }
             }
         }
+    }
+}
+
+// Helper to group app usages by category and sum durations, opens, etc.
+fun getCategoryDataFromAppUsages(appUsages: List<AppUsageUIModel>): List<CategoryData> {
+    // TODO: Replace with real category mapping logic
+    val colorPalette = listOf(
+        Color(0xFFFF6B6B), Color(0xFF4ECDC4), Color(0xFF45B7D1), Color(0xFF96CEB4), Color(0xFFFFEAA7)
+    )
+    val grouped = appUsages.groupBy { it.appName } // Replace with real category if available
+    return grouped.entries.mapIndexed { idx, entry ->
+        val totalDuration = entry.value.sumOf { it.totalDurationMillisToday }
+        val totalOpens = entry.value.sumOf { it.openCount }
+        CategoryData(
+            name = entry.key,
+            value = totalOpens,
+            color = colorPalette[idx % colorPalette.size],
+            time = millisToReadableTime(totalDuration)
+        )
     }
 }
 
@@ -810,4 +844,10 @@ fun SettingsView(
             }
         }
     }
+}
+
+fun millisToReadableTime(millis: Long): String {
+    val hours = millis / (1000 * 60 * 60)
+    val minutes = (millis / (1000 * 60)) % 60
+    return "%dh %02dm".format(hours, minutes)
 }

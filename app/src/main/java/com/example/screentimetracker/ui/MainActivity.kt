@@ -51,18 +51,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewmodel = hiltViewModel<DashboardViewModel>()
-                    PermissionWrapper()
-
+                    val viewModel = hiltViewModel<DashboardViewModel>()
+                    PermissionWrapper(viewModel)
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun PermissionWrapper() {
+fun PermissionWrapper(viewModel: DashboardViewModel) {
     val context = LocalContext.current
     var hasPermission by remember { mutableStateOf(PermissionUtils.hasUsageStatsPermission(context)) }
     // State to control which screen is shown
@@ -71,8 +69,7 @@ fun PermissionWrapper() {
         LaunchedEffect(Unit) {
             context.startService(Intent(context, AppUsageTrackingService::class.java))
         }
-        ScreenTimeTracker()
-
+        ScreenTimeTracker(viewModel)
     } else {
         RequestUsagePermissionScreen {
             PermissionUtils.requestUsageStatsPermission(context)

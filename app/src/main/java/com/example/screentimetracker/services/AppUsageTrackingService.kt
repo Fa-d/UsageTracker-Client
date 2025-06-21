@@ -56,6 +56,14 @@ class AppUsageTrackingService : Service() {
 
     private var lastTrackedEventTimeForPolling: Long = 0L
 
+    // Helper data class to store event info
+    private data class ForegroundEventInfo(
+        val eventType: Int,
+        val packageName: String?,
+        val className: String?,
+        val timeStamp: Long
+    )
+
     companion object {
         private const val TAG = "AppUsageService"
         private const val POLLING_INTERVAL_MS = 3000L // Keep polling interval relatively short for responsiveness
@@ -170,16 +178,20 @@ class AppUsageTrackingService : Service() {
     private suspend fun pollAppUsage() {
         val currentTime = System.currentTimeMillis()
         val usageEvents = usageStatsManager.queryEvents(lastTrackedEventTimeForPolling, currentTime)
-        var latestForegroundEvent: UsageEvents.Event? = null
+        var latestForegroundEvent: ForegroundEventInfo? = null
         val tempEvent = UsageEvents.Event()
 
         while (usageEvents.hasNextEvent()) {
             usageEvents.getNextEvent(tempEvent)
             if (tempEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED || tempEvent.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
                 if (latestForegroundEvent == null || tempEvent.timeStamp > latestForegroundEvent.timeStamp) {
-                    latestForegroundEvent = UsageEvents.Event();
+                    latestForegroundEvent = ForegroundEventInfo(
+                        eventType = tempEvent.eventType,
+                        packageName = tempEvent.packageName,
+                        className = tempEvent.className,
+                        timeStamp = tempEvent.timeStamp
+                    )
                     Log.d(TAG, "New foreground event: ${tempEvent.packageName}")
-                  //  latestForegroundEvent!!.copyFrom(tempEvent)
                 }
             }
         }
@@ -245,7 +257,16 @@ class AppUsageTrackingService : Service() {
         warningShownForCurrentSessionApp = null
         threeXActionTakenForCurrentSessionApp = null
 
-        if (pkgName != null && sessionStartTime != null) { /* ... (save session event) ... */ }
+        if (pkgName != null && sessionStartTime != null) {
+            serviceScope.launch {
+                try {
+                    recordAppSessionUseCase(pkgName, sessionStartTime, sessionEndTimeMillis)
+                    Log.d(TAG, "Session saved: $pkgName $sessionStartTime-$sessionEndTimeMillis")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to save session for $pkgName", e)
+                }
+            }
+        }
         currentSessionPackageName = null
         currentSessionStartTimeMillis = null
 
