@@ -5,10 +5,8 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.screentimetracker.domain.usecases.DashboardData // Today's data DTO from GetDashboardDataUseCase
 import com.example.screentimetracker.domain.usecases.GetDashboardDataUseCase
 import com.example.screentimetracker.domain.usecases.GetHistoricalDataUseCase
-import com.example.screentimetracker.domain.usecases.HistoricalData // Historical data DTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,18 +25,6 @@ class DashboardViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(DashboardState(isLoading = true))
     val uiState: StateFlow<DashboardState> = _uiState.asStateFlow()
-
-    init {
-        processIntent(DashboardIntent.LoadDashboardData)
-    }
-
-    fun processIntent(intent: DashboardIntent) {
-        viewModelScope.launch {
-            when (intent) {
-                is DashboardIntent.LoadDashboardData -> loadData()
-            }
-        }
-    }
 
     private fun loadData() { // Removed suspend, as flow collection is main async part
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)

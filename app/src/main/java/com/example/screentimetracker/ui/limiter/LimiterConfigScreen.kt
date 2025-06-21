@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun LimiterConfigScreen(
     viewModel: LimiterConfigViewModel = hiltViewModel(),
-    // onNavigateBack: () -> Unit // For navigation
+     onNavigateBack: () -> Unit // For navigation
 ) {
     val state by viewModel.uiState
     val snackbarHostState = remember { SnackbarHostState() }
