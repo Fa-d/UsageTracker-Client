@@ -1,5 +1,6 @@
 package com.example.screentimetracker.domain.usecases
 
+import com.example.screentimetracker.data.local.AppLastOpenedData
 import com.example.screentimetracker.data.local.AppSessionDataAggregate // Needed
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,8 +12,8 @@ import javax.inject.Inject
 data class TodaysAppData(
     val packageName: String,
     val totalDurationMillis: Long,
-    val sessionCount: Int // This is effectively open count from sessions
-    // If lastInteractionTime is needed, it would come from max(endTimeMillis) of AppSessionEvent for today
+    val sessionCount: Int, // This is effectively open count from sessions
+    val lastOpenedTimestamp: Long // Added lastOpenedTimestamp
 )
 
 // DTO from GetDashboardDataUseCase, representing all data needed for "today's" view
@@ -39,13 +40,16 @@ class GetDashboardDataUseCase @Inject constructor(
         val screenUnlocksFlow: Flow<Int> = repository.getUnlockCountForDay(startOfTodayMillis, endOfTodayMillis)
         // Use getAggregatedSessionDataForDay for today's app details
         val aggregatedSessionsTodayFlow: Flow<List<AppSessionDataAggregate>> = repository.getAggregatedSessionDataForDay(startOfTodayMillis, endOfTodayMillis)
+        val lastOpenedTimestampsFlow: Flow<List<AppLastOpenedData>> = repository.getLastOpenedTimestampsForAppsInRange(startOfTodayMillis, endOfTodayMillis)
 
-        return combine(screenUnlocksFlow, aggregatedSessionsTodayFlow) { unlocks, sessionAggregates ->
+        return combine(screenUnlocksFlow, aggregatedSessionsTodayFlow, lastOpenedTimestampsFlow) { unlocks, sessionAggregates, lastOpenedTimestamps ->
+            val lastOpenedMap = lastOpenedTimestamps.associateBy { it.packageName }
             val todaysAppDetails = sessionAggregates.map { aggregate ->
                 TodaysAppData(
                     packageName = aggregate.packageName,
                     totalDurationMillis = aggregate.totalDuration,
-                    sessionCount = aggregate.sessionCount
+                    sessionCount = aggregate.sessionCount,
+                    lastOpenedTimestamp = lastOpenedMap[aggregate.packageName]?.lastOpenedTimestamp ?: 0L
                 )
             }
             val totalScreenTime = sessionAggregates.sumOf { it.totalDuration }

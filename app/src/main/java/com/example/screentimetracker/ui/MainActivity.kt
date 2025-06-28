@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,10 +63,29 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PermissionWrapper(viewModel: DashboardViewModel) {
     val context = LocalContext.current
-    var hasPermission by remember { mutableStateOf(PermissionUtils.hasUsageStatsPermission(context)) }
-    // State to control which screen is shown
+    val hasUsageStatsPermission by produceState(initialValue = PermissionUtils.hasUsageStatsPermission(context)) {
+        while (true) {
+            value = PermissionUtils.hasUsageStatsPermission(context)
+            kotlinx.coroutines.delay(1000) // Check every second
+        }
+    }
 
-    if (hasPermission) {
+    // State for notification permission
+    var hasNotificationPermission by remember { mutableStateOf(PermissionUtils.hasNotificationPermission(context)) }
+
+    // Request notification permission on startup if not granted
+    LaunchedEffect(Unit) {
+        if (!hasNotificationPermission) {
+            PermissionUtils.requestNotificationPermission(context)
+        }
+    }
+
+    // Update notification permission status when activity resumes or permission changes
+    LaunchedEffect(hasNotificationPermission) {
+        hasNotificationPermission = PermissionUtils.hasNotificationPermission(context)
+    }
+
+    if (hasUsageStatsPermission) {
         LaunchedEffect(Unit) {
             context.startService(Intent(context, AppUsageTrackingService::class.java))
         }

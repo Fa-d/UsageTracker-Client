@@ -77,6 +77,10 @@ class TrackerRepositoryImpl @Inject constructor(
         return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis)
     }
 
+    override fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<com.example.screentimetracker.data.local.AppLastOpenedData>> {
+        return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime)
+    }
+
     // Daily Summary Methods
     override suspend fun insertDailyAppSummaries(summaries: List<DailyAppSummary>) {
         dailyAppSummaryDao.insertAll(summaries)

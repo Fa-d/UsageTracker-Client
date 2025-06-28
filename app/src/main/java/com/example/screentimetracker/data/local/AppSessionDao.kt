@@ -36,6 +36,10 @@ interface AppSessionDao {
     // This query is an example of what might be used by the DailyAggregationWorker
     @Query("SELECT packageName, SUM(durationMillis) as totalDuration, COUNT(id) as sessionCount FROM app_session_events WHERE startTimeMillis >= :dayStartMillis AND startTimeMillis < :dayEndMillis GROUP BY packageName")
     fun getAggregatedSessionDataForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<List<AppSessionDataAggregate>>
+
+    // Get the latest end time for each package within a time range
+    @Query("SELECT packageName, MAX(endTimeMillis) as lastOpenedTimestamp FROM app_session_events WHERE startTimeMillis >= :startTime AND endTimeMillis <= :endTime GROUP BY packageName")
+    fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<AppLastOpenedData>>
 }
 
 // Data class for the result of the aggregated query
@@ -43,4 +47,9 @@ data class AppSessionDataAggregate(
     val packageName: String,
     val totalDuration: Long,
     val sessionCount: Int // Represents open count for the day based on sessions
+)
+
+data class AppLastOpenedData(
+    val packageName: String,
+    val lastOpenedTimestamp: Long
 )

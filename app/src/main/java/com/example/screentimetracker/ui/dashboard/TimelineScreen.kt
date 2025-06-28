@@ -39,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,63 +51,85 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.screentimetracker.data.local.AppSessionEvent
+import com.example.screentimetracker.utils.millisToReadableTime
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun TimelineScreen() {
+    val viewModel = LocalDashboardViewModel.current
     var selectedDate by remember { mutableStateOf("Today") }
-    val timelineItems = listOf(
+    val timelineEvents by viewModel.timelineEvents.collectAsStateWithLifecycle()
+
+    LaunchedEffect(selectedDate) {
+        val calendar = Calendar.getInstance()
+        val endTimeMillis = calendar.timeInMillis
+        val startTimeMillis: Long
+
+        when (selectedDate) {
+            "Today" -> {
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                startTimeMillis = calendar.timeInMillis
+            }
+            "Yesterday" -> {
+                calendar.add(Calendar.DAY_OF_YEAR, -1)
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                startTimeMillis = calendar.timeInMillis
+            }
+            "Week" -> {
+                calendar.add(Calendar.DAY_OF_YEAR, -6) // Last 7 days including today
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                startTimeMillis = calendar.timeInMillis
+            }
+            else -> {
+                startTimeMillis = 0L // All time, or handle specific date selection
+            }
+        }
+        viewModel.loadTimelineEvents(startTimeMillis, endTimeMillis)
+    }
+
+    val timelineUiItems = timelineEvents.map { event ->
+        // Placeholder for category, icon, and colors. You'll need to implement logic
+        // to determine these based on the app's package name or other criteria.
+        val appName = viewModel.getAppName(event.packageName) // Assuming getAppName is public in ViewModel
+        val category = "Uncategorized" // Placeholder
+        val icon = Icons.Outlined.Article // Placeholder icon
+        val iconBg = Color(0xFFF1F5F9) // Placeholder color
+        val iconColor = Color(0xFF64748B) // Placeholder color
+        val chipBg = Color(0xFFF1F5F9) // Placeholder color
+        val chipTextColor = Color(0xFF334155) // Placeholder color
+
+        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val startTime = timeFormat.format(Date(event.startTimeMillis))
+        val endTime = timeFormat.format(Date(event.endTimeMillis))
+        val duration = millisToReadableTime(event.durationMillis)
+
         TimelineUiItem(
-            category = "Social Media",
-            app = "Instagram",
-            icon = Icons.Outlined.PhotoCamera,
-            iconBg = Color(0xFFFFF1F2),
-            iconColor = Color(0xFFFB7185),
-            chipBg = Color(0xFFFFF1F2),
-            chipTextColor = Color(0xFFBE123C),
-            time = "9:00 AM - 9:30 AM",
-            duration = "30 min"
-        ), TimelineUiItem(
-            category = "Productivity",
-            app = "Notion",
-            icon = Icons.Outlined.Edit,
-            iconBg = Color(0xFFE0F2FE),
-            iconColor = Color(0xFF0EA5E9),
-            chipBg = Color(0xFFE0F2FE),
-            chipTextColor = Color(0xFF0369A1),
-            time = "9:30 AM - 10:00 AM",
-            duration = "30 min"
-        ), TimelineUiItem(
-            category = "Entertainment",
-            app = "YouTube",
-            icon = Icons.Outlined.PlayCircleOutline,
-            iconBg = Color(0xFFFEE2E2),
-            iconColor = Color(0xFFEF4444),
-            chipBg = Color(0xFFFEE2E2),
-            chipTextColor = Color(0xFFB91C1C),
-            time = "10:00 AM - 11:00 AM",
-            duration = "1 hr"
-        ), TimelineUiItem(
-            category = "Communication",
-            app = "WhatsApp",
-            icon = Icons.Outlined.ChatBubbleOutline,
-            iconBg = Color(0xFFD1FAE5),
-            iconColor = Color(0xFF22C55E),
-            chipBg = Color(0xFFD1FAE5),
-            chipTextColor = Color(0xFF166534),
-            time = "11:00 AM - 12:00 PM",
-            duration = "1 hr"
-        ), TimelineUiItem(
-            category = "News",
-            app = "News App",
-            icon = Icons.Outlined.Article,
-            iconBg = Color(0xFFF1F5F9),
-            iconColor = Color(0xFF64748B),
-            chipBg = Color(0xFFF1F5F9),
-            chipTextColor = Color(0xFF334155),
-            time = "12:00 PM - 12:30 PM",
-            duration = "30 min"
+            category = category,
+            app = appName,
+            icon = icon,
+            iconBg = iconBg,
+            iconColor = iconColor,
+            chipBg = chipBg,
+            chipTextColor = chipTextColor,
+            time = "$startTime - $endTime",
+            duration = duration
         )
-    )
+    }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -172,9 +195,9 @@ fun TimelineScreen() {
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            itemsIndexed(timelineItems) { idx, item ->
+            itemsIndexed(timelineUiItems) { idx, item ->
                 TimelineItem(
-                    item = item, isFirst = idx == 0, isLast = idx == timelineItems.lastIndex
+                    item = item, isFirst = idx == 0, isLast = idx == timelineUiItems.lastIndex
                 )
             }
         }

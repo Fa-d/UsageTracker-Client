@@ -3,8 +3,11 @@ package com.example.screentimetracker.utils
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 
 object PermissionUtils {
 
@@ -37,6 +40,26 @@ object PermissionUtils {
         // intent.data = Uri.parse("package:${context.packageName}")
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
+        }
+    }
+
+    fun hasNotificationPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+        } else {
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+        }
+    }
+
+    fun requestNotificationPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (context is androidx.activity.ComponentActivity) {
+                ActivityCompat.requestPermissions(
+                    context,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    0 // Request code, not used here but required
+                )
+            }
         }
     }
 }

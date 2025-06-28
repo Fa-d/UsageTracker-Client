@@ -29,6 +29,7 @@ interface TrackerRepository {
     fun getTotalDurationForAppInRange(packageName: String, startTime: Long, endTime: Long): Flow<Long?>
     fun getTotalScreenTimeFromSessionsInRange(startTime: Long, endTime: Long): Flow<Long?>
     fun getAggregatedSessionDataForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<List<AppSessionDataAggregate>>
+    fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<com.example.screentimetracker.data.local.AppLastOpenedData>>
 
     // Daily Summary Methods
     suspend fun insertDailyAppSummaries(summaries: List<DailyAppSummary>)

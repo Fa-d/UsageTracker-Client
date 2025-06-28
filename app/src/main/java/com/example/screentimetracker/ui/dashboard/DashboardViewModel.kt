@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.screentimetracker.domain.usecases.GetDashboardDataUseCase
 import com.example.screentimetracker.domain.usecases.GetHistoricalDataUseCase
+import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,11 +21,15 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getDashboardDataUseCase: GetDashboardDataUseCase,
     private val getHistoricalDataUseCase: GetHistoricalDataUseCase, // New UseCase
+    private val getAppSessionEventsUseCase: GetAppSessionEventsUseCase,
     private val application: Application
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardState(isLoading = true))
     val uiState: StateFlow<DashboardState> = _uiState.asStateFlow()
+
+    private val _timelineEvents = MutableStateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>>(emptyList())
+    val timelineEvents: StateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>> = _timelineEvents.asStateFlow()
 
     fun loadData() { // Removed suspend, as flow collection is main async part
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -48,14 +53,8 @@ class DashboardViewModel @Inject constructor(
                     AppUsageUIModel(
                         packageName = detail.packageName,
                         appName = getAppName(detail.packageName),
-                        openCount = detail.sessionCount, // From session counts
-                        // lastOpenedTimestamp for today's apps:
-                        // This requires finding the max endTimeMillis for each package from today's sessions.
-                        // AppSessionDataAggregate does not provide this.
-                        // GetDashboardDataUseCase would need to be enhanced, or another query made.
-                        // For now, setting to 0 or using a placeholder.
-                        // A more accurate way would be to enhance GetDashboardDataUseCase or add a specific query.
-                        lastOpenedTimestamp = 0L, // Placeholder - requires enhancement for accuracy
+                        openCount = detail.sessionCount,
+                        lastOpenedTimestamp = detail.lastOpenedTimestamp,
                         totalDurationMillisToday = detail.totalDurationMillis
                     )
                 }
@@ -88,7 +87,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun getAppName(packageName: String): String {
+    internal fun getAppName(packageName: String): String {
         return try {
             val pm = application.packageManager
             val applicationInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
@@ -96,6 +95,19 @@ class DashboardViewModel @Inject constructor(
         } catch (e: PackageManager.NameNotFoundException) {
             Log.w("DashboardViewModel", "App name not found for package: $packageName")
             packageName // Fallback to package name
+        }
+    }
+
+    fun loadTimelineEvents(startTime: Long, endTime: Long) {
+        viewModelScope.launch {
+            getAppSessionEventsUseCase(startTime, endTime)
+                .catch { exception ->
+                    Log.e("DashboardViewModel", "Error loading timeline events", exception)
+                    // Handle error, maybe update a separate error state for timeline
+                }
+                .collect { events ->
+                    _timelineEvents.value = events
+                }
         }
     }
 }
