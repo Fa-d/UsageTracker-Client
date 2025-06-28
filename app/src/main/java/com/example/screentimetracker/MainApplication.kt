@@ -15,6 +15,7 @@ import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import androidx.core.content.edit
+import com.example.screentimetracker.receivers.ScreenUnlockReceiver
 
 @HiltAndroidApp
 class MainApplication : Application(), Configuration.Provider { // Implement Configuration.Provider
@@ -25,13 +26,14 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
-            .setMinimumLoggingLevel(android.util.Log.INFO) // Optional: for debugging
+            .setMinimumLoggingLevel(Log.INFO) // Optional: for debugging
             .build()
 
     override fun onCreate() {
         super.onCreate()
         scheduleDailyAggregationWork()
         enqueueHistoricalDataWorker()
+        ScreenUnlockReceiver.register(this)
     }
 
     private fun enqueueHistoricalDataWorker() {

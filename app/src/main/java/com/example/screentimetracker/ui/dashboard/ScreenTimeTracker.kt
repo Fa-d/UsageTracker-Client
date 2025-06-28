@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,7 +50,7 @@ import com.example.screentimetracker.ui.limiter.LimiterConfigScreen
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
 @Composable
-fun ScreenTimeTracker(viewModel: DashboardViewModel) {
+fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
     CompositionLocalProvider(LocalDashboardViewModel provides viewModel) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         LaunchedEffect(Unit) { viewModel.loadData() }
@@ -64,7 +66,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
         var expandedCategory by remember { mutableStateOf<Int?>(null) }
 
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding.asPaddingValues()),
             color = if (darkMode) Color(0xFF18181B) else Color(0xFFF9FAFB)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {

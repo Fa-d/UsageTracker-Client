@@ -3,12 +3,13 @@ package com.example.screentimetracker.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.util.Log
-import com.example.screentimetracker.domain.usecases.RecordScreenUnlockUseCase
+import com.example.screentimetracker.data.local.ScreenUnlockEvent
+import com.example.screentimetracker.domain.repository.TrackerRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,36 +17,28 @@ import javax.inject.Inject
 class ScreenUnlockReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var recordScreenUnlockUseCase: RecordScreenUnlockUseCase
-
-    // It's better to manage the scope or pass it if possible,
-    // but for a BroadcastReceiver, a new scope is often created.
-    // Ensure this scope is managed if the receiver has a longer lifecycle or specific needs.
-    private val receiverScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
+    lateinit var repository: TrackerRepository
 
     companion object {
-        private const val TAG = "ScreenUnlockReceiver"
+        fun register(context: Context) {
+            val filter = IntentFilter(Intent.ACTION_USER_PRESENT)
+            context.registerReceiver(ScreenUnlockReceiver(), filter)
+        }
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == Intent.ACTION_USER_PRESENT) {
-            Log.d(TAG, "Screen unlocked event received.")
+            Log.d("ScreenUnlockReceiver", "Screen unlocked detected!")
+            val timestamp = System.currentTimeMillis()
+            val event = ScreenUnlockEvent(timestamp = timestamp)
 
-            // GoPendingResult for BroadcastReceivers if the work is async
-            // However, Hilt's @AndroidEntryPoint might handle some of this for field injection.
-            // For simplicity and if the operation is quick, direct launch is often seen.
-            // If DB operation is slow, goAsync() is the proper way.
-            val pendingResult: PendingResult? = goAsync() // Important for async work in receivers
-
-            receiverScope.launch {
+            // Use a CoroutineScope to insert into the database as onReceive is on main thread
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    recordScreenUnlockUseCase() // UseCase handles timestamp internally
-                    Log.d(TAG, "Screen unlock event saved via UseCase.")
+                    repository.insertScreenUnlockEvent(event)
+                    Log.d("ScreenUnlockReceiver", "Screen unlock event inserted: $event")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error saving screen unlock event", e)
-                } finally {
-                    pendingResult?.finish() // Always finish the pending result
+                    Log.e("ScreenUnlockReceiver", "Error inserting screen unlock event", e)
                 }
             }
         }
