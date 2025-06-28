@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,17 +37,13 @@ import kotlin.math.min
 @Composable
 fun DashboardView(state: DashboardState) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Today's Overview
         OverviewCard(
             totalScreenTimeTodayMillis = state.totalScreenTimeTodayMillis,
             totalScreenUnlocksToday = state.totalScreenUnlocksToday,
             totalAppOpensToday = state.appUsagesToday.sumOf { it.openCount })
-        // Quick Stats Grid
         QuickViewComponent(state)
-
 
         // Weekly Trend Chart
         Card(
@@ -64,117 +59,57 @@ fun DashboardView(state: DashboardState) {
             }
         }
 
-
-        // Category Breakdown (pie chart placeholder)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Text(
-                "Category Breakdown",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(16.dp) // Keep padding for the title
-            )
-            Spacer(Modifier.height(8.dp))
-            // Use real data for categories
-            val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
-            PieChartCategoryBreakdown(
-                categories = categories,
-                modifier = Modifier.height(400.dp)
-            ) // Make pie chart take remaining space in this column
-            Spacer(Modifier.height(8.dp))
-            Column(
-                modifier = Modifier.padding(16.dp), // Keep padding for the legend
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                categories.forEach { category ->
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier
-                                    .size(10.dp)
-                                    .background(
-                                        category.color, shape = MaterialTheme.shapes.small
-                                    )
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(category.name, fontSize = 13.sp)
-                        }
-                        Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                    }
-                }
-            }
-        }
+        CategoryBreakDown(state)
     }
 }
 
 @Composable
 private fun CategoryBreakDown(state: DashboardState) {
     val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
+    Column {
+        Text(
+            "Category Breakdown",
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(16.dp) // Keep padding for the title
+        )
+        Spacer(Modifier.height(8.dp))
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp), // Add padding to the bottom
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize() // This column should fill the card
+        LazyColumn(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(
-                "Category Breakdown",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(16.dp) // Keep padding for the title
-            )
-            Spacer(Modifier.height(8.dp))
-            PieChartCategoryBreakdown(
-                categories = categories,
-                modifier = Modifier
-                    .size(400.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Spacer(Modifier.height(8.dp))/* Column(
-                 modifier = Modifier.padding(16.dp), // Keep padding for the legend
-                 verticalArrangement = Arrangement.spacedBy(6.dp)
-             ) {
-                 categories.forEach { category ->
 
-                 }
-             }*/
-
-
-            LazyColumn(
-                modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                items(categories.size) { index ->
-                    val category = categories[index]
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier
-                                    .size(10.dp)
-                                    .background(
-                                        category.color, shape = MaterialTheme.shapes.small
-                                    )
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(category.name, fontSize = 13.sp)
-                        }
-                        Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            items(categories.size) { index ->
+                val category = categories[index]
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            Modifier
+                                .size(10.dp)
+                                .background(
+                                    category.color, shape = MaterialTheme.shapes.small
+                                )
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(category.name, fontSize = 13.sp)
                     }
+                    Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                 }
+            }
+
+            item {
+                PieChartCategoryBreakdown(categories = categories, modifier = Modifier.size(400.dp))
+            }
+
+            item {
+                Spacer(Modifier.height(8.dp))
             }
         }
     }
