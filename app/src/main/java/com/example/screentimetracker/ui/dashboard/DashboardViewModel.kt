@@ -99,6 +99,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun loadTimelineEvents(startTime: Long, endTime: Long) {
+        Log.d("DashboardViewModel", "Loading timeline events from $startTime to $endTime")
         viewModelScope.launch {
             getAppSessionEventsUseCase(startTime, endTime)
                 .catch { exception ->
@@ -106,6 +107,7 @@ class DashboardViewModel @Inject constructor(
                     // Handle error, maybe update a separate error state for timeline
                 }
                 .collect { events ->
+                    Log.d("DashboardViewModel", "Received ${events.size} timeline events.")
                     _timelineEvents.value = events
                 }
         }

@@ -20,10 +20,7 @@ class GetInstalledAppsUseCase @Inject constructor(
         val pm = application.packageManager
         val installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
 
-        installedApps.filter { appInfo ->
-            // Filter out system apps / apps without launch intents
-            (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0 || (appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
-        }.mapNotNull { appInfo ->
+        installedApps.mapNotNull { appInfo ->
             AppInfo(
                 packageName = appInfo.packageName,
                 appName = pm.getApplicationLabel(appInfo).toString()

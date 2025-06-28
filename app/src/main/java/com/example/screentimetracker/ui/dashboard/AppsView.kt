@@ -33,9 +33,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.screentimetracker.utils.millisToReadableTime
 
+
+import androidx.navigation.NavController
+
 @Composable
 fun AppsView(
-    expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit
+    expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, navController: NavController
 ) {
     val viewModel = LocalDashboardViewModel.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,7 +51,7 @@ fun AppsView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("App Usage", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Button(onClick = { /* TODO: Filter action */ }, contentPadding = PaddingValues(8.dp)) {
+            Button(onClick = { navController.navigate("app_search_route") }, contentPadding = PaddingValues(8.dp)) {
                 Text("Filter", color = Color(0xFF2563EB), fontSize = 14.sp)
             }
         }

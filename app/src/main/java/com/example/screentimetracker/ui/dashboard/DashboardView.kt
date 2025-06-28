@@ -35,13 +35,21 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.math.min
 
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.TextStyle
+import kotlin.math.cos
+import kotlin.math.sin
+
 @Composable
 fun DashboardView(state: DashboardState) {
     val viewModel = LocalDashboardViewModel.current
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
         // Today's Overview
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF6366F1))
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
@@ -96,7 +104,12 @@ fun DashboardView(state: DashboardState) {
             }
         }
         // Quick Stats Grid
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -136,7 +149,9 @@ fun DashboardView(state: DashboardState) {
         }
         // Weekly Trend Chart
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(Modifier.padding(16.dp)) {
@@ -147,17 +162,29 @@ fun DashboardView(state: DashboardState) {
         }
         // Category Breakdown (pie chart placeholder)
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f), // Make the card take up remaining vertical space
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(Modifier.padding(16.dp)) {
-                Text("Category Breakdown", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+            Column(
+                modifier = Modifier.fillMaxSize() // This column should fill the card
+            ) {
+                Text(
+                    "Category Breakdown",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(16.dp) // Keep padding for the title
+                )
                 Spacer(Modifier.height(8.dp))
                 // Use real data for categories
                 val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
-                PieChartCategoryBreakdown(categories = categories)
+                PieChartCategoryBreakdown(categories = categories, modifier = Modifier.weight(1f)) // Make pie chart take remaining space in this column
                 Spacer(Modifier.height(8.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp), // Keep padding for the legend
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
                     categories.forEach { category ->
                         Row(
                             Modifier.fillMaxWidth(),
@@ -245,8 +272,10 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .fillMaxWidth(), contentAlignment = Alignment.Center
+            .fillMaxSize(), contentAlignment = Alignment.Center
     ) {
+        val textMeasurer = rememberTextMeasurer()
+
         Canvas(modifier = Modifier.fillMaxSize()) {
             var startAngle = -90f
             val diameter = min(size.width, size.height)
@@ -261,6 +290,37 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(diameter, diameter)
                 )
+
+                // Calculate the midpoint of the arc for text placement
+                val angleInRadians = Math.toRadians((startAngle + sweep / 2f).toDouble()).toFloat()
+                val textRadius = radius * 0.7f // Adjust this to move text closer/further from center
+                val textX = center.x + textRadius * cos(angleInRadians)
+                val textY = center.y + textRadius * sin(angleInRadians)
+
+                val categoryNameLayoutResult = textMeasurer.measure(
+                    text = categories[i].name,
+                    style = TextStyle(fontSize = 12.sp, color = Color.Black)
+                )
+                val categoryTimeLayoutResult = textMeasurer.measure(
+                    text = categories[i].time,
+                    style = TextStyle(fontSize = 10.sp, color = Color.Black)
+                )
+
+                drawText(
+                    textLayoutResult = categoryNameLayoutResult,
+                    topLeft = Offset(
+                        textX - categoryNameLayoutResult.size.width / 2,
+                        textY - categoryNameLayoutResult.size.height / 2 - 8.dp.toPx() // Adjust vertical position
+                    )
+                )
+                drawText(
+                    textLayoutResult = categoryTimeLayoutResult,
+                    topLeft = Offset(
+                        textX - categoryTimeLayoutResult.size.width / 2,
+                        textY - categoryTimeLayoutResult.size.height / 2 + 8.dp.toPx() // Adjust vertical position
+                    )
+                )
+
                 startAngle += sweep
             }
         }

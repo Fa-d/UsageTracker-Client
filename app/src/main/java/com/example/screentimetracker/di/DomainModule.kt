@@ -13,6 +13,7 @@ import com.example.screentimetracker.domain.usecases.RecordAppUsageEventUseCase
 import com.example.screentimetracker.domain.usecases.RecordScreenUnlockUseCase
 import com.example.screentimetracker.domain.usecases.RemoveLimitedAppUseCase
 import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
+import com.example.screentimetracker.domain.usecases.UpdateLimitedAppUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,5 +89,11 @@ object DomainModule {
     @Singleton
     fun provideGetAppSessionEventsUseCase(repository: TrackerRepository): GetAppSessionEventsUseCase {
         return GetAppSessionEventsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateLimitedAppUseCase(repository: TrackerRepository): UpdateLimitedAppUseCase {
+        return UpdateLimitedAppUseCase(repository)
     }
 }

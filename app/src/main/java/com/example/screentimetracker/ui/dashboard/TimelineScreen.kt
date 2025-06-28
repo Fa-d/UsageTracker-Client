@@ -67,8 +67,10 @@ fun TimelineScreen() {
 
     LaunchedEffect(selectedDate) {
         val calendar = Calendar.getInstance()
-        val endTimeMillis = calendar.timeInMillis
+        val currentDayEndMillis = calendar.timeInMillis
+
         val startTimeMillis: Long
+        val endTimeMillis: Long
 
         when (selectedDate) {
             "Today" -> {
@@ -77,6 +79,7 @@ fun TimelineScreen() {
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
                 startTimeMillis = calendar.timeInMillis
+                endTimeMillis = currentDayEndMillis
             }
             "Yesterday" -> {
                 calendar.add(Calendar.DAY_OF_YEAR, -1)
@@ -85,6 +88,14 @@ fun TimelineScreen() {
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
                 startTimeMillis = calendar.timeInMillis
+
+                val yesterdayCalendar = Calendar.getInstance()
+                yesterdayCalendar.add(Calendar.DAY_OF_YEAR, -1)
+                yesterdayCalendar.set(Calendar.HOUR_OF_DAY, 23)
+                yesterdayCalendar.set(Calendar.MINUTE, 59)
+                yesterdayCalendar.set(Calendar.SECOND, 59)
+                yesterdayCalendar.set(Calendar.MILLISECOND, 999)
+                endTimeMillis = yesterdayCalendar.timeInMillis
             }
             "Week" -> {
                 calendar.add(Calendar.DAY_OF_YEAR, -6) // Last 7 days including today
@@ -93,9 +104,11 @@ fun TimelineScreen() {
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
                 startTimeMillis = calendar.timeInMillis
+                endTimeMillis = currentDayEndMillis
             }
             else -> {
                 startTimeMillis = 0L // All time, or handle specific date selection
+                endTimeMillis = currentDayEndMillis
             }
         }
         viewModel.loadTimelineEvents(startTimeMillis, endTimeMillis)

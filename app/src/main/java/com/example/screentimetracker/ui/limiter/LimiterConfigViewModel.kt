@@ -30,6 +30,7 @@ data class LimiterConfigState(
     val error: String? = null,
     val showAppSelectionDialog: Boolean = false,
     val selectedAppForLimit: InstalledAppViewItem? = null, // App for which limit is being set
+    val appBeingEdited: LimitedAppViewItem? = null, // The app currently being edited
     val newLimitTimeInputMinutes: String = "10" // Default input for new limit
 )
 
@@ -38,6 +39,7 @@ class LimiterConfigViewModel @Inject constructor(
     private val getAllLimitedAppsUseCase: GetAllLimitedAppsUseCase,
     private val addLimitedAppUseCase: AddLimitedAppUseCase,
     private val removeLimitedAppUseCase: RemoveLimitedAppUseCase,
+    private val updateLimitedAppUseCase: UpdateLimitedAppUseCase,
     private val getInstalledAppsUseCase: GetInstalledAppsUseCase,
     private val application: Application // For app name resolution, Application is better than Context here
 ) : ViewModel() {
@@ -70,7 +72,7 @@ class LimiterConfigViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
                 val installed = getInstalledAppsUseCase().map { appInfo ->
-                    InstalledAppViewItem(appName = appInfo.appName, packageName = appInfo.packageName)
+                    InstalledAppViewItem(appName = getAppName(appInfo.packageName), packageName = appInfo.packageName)
                 }
                 // Filter out apps already limited from selection list
                 val currentLimitedPackageNames = _uiState.value.limitedApps.map { it.packageName }.toSet()
@@ -87,7 +89,17 @@ class LimiterConfigViewModel @Inject constructor(
     fun onAddAppClicked() {
         // Refresh installed apps list, filtering out already limited ones
         loadInstalledAppsForSelection()
-        _uiState.value = _uiState.value.copy(showAppSelectionDialog = true, selectedAppForLimit = null, newLimitTimeInputMinutes = "10", error = null)
+        _uiState.value = _uiState.value.copy(showAppSelectionDialog = true, selectedAppForLimit = null, appBeingEdited = null, newLimitTimeInputMinutes = "10", error = null)
+    }
+
+    fun onEditAppClicked(app: LimitedAppViewItem) {
+        _uiState.value = _uiState.value.copy(
+            showAppSelectionDialog = true,
+            selectedAppForLimit = InstalledAppViewItem(app.appName, app.packageName),
+            appBeingEdited = app,
+            newLimitTimeInputMinutes = (app.timeLimitMillis / (60 * 1000)).toString(), // Convert millis to minutes
+            error = null
+        )
     }
 
     fun onDismissAppSelectionDialog() {
@@ -114,12 +126,17 @@ class LimiterConfigViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                addLimitedAppUseCase(LimitedApp(appToLimit.packageName, timeMinutes * 60 * 1000))
-                _uiState.value = _uiState.value.copy(showAppSelectionDialog = false, selectedAppForLimit = null, error = null)
+                val limitedApp = LimitedApp(appToLimit.packageName, timeMinutes * 60 * 1000)
+                if (_uiState.value.appBeingEdited == null) {
+                    addLimitedAppUseCase(limitedApp)
+                } else {
+                    updateLimitedAppUseCase(limitedApp)
+                }
+                _uiState.value = _uiState.value.copy(showAppSelectionDialog = false, selectedAppForLimit = null, appBeingEdited = null, error = null)
                 loadLimitedApps() // Refresh the main list of limited apps
-                loadInstalledAppsForSelection() // Refresh selection list after adding
+                loadInstalledAppsForSelection() // Refresh selection list after adding/updating
             } catch (e: Exception) {
-                 _uiState.value = _uiState.value.copy(error = "Failed to add limit: ${e.message}")
+                 _uiState.value = _uiState.value.copy(error = "Failed to add/update limit: ${e.message}")
             }
         }
     }
