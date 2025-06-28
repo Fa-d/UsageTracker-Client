@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +39,9 @@ import kotlin.math.min
 @Composable
 fun DashboardView(state: DashboardState) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()) // Make the entire screen scrollable
     ) {
         OverviewCard(
             totalScreenTimeTodayMillis = state.totalScreenTimeTodayMillis,
@@ -66,50 +70,36 @@ fun DashboardView(state: DashboardState) {
 @Composable
 private fun CategoryBreakDown(state: DashboardState) {
     val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
-    Column {
+    Column(
+        modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text(
-            "Category Breakdown",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(16.dp) // Keep padding for the title
+            "Category Breakdown", fontWeight = FontWeight.SemiBold, fontSize = 16.sp
+        )
+        Spacer(Modifier.height(8.dp))
+        PieChartCategoryBreakdown(
+            categories = categories, modifier = Modifier.size(350.dp)
         )
         Spacer(Modifier.height(8.dp))
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-
-            items(categories.size) { index ->
-                val category = categories[index]
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            Modifier
-                                .size(10.dp)
-                                .background(
-                                    category.color, shape = MaterialTheme.shapes.small
-                                )
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(category.name, fontSize = 13.sp)
-                    }
-                    Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+        categories.forEach { category ->
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier
+                            .size(10.dp)
+                            .background(
+                                category.color, shape = MaterialTheme.shapes.small
+                            )
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(category.name, fontSize = 13.sp)
                 }
-            }
-
-            item {
-                PieChartCategoryBreakdown(categories = categories, modifier = Modifier.size(400.dp))
-            }
-
-            item {
-                Spacer(Modifier.height(8.dp))
+                Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
     }
@@ -247,6 +237,21 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(diameter, diameter)
                 )
+
+                // Calculate text position for percentage
+                val angleInRadians = Math.toRadians((startAngle + sweep / 2).toDouble()).toFloat()
+                val textRadius = radius * 0.7f // Position text slightly inside the arc
+                val textX = center.x + textRadius * kotlin.math.cos(angleInRadians)
+                val textY = center.y + textRadius * kotlin.math.sin(angleInRadians)
+
+                val percentage = (categories[i].value.toFloat() / total * 100).toInt()
+                drawContext.canvas.nativeCanvas.drawText(
+                    "$percentage%", textX, textY, android.graphics.Paint().apply {
+                        color = android.graphics.Color.BLACK
+                        textSize = 30f
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    })
+
                 startAngle += sweep
             }
         }
