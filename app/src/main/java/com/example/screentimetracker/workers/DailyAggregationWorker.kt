@@ -12,12 +12,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.firstOrNull
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 @HiltWorker
 class DailyAggregationWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
+    @Assisted  appContext: Context,
+    @Assisted   workerParams: WorkerParameters,
     private val repository: TrackerRepository // Inject repository
 ) : CoroutineWorker(appContext, workerParams) {
 

@@ -37,6 +37,9 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
     }
 
     private fun enqueueHistoricalDataWorker() {
+        val historicalDataWorkRequest = OneTimeWorkRequestBuilder<HistoricalDataWorker>()
+            .build()
+        WorkManager.getInstance(this).enqueue(historicalDataWorkRequest)
         val sharedPrefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val isFirstLaunch = sharedPrefs.getBoolean("is_first_launch", true)
 
