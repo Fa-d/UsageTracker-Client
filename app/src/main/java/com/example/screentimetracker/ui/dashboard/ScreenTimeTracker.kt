@@ -93,11 +93,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
                 ) {
                     NavHost(navController = navController, startDestination = "dashboard_route") {
                         composable("dashboard_route") {
-                            DashboardView(state)
+                            DashboardView(expandedCategory, { expandedCategory = it }, state)
                         }
-                        composable("apps_route") {
-                            AppsView(expandedCategory, { expandedCategory = it }, navController)
-                        }
+
                         composable("timeline_route") {
                             TimelineScreen()
                         }
@@ -134,7 +132,6 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
                     ) {
                         val tabs = listOf(
                             "dashboard_route" to "Dashboard",
-                            "apps_route" to "Apps",
                             "timeline_route" to "Timeline",
                             "goals_route" to "Goals",
                             "limiter_route" to "Limiter",
@@ -172,87 +169,5 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
             }
         }
     }
-
-
-    @Composable
-    fun TimelineView(selectedDate: String, onDateChange: (String) -> Unit) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Usage Timeline", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                //    DropdownMenuBox(selectedDate, onDateChange)
-            }
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    timelineData.forEach { entry ->
-                        Row(
-                            Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                entry.time,
-                                fontSize = 13.sp,
-                                color = Color.Gray,
-                                modifier = Modifier.width(48.dp)
-                            )
-                            Box(
-                                Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        Color(0xFF2563EB), shape = MaterialTheme.shapes.small
-                                    )
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Column(Modifier.weight(1f)) {
-                                Row(
-                                    Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(entry.app, fontWeight = FontWeight.Medium)
-                                    Text(entry.duration, fontSize = 13.sp, color = Color.Gray)
-                                }
-                                Text(entry.category, fontSize = 12.sp, color = Color(0xFF64748B))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun DropdownMenuBox(selected: String, onSelected: (String) -> Unit) {
-        var expanded by remember { mutableStateOf(false) }
-        Box {
-            Button(onClick = { expanded = true }, contentPadding = PaddingValues(8.dp)) {
-                Text(
-                    when (selected) {
-                        "today" -> "Today"
-                        "yesterday" -> "Yesterday"
-                        "week" -> "This Week"
-                        else -> selected
-                    }, fontSize = 14.sp
-                )
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                DropdownMenuItem(
-                    text = { Text("Today") },
-                    onClick = { onSelected("today"); expanded = false })
-                DropdownMenuItem(
-                    text = { Text("Yesterday") },
-                    onClick = { onSelected("yesterday"); expanded = false })
-                DropdownMenuItem(
-                    text = { Text("This Week") },
-                    onClick = { onSelected("week"); expanded = false })
-            }
-        }
-    }
-
 
 }

@@ -2,9 +2,11 @@ package com.example.screentimetracker.ui.dashboard
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +18,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -38,7 +46,7 @@ import java.util.Locale
 import kotlin.math.min
 
 @Composable
-fun DashboardView(state: DashboardState) {
+fun DashboardView(expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, state: DashboardState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,12 +72,16 @@ fun DashboardView(state: DashboardState) {
             }
         }
 
-        CategoryBreakDown(state)
+        CategoryBreakDown(expandedCategory, onCategoryExpand, state)
     }
 }
 
 @Composable
-private fun CategoryBreakDown(state: DashboardState) {
+private fun CategoryBreakDown(
+    expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, state: DashboardState
+) {
+    val appUsageData = state.appUsagesToday
+
     val categories = getCategoryDataFromAppUsages(state.appUsagesToday)
     Column(
         modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -83,24 +95,88 @@ private fun CategoryBreakDown(state: DashboardState) {
         )
         Spacer(Modifier.height(8.dp))
 
-        categories.forEach { category ->
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        Modifier
-                            .size(10.dp)
-                            .background(
-                                category.color, shape = MaterialTheme.shapes.small
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            categories.forEachIndexed { index, category ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .clickable(
+                                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                    indication = null
+                                ) { onCategoryExpand(if (expandedCategory == index) null else index) },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    Modifier
+                                        .size(14.dp)
+                                        .background(
+                                            category.color, shape = MaterialTheme.shapes.small
+                                        )
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(category.name, fontWeight = FontWeight.Medium)
+                                Spacer(Modifier.width(8.dp))
+                                Text(category.time, fontSize = 13.sp, color = Color.Gray)
+                            }
+                            Icon(
+                                imageVector = if (expandedCategory == index) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,
+                                contentDescription = null
                             )
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(category.name, fontSize = 13.sp)
+                        }
+                        if (expandedCategory == index) {
+                            Column(
+                                Modifier.padding(start = 24.dp, end = 16.dp, bottom = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                appUsageData.filter { it.appName == category.name }.forEach { app ->
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text("\uD83D\uDCF1", fontSize = 22.sp)
+                                            Spacer(Modifier.width(8.dp))
+                                            Column {
+                                                Text(
+                                                    app.appName, fontWeight = FontWeight.Medium
+                                                )
+                                                Text(
+                                                    "${app.openCount} opens",
+                                                    fontSize = 12.sp,
+                                                    color = Color.Gray
+                                                )
+                                            }
+                                        }
+                                        Column(horizontalAlignment = Alignment.End) {
+                                            Text(
+                                                millisToReadableTime(app.totalDurationMillisToday),
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                            Button(
+                                                onClick = { /* TODO: Tag action */ },
+                                                contentPadding = PaddingValues(horizontal = 10.dp),
+                                                modifier = Modifier.height(24.dp)
+                                            ) {
+                                                Text(
+                                                    "Limit Usage", fontSize = 12.sp
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                Text(category.time, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

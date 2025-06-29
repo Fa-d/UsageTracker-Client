@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,22 +19,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Article
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material.icons.outlined.PlayCircleOutline
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.screentimetracker.data.local.AppSessionEvent
 import com.example.screentimetracker.utils.millisToReadableTime
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -143,61 +131,47 @@ fun TimelineScreen() {
         )
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF0F4F8))
-    ) {
-        // Header
-        Surface(shadowElevation = 2.dp, color = Color.White) {
-            Column {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+
+    Column {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Timeline",
+                Modifier.weight(1f),
+                color = Color(0xFF1E293B),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                maxLines = 1
+            )
+            Spacer(Modifier.width(40.dp))
+        }
+        Row(
+            Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(Color(0xFFF0F4F8), shape = MaterialTheme.shapes.medium)
+                .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            listOf("Today", "Yesterday", "Week").forEach { label ->
+                val selected = selectedDate == label
+                TextButton(
+                    onClick = { selectedDate = label },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = if (selected) Color.White else Color(0xFFF0F4F8),
+                        contentColor = if (selected) Color(0xFF3B82F6) else Color(0xFF64748B)
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    IconButton(onClick = { /* TODO: Back */ }) {
-                        Icon(
-                            Icons.Outlined.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color(0xFF1E293B)
-                        )
-                    }
                     Text(
-                        "Timeline",
-                        Modifier.weight(1f),
-                        color = Color(0xFF1E293B),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        maxLines = 1
+                        label,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 14.sp
                     )
-                    Spacer(Modifier.width(40.dp))
-                }
-                Row(
-                    Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .background(Color(0xFFF0F4F8), shape = MaterialTheme.shapes.medium)
-                        .height(40.dp), verticalAlignment = Alignment.CenterVertically
-                ) {
-                    listOf("Today", "Yesterday", "Week").forEach { label ->
-                        val selected = selectedDate == label
-                        TextButton(
-                            onClick = { selectedDate = label },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (selected) Color.White else Color(0xFFF0F4F8),
-                                contentColor = if (selected) Color(0xFF3B82F6) else Color(0xFF64748B)
-                            ),
-                            shape = MaterialTheme.shapes.medium
-                        ) {
-                            Text(
-                                label,
-                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -214,23 +188,9 @@ fun TimelineScreen() {
                 )
             }
         }
-        // Footer Navigation
-        Surface(
-            shadowElevation = 4.dp, color = Color.White, modifier = Modifier.navigationBarsPadding()
-        ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FooterNavItem(Icons.Outlined.BarChart, "Summary", false)
-                FooterNavItem(Icons.Outlined.Schedule, "Timeline", true)
-                FooterNavItem(Icons.Outlined.Settings, "Settings", false)
-            }
-        }
     }
+
+
 }
 
 data class TimelineUiItem(
