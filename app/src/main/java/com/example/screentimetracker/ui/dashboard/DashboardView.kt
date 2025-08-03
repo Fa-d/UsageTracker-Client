@@ -127,7 +127,7 @@ private fun CategoryBreakDown(
                                 Text(category.time, fontSize = 13.sp, color = Color.Gray)
                             }
                             Icon(
-                                imageVector = if (expandedCategory == index) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,
+                                imageVector = if (expandedCategory == index) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowRight,
                                 contentDescription = null
                             )
                         }
@@ -185,7 +185,7 @@ private fun CategoryBreakDown(
 @Composable
 private fun QuickViewComponent(state: DashboardState) {
     Row(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)

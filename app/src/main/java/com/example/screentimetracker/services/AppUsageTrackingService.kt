@@ -140,30 +140,24 @@ class AppUsageTrackingService : Service() {
     }
 
     private fun createNotificationChannels() { /* ... same as before ... */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(NotificationManager::class.java)
-            val serviceChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID, "App Usage Tracking Service Channel", NotificationManager.IMPORTANCE_DEFAULT
-            )
-            manager?.createNotificationChannel(serviceChannel)
-            val warningChannel = NotificationChannel(
-                WARNING_NOTIFICATION_CHANNEL_ID, "App Usage Limit Warnings", NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Notifications for when app usage limits are reached."
-                enableVibration(true)
-                lightColor = Color.RED
-            }
-            manager?.createNotificationChannel(warningChannel)
+        val manager = getSystemService(NotificationManager::class.java)
+        val serviceChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID, "App Usage Tracking Service Channel", NotificationManager.IMPORTANCE_DEFAULT
+        )
+        manager?.createNotificationChannel(serviceChannel)
+        val warningChannel = NotificationChannel(
+            WARNING_NOTIFICATION_CHANNEL_ID, "App Usage Limit Warnings", NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications for when app usage limits are reached."
+            enableVibration(true)
+            lightColor = Color.RED
         }
+        manager?.createNotificationChannel(warningChannel)
     }
 
     private fun createForegroundServiceNotification(): Notification { /* ... same as before ... */
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
+        val pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, pendingIntentFlags)
         val notificationIcon = R.drawable.ic_launcher_foreground
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
@@ -183,7 +177,12 @@ class AppUsageTrackingService : Service() {
 
         while (usageEvents.hasNextEvent()) {
             usageEvents.getNextEvent(tempEvent)
-            if (tempEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED || tempEvent.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+            val eventType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tempEvent.eventType
+            } else {
+                @Suppress("DEPRECATION") tempEvent.eventType
+            }
+            if (eventType == UsageEvents.Event.ACTIVITY_RESUMED /*|| eventType == UsageEvents.Event.MOVE_TO_FOREGROUND*/) {
                 if (latestForegroundEvent == null || tempEvent.timeStamp > latestForegroundEvent.timeStamp) {
                     latestForegroundEvent = ForegroundEventInfo(
                         eventType = tempEvent.eventType,
@@ -285,11 +284,7 @@ class AppUsageTrackingService : Service() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
+        val pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         val pendingIntent = PendingIntent.getActivity(this, limitedApp.packageName.hashCode(), intent, pendingIntentFlags)
         val notificationIcon = R.drawable.ic_launcher_foreground
         val notification = NotificationCompat.Builder(this, WARNING_NOTIFICATION_CHANNEL_ID)

@@ -1,8 +1,10 @@
 package com.example.screentimetracker.domain.usecases
 
 import android.app.Application // For PackageManager
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -18,13 +20,24 @@ class GetInstalledAppsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): List<AppInfo> = withContext(Dispatchers.IO) {
         val pm = application.packageManager
-        val installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
-        installedApps.mapNotNull { appInfo ->
+        val installedApps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong()))
+        } else {
+            @Suppress("DEPRECATION")
+            pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
+        }
+
+        installedApps.mapNotNull { resolveInfo ->
+            val packageName = resolveInfo.activityInfo.packageName
+            val appName = pm.getApplicationLabel(resolveInfo.activityInfo.applicationInfo).toString()
             AppInfo(
-                packageName = appInfo.packageName,
-                appName = pm.getApplicationLabel(appInfo).toString()
+                packageName = packageName,
+                appName = appName
             )
-        }.sortedBy { it.appName.lowercase() } // Sort alphabetically by app name
+        }.distinctBy { it.packageName } // Ensure unique apps
+            .sortedBy { it.appName.lowercase() } // Sort alphabetically by app name
     }
 }

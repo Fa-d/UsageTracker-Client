@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase
         LimitedApp::class // Added LimitedApp
     ],
     version = 5, // Incremented version
-    exportSchema = true
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun screenUnlockDao(): ScreenUnlockDao

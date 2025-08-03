@@ -19,7 +19,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Article
+import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -107,7 +107,7 @@ fun TimelineScreen() {
         // to determine these based on the app's package name or other criteria.
         val appName = viewModel.getAppName(event.packageName) // Assuming getAppName is public in ViewModel
         val category = "Uncategorized" // Placeholder
-        val icon = Icons.Outlined.Article // Placeholder icon
+        val icon = Icons.AutoMirrored.Outlined.Article // Placeholder icon
         val iconBg = Color(0xFFF1F5F9) // Placeholder color
         val iconColor = Color(0xFF64748B) // Placeholder color
         val chipBg = Color(0xFFF1F5F9) // Placeholder color

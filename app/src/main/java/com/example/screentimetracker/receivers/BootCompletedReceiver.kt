@@ -20,11 +20,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
             // Check for usage stats permission before starting service
             if (PermissionUtils.hasUsageStatsPermission(context)) {
                 val serviceIntent = Intent(context, AppUsageTrackingService::class.java)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(serviceIntent)
-                } else {
-                    context.startService(serviceIntent)
-                }
+                context.startForegroundService(serviceIntent)
                 Log.d(TAG, "AppUsageTrackingService started on boot.")
             } else {
                 Log.w(TAG, "Usage stats permission not granted. Service not started on boot.")

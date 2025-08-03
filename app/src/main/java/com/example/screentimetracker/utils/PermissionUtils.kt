@@ -12,24 +12,13 @@ import androidx.core.app.NotificationManagerCompat
 object PermissionUtils {
 
     fun hasUsageStatsPermission(context: Context): Boolean {
-        val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            appOpsManager.unsafeCheckOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                context.applicationInfo.uid,
-                context.packageName
-            )
-        } else {
-            // For older versions, checkOpNoThrow might not be available or behave differently
-            // and unsafeCheckOpNoThrow is the modern equivalent.
-            // However, the common practice pre-Q was similar.
-            @Suppress("DEPRECATION")
-            appOpsManager.checkOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                context.applicationInfo.uid,
-                context.packageName
-            )
-        }
+        val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as? AppOpsManager
+            ?: return false // Return false if AppOpsManager is not available
+        val mode = appOpsManager.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            context.applicationInfo.uid,
+            context.packageName
+        )
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
