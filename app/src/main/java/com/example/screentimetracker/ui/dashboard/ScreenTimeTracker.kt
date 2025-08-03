@@ -81,7 +81,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Screen Time", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                  //  Text("Screen Time", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     // Add focus mode indicator and eye icon here if needed
                 }
 
