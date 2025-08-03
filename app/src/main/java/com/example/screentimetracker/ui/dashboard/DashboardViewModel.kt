@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.screentimetracker.domain.usecases.GetDashboardDataUseCase
 import com.example.screentimetracker.domain.usecases.GetHistoricalDataUseCase
+import com.example.screentimetracker.domain.usecases.HistoricalData
 import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,20 +36,10 @@ class DashboardViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {
-            val todayDataFlow = getDashboardDataUseCase()
-            val historicalDataFlow = getHistoricalDataUseCase() // Default is last 7 days
+            try {
+                val todayData = getDashboardDataUseCase() // Call as suspend function
+                val historicalData = getHistoricalDataUseCase()
 
-            todayDataFlow.combine(historicalDataFlow) { todayData, historicalData ->
-                Pair(todayData, historicalData)
-            }
-            .catch { exception ->
-                Log.e("DashboardViewModel", "Error loading dashboard data", exception)
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Failed to load dashboard data: ${exception.localizedMessage ?: "Unknown error"}"
-                )
-            }
-            .collect { (todayData, historicalData) ->
                 val appUsageUIModels = todayData.appDetailsToday.map { detail ->
                     AppUsageUIModel(
                         packageName = detail.packageName,
@@ -60,8 +51,6 @@ class DashboardViewModel @Inject constructor(
                 }
 
                 val avgScreenTime = if (historicalData.appSummaries.isNotEmpty()) {
-                    // Calculate average daily screen time from historical app summaries
-                    // This sums up total duration for each day, then averages these daily totals.
                     historicalData.appSummaries
                         .groupBy { it.dateMillis } // Group by day
                         .mapValues { entry -> entry.value.sumOf { it.totalDurationMillis } } // Sum durations for each day
@@ -82,6 +71,12 @@ class DashboardViewModel @Inject constructor(
                     averageDailyScreenTimeMillisLastWeek = avgScreenTime,
                     averageDailyUnlocksLastWeek = avgUnlocks,
                     error = null
+                )
+            } catch (exception: Exception) {
+                Log.e("DashboardViewModel", "Error loading dashboard data", exception)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to load dashboard data: ${exception.localizedMessage ?: "Unknown error"}"
                 )
             }
         }

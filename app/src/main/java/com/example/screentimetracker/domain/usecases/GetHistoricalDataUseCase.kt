@@ -5,6 +5,7 @@ import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ data class HistoricalData(
 class GetHistoricalDataUseCase @Inject constructor(
     private val repository: TrackerRepository
 ) {
-    operator fun invoke(daysAgo: Int = 7): Flow<HistoricalData> {
+    suspend operator fun invoke(daysAgo: Int = 7): HistoricalData {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
@@ -33,6 +34,6 @@ class GetHistoricalDataUseCase @Inject constructor(
 
         return combine(appSummariesFlow, unlockSummariesFlow) { apps, unlocks ->
             HistoricalData(appSummaries = apps, unlockSummaries = unlocks)
-        }
+        }.first()
     }
 }

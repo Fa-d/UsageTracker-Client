@@ -10,7 +10,7 @@ import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
 import com.example.screentimetracker.domain.repository.TrackerRepository // Corrected import path
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.firstOrNull
+
 import java.util.Calendar
 
 @HiltWorker
@@ -46,9 +46,9 @@ class DailyAggregationWorker @AssistedInject constructor(
             Log.d(TAG, "Aggregating data for day starting at: $startOfYesterdayMillis until $endOfYesterdayMillis")
 
             // 1. Aggregate App Session Data
-            val appSessionAggregates = repository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis).firstOrNull()
+            val appSessionAggregates = repository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis)
 
-            if (appSessionAggregates != null && appSessionAggregates.isNotEmpty()) {
+            if (appSessionAggregates.isNotEmpty()) {
                 val dailyAppSummaries = appSessionAggregates.map { aggregate ->
                     DailyAppSummary(
                         dateMillis = startOfYesterdayMillis,
@@ -65,7 +65,7 @@ class DailyAggregationWorker @AssistedInject constructor(
 
             // 2. Aggregate Screen Unlock Data
             // We need a way to get unlock count for a specific day.
-            val screenUnlocksYesterday = repository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis).firstOrNull() ?: 0 // New method in repository
+            val screenUnlocksYesterday = repository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis) // New method in repository
 
             val dailyUnlockSummary = DailyScreenUnlockSummary(
                 dateMillis = startOfYesterdayMillis,

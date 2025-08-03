@@ -15,7 +15,7 @@ interface TrackerRepository {
     suspend fun insertScreenUnlockEvent(event: ScreenUnlockEvent)
     fun getUnlockCountSince(sinceTimestamp: Long): Flow<Int>
     fun getAllUnlockEvents(): Flow<List<ScreenUnlockEvent>>
-    fun getUnlockCountForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<Int>
+    suspend fun getUnlockCountForDay(dayStartMillis: Long, dayEndMillis: Long): Int
 
     // App Usage Event Methods
     suspend fun insertAppUsageEvent(event: AppUsageEvent)
@@ -28,8 +28,8 @@ interface TrackerRepository {
     fun getAllSessionsInRange(startTime: Long, endTime: Long): Flow<List<AppSessionEvent>>
     fun getTotalDurationForAppInRange(packageName: String, startTime: Long, endTime: Long): Flow<Long?>
     fun getTotalScreenTimeFromSessionsInRange(startTime: Long, endTime: Long): Flow<Long?>
-    fun getAggregatedSessionDataForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<List<AppSessionDataAggregate>>
-    fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<com.example.screentimetracker.data.local.AppLastOpenedData>>
+    suspend fun getAggregatedSessionDataForDay(dayStartMillis: Long, dayEndMillis: Long): List<AppSessionDataAggregate>
+    suspend fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): List<com.example.screentimetracker.data.local.AppLastOpenedData>
 
     // Daily Summary Methods
     suspend fun insertDailyAppSummaries(summaries: List<DailyAppSummary>)

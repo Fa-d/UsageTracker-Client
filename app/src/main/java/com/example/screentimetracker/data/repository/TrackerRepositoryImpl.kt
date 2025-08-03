@@ -2,8 +2,8 @@ package com.example.screentimetracker.data.repository
 
 import com.example.screentimetracker.data.local.AppDatabase
 import com.example.screentimetracker.data.local.AppOpenData
-import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.data.local.AppSessionDao
+import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.data.local.AppSessionEvent
 import com.example.screentimetracker.data.local.AppUsageDao
 import com.example.screentimetracker.data.local.AppUsageEvent
@@ -11,18 +11,19 @@ import com.example.screentimetracker.data.local.DailyAppSummary
 import com.example.screentimetracker.data.local.DailyAppSummaryDao
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummaryDao
-import com.example.screentimetracker.data.local.LimitedApp // Import LimitedApp
-import com.example.screentimetracker.data.local.LimitedAppDao // Import LimitedAppDao
+import com.example.screentimetracker.data.local.LimitedApp
+import com.example.screentimetracker.data.local.LimitedAppDao
 import com.example.screentimetracker.data.local.ScreenUnlockDao
 import com.example.screentimetracker.data.local.ScreenUnlockEvent
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TrackerRepositoryImpl @Inject constructor(
-    private val db: AppDatabase
+    val db: AppDatabase
 ) : TrackerRepository {
 
     private val screenUnlockDao: ScreenUnlockDao = db.screenUnlockDao()
@@ -42,8 +43,8 @@ class TrackerRepositoryImpl @Inject constructor(
     override fun getAllUnlockEvents(): Flow<List<ScreenUnlockEvent>> {
         return screenUnlockDao.getAllUnlockEvents()
     }
-    override fun getUnlockCountForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<Int> {
-        return screenUnlockDao.getUnlockCountForDay(dayStartMillis, dayEndMillis)
+    override suspend fun getUnlockCountForDay(dayStartMillis: Long, dayEndMillis: Long): Int {
+        return screenUnlockDao.getUnlockCountForDay(dayStartMillis, dayEndMillis).first()
     }
 
     // App Usage Event Methods
@@ -73,12 +74,16 @@ class TrackerRepositoryImpl @Inject constructor(
     override fun getTotalScreenTimeFromSessionsInRange(startTime: Long, endTime: Long): Flow<Long?> {
         return appSessionDao.getTotalScreenTimeFromSessionsInRange(startTime, endTime)
     }
-    override fun getAggregatedSessionDataForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<List<AppSessionDataAggregate>> {
-        return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis)
+    override suspend fun getAggregatedSessionDataForDay(
+        dayStartMillis: Long, dayEndMillis: Long
+    ): List<AppSessionDataAggregate> {
+        return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis).first()
     }
 
-    override fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<com.example.screentimetracker.data.local.AppLastOpenedData>> {
-        return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime)
+    override suspend fun getLastOpenedTimestampsForAppsInRange(
+        startTime: Long, endTime: Long
+    ): List<com.example.screentimetracker.data.local.AppLastOpenedData> {
+        return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime).first()
     }
 
     // Daily Summary Methods

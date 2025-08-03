@@ -30,7 +30,7 @@ object DatabaseModule {
             AppDatabase.DATABASE_NAME
         )
         // .addMigrations(AppDatabase.MIGRATION_1_2) // Add migrations here if implemented
-        .fallbackToDestructiveMigration() // For development, if migrations are not yet handled
+            .fallbackToDestructiveMigrationOnDowngrade() // For development, if migrations are not yet handled
         .build()
     }
 
