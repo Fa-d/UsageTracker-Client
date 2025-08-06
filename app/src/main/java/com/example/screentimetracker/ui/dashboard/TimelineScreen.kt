@@ -1,6 +1,7 @@
 package com.example.screentimetracker.ui.dashboard
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,11 +36,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.screentimetracker.utils.millisToReadableTime
 import java.text.SimpleDateFormat
@@ -103,15 +108,10 @@ fun TimelineScreen() {
     }
 
     val timelineUiItems = timelineEvents.map { event ->
-        // Placeholder for category, icon, and colors. You'll need to implement logic
-        // to determine these based on the app's package name or other criteria.
-        val appName = viewModel.getAppName(event.packageName) // Assuming getAppName is public in ViewModel
-        val category = "Uncategorized" // Placeholder
-        val icon = Icons.AutoMirrored.Outlined.Article // Placeholder icon
-        val iconBg = Color(0xFFF1F5F9) // Placeholder color
-        val iconColor = Color(0xFF64748B) // Placeholder color
-        val chipBg = Color(0xFFF1F5F9) // Placeholder color
-        val chipTextColor = Color(0xFF334155) // Placeholder color
+        val appName = viewModel.getAppName(event.packageName)
+        val category = "App Usage"
+        val chipBg = Color(0xFFEBF8FF)
+        val chipTextColor = Color(0xFF0F172A)
 
         val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
         val startTime = timeFormat.format(Date(event.startTimeMillis))
@@ -121,9 +121,7 @@ fun TimelineScreen() {
         TimelineUiItem(
             category = category,
             app = appName,
-            icon = icon,
-            iconBg = iconBg,
-            iconColor = iconColor,
+            packageName = event.packageName,
             chipBg = chipBg,
             chipTextColor = chipTextColor,
             time = "$startTime - $endTime",
@@ -196,9 +194,7 @@ fun TimelineScreen() {
 data class TimelineUiItem(
     val category: String,
     val app: String,
-    val icon: ImageVector,
-    val iconBg: Color,
-    val iconColor: Color,
+    val packageName: String,
     val chipBg: Color,
     val chipTextColor: Color,
     val time: String,
@@ -207,72 +203,117 @@ data class TimelineUiItem(
 
 @Composable
 fun TimelineItem(item: TimelineUiItem, isFirst: Boolean, isLast: Boolean) {
+    val context = LocalContext.current
+    
+    // Move the risky operation outside the composable calls
+    val appIcon = remember(item.packageName) {
+        try {
+            context.packageManager.getApplicationIcon(item.packageName)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     Row(Modifier.fillMaxWidth()) {
         Column(
-            Modifier.width(40.dp), horizontalAlignment = Alignment.CenterHorizontally
+            Modifier.width(48.dp), 
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (!isFirst) Box(
                 Modifier
-                    .width(2.dp)
-                    .height(12.dp)
-                    .background(Color(0xFFCBD5E1))
+                    .width(3.dp)
+                    .height(16.dp)
+                    .background(Color(0xFF3B82F6))
             )
             Box(
                 Modifier
-                    .size(40.dp)
-                    .background(item.iconBg, shape = CircleShape),
+                    .size(48.dp)
+                    .background(Color.White, shape = CircleShape)
+                    .padding(6.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    item.icon,
-                    contentDescription = null,
-                    tint = item.iconColor,
-                    modifier = Modifier.size(24.dp)
-                )
+                // Use conditional rendering instead of try-catch around composables
+                if (appIcon != null) {
+                    val bitmap = appIcon.toBitmap(96, 96)
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "${item.app} icon",
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Box(
+                        Modifier
+                            .size(36.dp)
+                            .background(Color(0xFFF1F5F9), shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.Article,
+                            contentDescription = null,
+                            tint = Color(0xFF64748B),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
             if (!isLast) Box(
                 Modifier
-                    .width(2.dp)
-                    .weight(1f)
-                    .background(Color(0xFFCBD5E1))
+                    .width(3.dp)
+                    .height(80.dp)
+                    .background(Color(0xFF3B82F6))
             )
         }
+        
+        Spacer(Modifier.width(12.dp))
+        
         Card(
             Modifier
                 .weight(1f)
-                .padding(bottom = 16.dp),
+                .padding(bottom = 20.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+            border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Column(Modifier.padding(16.dp)) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Text(
-                        item.category,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color(0xFF1E293B)
-                    )
-                    Box(
-                        Modifier
-                            .background(item.chipBg, shape = RoundedCornerShape(50))
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
+                    Column(Modifier.weight(1f)) {
                         Text(
                             item.app,
-                            fontSize = 12.sp,
-                            color = item.chipTextColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color(0xFF0F172A)
+                        )
+                        Text(
+                            item.category,
+                            fontSize = 14.sp,
+                            color = Color(0xFF64748B),
                             fontWeight = FontWeight.Medium
                         )
                     }
+                    Box(
+                        Modifier
+                            .background(item.chipBg, shape = RoundedCornerShape(8.dp))
+                            .padding(horizontal =10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            item.duration,
+                            fontSize = 12.sp,
+                            color = item.chipTextColor,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
-                Text(item.time, fontSize = 13.sp, color = Color(0xFF64748B))
+                Spacer(Modifier.height(8.dp))
                 Text(
-                    "Duration: ${item.duration}",
-                    fontSize = 13.sp,
+                    item.time, 
+                    fontSize = 13.sp, 
                     color = Color(0xFF64748B),
                     fontWeight = FontWeight.Medium
                 )

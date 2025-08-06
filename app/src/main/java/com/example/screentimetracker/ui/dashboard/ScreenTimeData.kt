@@ -17,9 +17,11 @@ data class WeeklyData(
 
 data class CategoryData(
     val name: String,
-    val value: Int,
+    val packageName: String = "",
+    val value: Long, // Changed to Long for duration in milliseconds
     val color: Color,
-    val time: String
+    val time: String,
+    val openCount: Int = 0
 )
 
 data class AppUsageData(

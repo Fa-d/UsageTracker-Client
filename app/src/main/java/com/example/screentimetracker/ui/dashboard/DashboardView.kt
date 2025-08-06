@@ -36,7 +36,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -261,7 +266,14 @@ private fun CategoryBreakDown(
                                         )
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(category.name, fontWeight = FontWeight.Medium)
+                                Column {
+                                    Text(category.name, fontWeight = FontWeight.Medium)
+                                    Text(
+                                        "${category.openCount} opens",
+                                        fontSize = 11.sp,
+                                        color = Color.Gray
+                                    )
+                                }
                                 Spacer(Modifier.width(8.dp))
                                 Text(category.time, fontSize = 13.sp, color = Color.Gray)
                             }
@@ -275,42 +287,115 @@ private fun CategoryBreakDown(
                                 Modifier.padding(start = 24.dp, end = 16.dp, bottom = 12.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                appUsageData.filter { it.appName == category.name }.forEach { app ->
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                // Filter by packageName and show individual app entries
+                                val categoryApps = appUsageData.filter { it.packageName == category.packageName }
+                                if (categoryApps.isNotEmpty()) {
+                                    // Show aggregated info for the category
+                                    val totalDuration = categoryApps.sumOf { it.totalDurationMillisToday }
+                                    val totalOpens = categoryApps.sumOf { it.openCount }
+                                    
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = category.color.copy(alpha = 0.1f)
+                                        )
                                     ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text("\uD83D\uDCF1", fontSize = 22.sp)
-                                            Spacer(Modifier.width(8.dp))
-                                            Column {
+                                        Row(
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .padding(12.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text("📱", fontSize = 20.sp)
+                                                Spacer(Modifier.width(8.dp))
+                                                Column {
+                                                    Text(
+                                                        category.name,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 14.sp
+                                                    )
+                                                    Text(
+                                                        "${totalOpens} opens total",
+                                                        fontSize = 12.sp,
+                                                        color = Color.Gray
+                                                    )
+                                                }
+                                            }
+                                            Column(horizontalAlignment = Alignment.End) {
                                                 Text(
-                                                    app.appName, fontWeight = FontWeight.Medium
+                                                    millisToReadableTime(totalDuration),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 14.sp,
+                                                    color = category.color
                                                 )
                                                 Text(
-                                                    "${app.openCount} opens",
-                                                    fontSize = 12.sp,
+                                                    "Total time",
+                                                    fontSize = 11.sp,
                                                     color = Color.Gray
                                                 )
                                             }
                                         }
-                                        Column(horizontalAlignment = Alignment.End) {
-                                            Text(
-                                                millisToReadableTime(app.totalDurationMillisToday),
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                            Button(
-                                                onClick = { /* TODO: Tag action */ },
-                                                contentPadding = PaddingValues(horizontal = 10.dp),
-                                                modifier = Modifier.height(24.dp)
+                                    }
+                                    Spacer(Modifier.height(4.dp))
+                                    
+                                    // Show individual sessions if there are multiple
+                                    if (categoryApps.size > 1) {
+                                        Text(
+                                            "Sessions:",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 12.sp,
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                        categoryApps.forEach { app ->
+                                            Row(
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(start = 16.dp, top = 4.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Box(
+                                                        Modifier
+                                                            .size(8.dp)
+                                                            .background(
+                                                                category.color.copy(alpha = 0.6f),
+                                                                shape = MaterialTheme.shapes.extraSmall
+                                                            )
+                                                    )
+                                                    Spacer(Modifier.width(8.dp))
+                                                    Column {
+                                                        Text(
+                                                            "Session ${categoryApps.indexOf(app) + 1}",
+                                                            fontSize = 12.sp,
+                                                            color = Color.DarkGray
+                                                        )
+                                                        Text(
+                                                            "${app.openCount} opens",
+                                                            fontSize = 10.sp,
+                                                            color = Color.Gray
+                                                        )
+                                                    }
+                                                }
                                                 Text(
-                                                    "Limit Usage", fontSize = 12.sp
+                                                    millisToReadableTime(app.totalDurationMillisToday),
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = Color.DarkGray
                                                 )
                                             }
                                         }
                                     }
+                                } else {
+                                    Text(
+                                        "No data available",
+                                        fontSize = 12.sp,
+                                        color = Color.Gray,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
                                 }
                             }
                         }
@@ -434,42 +519,139 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
     val total = categories.sumOf { it.value }
     val sweepAngles = categories.map { 360f * (it.value / total.toFloat()) }
     val colors = categories.map { it.color }
+    
     Box(
-        modifier = modifier.fillMaxSize(), // Fill available space
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             var startAngle = -90f
-            val diameter =
-                min(size.width, size.height) // Ensures it's a circle within the available space
+            val diameter = min(size.width, size.height) * 0.9f // Leave some padding
             val radius = diameter / 2f
             val center = Offset(size.width / 2, size.height / 2)
+            val strokeWidth = 8.dp.toPx()
+            
+            // Draw shadow first
+            drawIntoCanvas { canvas ->
+                sweepAngles.forEachIndexed { i, sweep ->
+                    val shadowOffset = 4.dp.toPx()
+                    val shadowPaint = Paint().apply {
+                        color = Color.Black.copy(alpha = 0.1f)
+                        isAntiAlias = true
+                    }
+                    
+                    canvas.drawArc(
+                        left = center.x - radius + shadowOffset,
+                        top = center.y - radius + shadowOffset,
+                        right = center.x + radius + shadowOffset,
+                        bottom = center.y + radius + shadowOffset,
+                        startAngle = startAngle,
+                        sweepAngle = sweep,
+                        useCenter = true,
+                        paint = shadowPaint
+                    )
+                }
+            }
+            
+            // Draw main pie chart with gradients and borders
             sweepAngles.forEachIndexed { i, sweep ->
+                val baseColor = colors[i]
+                val gradientBrush = Brush.radialGradient(
+                    colors = listOf(
+                        baseColor.copy(alpha = 0.8f),
+                        baseColor,
+                        baseColor.copy(alpha = 1.2f)
+                    ),
+                    center = center,
+                    radius = radius
+                )
+                
+                // Draw main arc with gradient
                 drawArc(
-                    color = colors[i],
+                    brush = gradientBrush,
                     startAngle = startAngle,
                     sweepAngle = sweep,
                     useCenter = true,
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(diameter, diameter)
                 )
-
-                // Calculate text position for percentage
-                val angleInRadians = Math.toRadians((startAngle + sweep / 2).toDouble()).toFloat()
-                val textRadius = radius * 0.7f // Position text slightly inside the arc
-                val textX = center.x + textRadius * kotlin.math.cos(angleInRadians)
-                val textY = center.y + textRadius * kotlin.math.sin(angleInRadians)
-
-                val percentage = (categories[i].value.toFloat() / total * 100).toInt()
-                drawContext.canvas.nativeCanvas.drawText(
-                    "$percentage%", textX, textY, android.graphics.Paint().apply {
-                        color = android.graphics.Color.BLACK
-                        textSize = 30f
-                        textAlign = android.graphics.Paint.Align.CENTER
-                    })
-
+                
+                // Draw border/stroke
+                drawArc(
+                    color = Color.White,
+                    startAngle = startAngle,
+                    sweepAngle = sweep,
+                    useCenter = true,
+                    topLeft = Offset(center.x - radius, center.y - radius),
+                    size = Size(diameter, diameter),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
+                )
+                
+                // Enhanced text rendering with better styling
+                if (sweep > 20f) { // Only show percentage if segment is large enough
+                    val angleInRadians = Math.toRadians((startAngle + sweep / 2).toDouble()).toFloat()
+                    val textRadius = radius * 0.7f
+                    val textX = center.x + textRadius * kotlin.math.cos(angleInRadians)
+                    val textY = center.y + textRadius * kotlin.math.sin(angleInRadians)
+                    
+                    val percentage = (categories[i].value.toFloat() / total * 100).toInt()
+                    
+                    // Draw text shadow
+                    drawContext.canvas.nativeCanvas.drawText(
+                        "$percentage%", 
+                        textX + 2f, 
+                        textY + 2f, 
+                        android.graphics.Paint().apply {
+                            color = android.graphics.Color.BLACK
+                            alpha = 50
+                            textSize = 32f
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = android.graphics.Typeface.DEFAULT_BOLD
+                            isAntiAlias = true
+                        }
+                    )
+                    
+                    // Draw main text
+                    drawContext.canvas.nativeCanvas.drawText(
+                        "$percentage%", 
+                        textX, 
+                        textY, 
+                        android.graphics.Paint().apply {
+                            color = android.graphics.Color.WHITE
+                            textSize = 32f
+                            textAlign = android.graphics.Paint.Align.CENTER
+                            typeface = android.graphics.Typeface.DEFAULT_BOLD
+                            isAntiAlias = true
+                            setShadowLayer(4f, 2f, 2f, android.graphics.Color.BLACK)
+                        }
+                    )
+                }
+                
                 startAngle += sweep
             }
+            
+            // Draw center circle for a donut effect
+            val centerCircleRadius = radius * 0.3f
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.9f),
+                        Color.Gray.copy(alpha = 0.1f)
+                    ),
+                    center = center,
+                    radius = centerCircleRadius
+                ),
+                radius = centerCircleRadius,
+                center = center
+            )
+            
+            // Draw center circle border
+            drawCircle(
+                color = Color.Gray.copy(alpha = 0.3f),
+                radius = centerCircleRadius,
+                center = center,
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+            )
         }
     }
 }
