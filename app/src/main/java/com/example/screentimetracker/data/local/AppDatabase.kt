@@ -18,9 +18,10 @@ import androidx.room.RoomDatabase
         UserGoal::class,
         Challenge::class,
         FocusSession::class,
-        HabitTracker::class
+        HabitTracker::class,
+        TimeRestriction::class
     ],
-    version = 6, // Incremented version for new entities
+    version = 7, // Incremented version for TimeRestriction entity
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -36,6 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun challengeDao(): ChallengeDao
     abstract fun focusSessionDao(): FocusSessionDao
     abstract fun habitTrackerDao(): HabitTrackerDao
+    abstract fun timeRestrictionDao(): TimeRestrictionDao
 
     companion object {
         const val DATABASE_NAME = "screen_time_tracker_db"

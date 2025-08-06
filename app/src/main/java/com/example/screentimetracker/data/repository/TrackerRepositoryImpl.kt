@@ -27,6 +27,8 @@ import com.example.screentimetracker.data.local.FocusSession
 import com.example.screentimetracker.data.local.FocusSessionDao
 import com.example.screentimetracker.data.local.HabitTracker
 import com.example.screentimetracker.data.local.HabitTrackerDao
+import com.example.screentimetracker.data.local.TimeRestriction
+import com.example.screentimetracker.data.local.TimeRestrictionDao
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -53,6 +55,7 @@ class TrackerRepositoryImpl @Inject constructor(
     private val challengeDao: ChallengeDao = db.challengeDao()
     private val focusSessionDao: FocusSessionDao = db.focusSessionDao()
     private val habitTrackerDao: HabitTrackerDao = db.habitTrackerDao()
+    private val timeRestrictionDao: TimeRestrictionDao = db.timeRestrictionDao()
 
     // Screen Unlock Methods
     override suspend fun insertScreenUnlockEvent(event: ScreenUnlockEvent) {
@@ -240,6 +243,18 @@ class TrackerRepositoryImpl @Inject constructor(
         challengeDao.updateChallengeProgress(id, progress)
     }
 
+    override suspend fun updateChallengeStatus(id: Long, status: String) {
+        challengeDao.updateChallengeStatus(id, status)
+    }
+
+    override suspend fun getLatestChallengeByType(challengeId: String): Challenge? {
+        return challengeDao.getLatestChallengeByType(challengeId)
+    }
+
+    override suspend fun getExpiredChallenges(currentTime: Long): List<Challenge> {
+        return challengeDao.getExpiredChallenges(currentTime)
+    }
+
     // --- Focus Session Methods ---
     override fun getAllFocusSessions(): Flow<List<FocusSession>> {
         return focusSessionDao.getAllFocusSessions()
@@ -253,6 +268,10 @@ class TrackerRepositoryImpl @Inject constructor(
         return focusSessionDao.insertFocusSession(focusSession)
     }
 
+    override suspend fun completeFocusSession(id: Long, endTime: Long, actualDuration: Long, wasSuccessful: Boolean, interruptionCount: Int) {
+        focusSessionDao.completeFocusSession(id, endTime, actualDuration, wasSuccessful, interruptionCount)
+    }
+
     // --- Habit Tracker Methods ---
     override fun getAllHabits(): Flow<List<HabitTracker>> {
         return habitTrackerDao.getAllHabits()
@@ -264,6 +283,31 @@ class TrackerRepositoryImpl @Inject constructor(
 
     override suspend fun insertHabit(habit: HabitTracker): Long {
         return habitTrackerDao.insertHabit(habit)
+    }
+
+    override suspend fun updateHabit(habit: HabitTracker) {
+        habitTrackerDao.updateHabit(habit)
+    }
+
+    // --- Time Restriction Methods ---
+    override fun getAllTimeRestrictions(): Flow<List<TimeRestriction>> {
+        return timeRestrictionDao.getAllTimeRestrictions()
+    }
+
+    override fun getActiveTimeRestrictions(): Flow<List<TimeRestriction>> {
+        return timeRestrictionDao.getActiveTimeRestrictions()
+    }
+
+    override suspend fun getActiveRestrictionsForTime(currentTimeMinutes: Int, dayOfWeek: Int): List<TimeRestriction> {
+        return timeRestrictionDao.getActiveRestrictionsForTime(currentTimeMinutes, dayOfWeek)
+    }
+
+    override suspend fun insertTimeRestriction(restriction: TimeRestriction): Long {
+        return timeRestrictionDao.insertTimeRestriction(restriction)
+    }
+
+    override suspend fun updateRestrictionEnabled(id: Long, isEnabled: Boolean, updatedAt: Long) {
+        timeRestrictionDao.updateRestrictionEnabled(id, isEnabled, updatedAt)
     }
 
     // --- Helper Methods for Wellness Calculation ---

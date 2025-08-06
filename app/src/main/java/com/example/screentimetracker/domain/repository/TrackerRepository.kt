@@ -14,6 +14,7 @@ import com.example.screentimetracker.data.local.UserGoal
 import com.example.screentimetracker.data.local.Challenge
 import com.example.screentimetracker.data.local.FocusSession
 import com.example.screentimetracker.data.local.HabitTracker
+import com.example.screentimetracker.data.local.TimeRestriction
 import kotlinx.coroutines.flow.Flow
 
 interface TrackerRepository {
@@ -78,16 +79,28 @@ interface TrackerRepository {
     fun getActiveChallenges(currentTime: Long): Flow<List<Challenge>>
     suspend fun insertChallenge(challenge: Challenge): Long
     suspend fun updateChallengeProgress(id: Long, progress: Int)
+    suspend fun updateChallengeStatus(id: Long, status: String)
+    suspend fun getLatestChallengeByType(challengeId: String): Challenge?
+    suspend fun getExpiredChallenges(currentTime: Long): List<Challenge>
 
     // --- Focus Session Methods ---
     fun getAllFocusSessions(): Flow<List<FocusSession>>
     suspend fun getFocusSessionsForDate(date: Long): List<FocusSession>
     suspend fun insertFocusSession(focusSession: FocusSession): Long
+    suspend fun completeFocusSession(id: Long, endTime: Long, actualDuration: Long, wasSuccessful: Boolean, interruptionCount: Int)
 
     // --- Habit Tracker Methods ---
     fun getAllHabits(): Flow<List<HabitTracker>>
     fun getHabitsForDate(date: Long): Flow<List<HabitTracker>>
     suspend fun insertHabit(habit: HabitTracker): Long
+    suspend fun updateHabit(habit: HabitTracker)
+
+    // --- Time Restriction Methods ---
+    fun getAllTimeRestrictions(): Flow<List<TimeRestriction>>
+    fun getActiveTimeRestrictions(): Flow<List<TimeRestriction>>
+    suspend fun getActiveRestrictionsForTime(currentTimeMinutes: Int, dayOfWeek: Int): List<TimeRestriction>
+    suspend fun insertTimeRestriction(restriction: TimeRestriction): Long
+    suspend fun updateRestrictionEnabled(id: Long, isEnabled: Boolean, updatedAt: Long)
 
     // --- Helper Methods for Wellness Calculation ---
     suspend fun getAppUsageInTimeRange(startTime: Long, endTime: Long): List<DailyAppSummary>
