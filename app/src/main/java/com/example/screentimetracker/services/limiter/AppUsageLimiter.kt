@@ -22,8 +22,8 @@ class AppUsageLimiter @Inject constructor(
     private val appToastManager: AppToastManager // Inject AppToastManager
 ) {
     private var limitedAppSettings: List<LimitedApp> = emptyList()
-    private var currentLimitedAppDetails: LimitedApp? = null
-    private var continuousUsageStartTimeForLimiterMillis: Long? = null
+    var currentLimitedAppDetails: LimitedApp? = null
+    var continuousUsageStartTimeForLimiterMillis: Long? = null
     private var warningShownForCurrentSessionApp: String? = null
     private var threeXActionTakenForCurrentSessionApp: String? = null
 

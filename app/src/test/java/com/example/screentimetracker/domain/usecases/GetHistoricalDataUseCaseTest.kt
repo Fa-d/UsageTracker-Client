@@ -11,6 +11,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.ArgumentMatchers.anyLong
+import kotlinx.coroutines.flow.first
 
 class GetHistoricalDataUseCaseTest {
 

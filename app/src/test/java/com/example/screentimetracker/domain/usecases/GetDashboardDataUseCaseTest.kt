@@ -5,8 +5,11 @@ import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.first
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlinx.coroutines.flow.first
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mock
 import org.mockito.Mockito.`when`

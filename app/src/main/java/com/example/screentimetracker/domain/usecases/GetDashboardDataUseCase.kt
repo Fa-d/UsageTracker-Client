@@ -29,13 +29,19 @@ class GetDashboardDataUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<DashboardData> {
         val calendar = Calendar.getInstance()
-        val endOfTodayMillis = calendar.timeInMillis
-
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val startOfTodayMillis = calendar.timeInMillis
+        
+        // Calculate end of today (23:59:59.999) to capture all sessions for today
+        val endCalendar = Calendar.getInstance()
+        endCalendar.set(Calendar.HOUR_OF_DAY, 23)
+        endCalendar.set(Calendar.MINUTE, 59)
+        endCalendar.set(Calendar.SECOND, 59)
+        endCalendar.set(Calendar.MILLISECOND, 999)
+        val endOfTodayMillis = endCalendar.timeInMillis
 
         return combine(
             repository.getUnlockCountForDayFlow(startOfTodayMillis, endOfTodayMillis),

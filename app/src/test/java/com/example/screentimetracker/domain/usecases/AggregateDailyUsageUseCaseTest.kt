@@ -1,28 +1,27 @@
 package com.example.screentimetracker.domain.usecases
 
+
 import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.data.local.DailyAppSummary
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import com.example.screentimetracker.utils.logger.AppLogger
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor // Import ArgumentCaptor
-import org.mockito.Captor // Import Captor
-import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
-import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Captor
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat // Import argThat
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.never
-import java.util.Calendar
-import org.mockito.ArgumentMatcher // Import ArgumentMatcher
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 
 class AggregateDailyUsageUseCaseTest {
 
@@ -71,23 +70,29 @@ class AggregateDailyUsageUseCaseTest {
             AppSessionDataAggregate("com.app1", 10000L, 5),
             AppSessionDataAggregate("com.app2", 20000L, 10)
         )
-        whenever(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
-            .thenReturn(mockAppSessionAggregates)
+        whenever(
+            mockRepository.getAggregatedSessionDataForDayFlow(
+                startOfYesterdayMillis, endOfYesterdayMillis
+            )
+        ).thenReturn(flowOf(mockAppSessionAggregates))
 
         val mockUnlockCount = 15
-        whenever(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
-            .thenReturn(mockUnlockCount)
+        whenever(
+            mockRepository.getUnlockCountForDayFlow(
+                startOfYesterdayMillis, endOfYesterdayMillis
+            )
+        ).thenReturn(flowOf(mockUnlockCount))
 
         // When
         aggregateDailyUsageUseCase()
 
         // Then
         verify(mockAppLogger).d(anyString(), argThat(StringContainsMatcher("Starting daily aggregation use case.")))
-        verify(mockRepository).getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis)
-        verify(mockRepository).insertDailyAppSummaries(dailyAppSummaryListCaptor.capture())
-        verify(mockRepository).getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis)
-        verify(mockRepository).insertDailyScreenUnlockSummary(dailyScreenUnlockSummaryCaptor.capture())
         verify(mockAppLogger).d(anyString(), argThat(StringContainsMatcher("Daily aggregation use case finished successfully.")))
+
+        // Verify repository methods were called with captors
+        verify(mockRepository).insertDailyAppSummaries(dailyAppSummaryListCaptor.capture())
+        verify(mockRepository).insertDailyScreenUnlockSummary(dailyScreenUnlockSummaryCaptor.capture())
 
         // Verify captured DailyAppSummaries
         val capturedAppSummaries = dailyAppSummaryListCaptor.value
@@ -122,12 +127,18 @@ class AggregateDailyUsageUseCaseTest {
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val endOfYesterdayMillis = calendar.timeInMillis
 
-        whenever(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
-            .thenReturn(emptyList())
+        whenever(
+            mockRepository.getAggregatedSessionDataForDayFlow(
+                startOfYesterdayMillis, endOfYesterdayMillis
+            )
+        ).thenReturn(flowOf(emptyList()))
 
         val mockUnlockCount = 5
-        whenever(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
-            .thenReturn(mockUnlockCount)
+        whenever(
+            mockRepository.getUnlockCountForDayFlow(
+                startOfYesterdayMillis, endOfYesterdayMillis
+            )
+        ).thenReturn(flowOf(mockUnlockCount))
 
         // When
         aggregateDailyUsageUseCase()

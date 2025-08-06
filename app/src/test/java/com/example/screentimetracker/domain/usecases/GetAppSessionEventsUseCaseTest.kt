@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.eq
 
 class GetAppSessionEventsUseCaseTest {
 
@@ -35,7 +36,7 @@ class GetAppSessionEventsUseCaseTest {
                 1000L, "com.1=", 1500L, 500L, durationMillis = 300L
             ), AppSessionEvent(1600L, "com.app2", 1800L, 200L, durationMillis = 600L)
         )
-        whenever(mockRepository.getAllSessionsInRange(startTime, endTime)).thenReturn(
+        whenever(mockRepository.getAllSessionsInRange(eq(startTime), eq(endTime))).thenReturn(
             flowOf(
                 mockEvents
             )
