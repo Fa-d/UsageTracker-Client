@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -33,13 +34,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import com.example.screentimetracker.ui.components.PlayfulCard
+import com.example.screentimetracker.ui.components.PlayfulMetricCard
 import com.example.screentimetracker.ui.dashboard.components.OverviewCard
+import com.example.screentimetracker.ui.theme.*
 import com.example.screentimetracker.utils.millisToReadableTime
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -50,30 +55,164 @@ fun DashboardView(expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, stat
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()) // Make the entire screen scrollable
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        PlayfulPrimary.copy(alpha = 0.05f),
+                        VibrantOrange.copy(alpha = 0.02f),
+                        LimeGreen.copy(alpha = 0.03f)
+                    )
+                )
+            )
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        OverviewCard(
-            totalScreenTimeTodayMillis = state.totalScreenTimeTodayMillis,
-            totalScreenUnlocksToday = state.totalScreenUnlocksToday,
-            totalAppOpensToday = state.appUsagesToday.sumOf { it.openCount })
-        QuickViewComponent(state)
-
-        // Weekly Trend Chart
-        Card(
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // Fun Header
+        PlayfulCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+                .padding(horizontal = 16.dp),
+            backgroundColor = PlayfulPrimary.copy(alpha = 0.1f),
+            gradientBackground = true
         ) {
-            Column(Modifier.padding(16.dp)) {
-                Text("Weekly Trend", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                Spacer(Modifier.height(8.dp))
-                WeeklyTrendChart(state.historicalAppSummaries)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    Text(
+                        text = "🎯 Screen Time Dashboard",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = PlayfulPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Today's digital wellness journey ✨",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = PlayfulPrimary.copy(alpha = 0.7f)
+                    )
+                }
+                Text(
+                    text = "📱",
+                    fontSize = 40.sp,
+                    modifier = Modifier
+                        .background(
+                            PlayfulPrimary.copy(alpha = 0.1f),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(12.dp)
+                )
             }
         }
 
+        // Overview Cards with emojis and colors
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "Screen Time",
+                value = millisToReadableTime(state.totalScreenTimeTodayMillis),
+                emoji = "⏰",
+                color = SkyBlue,
+                subtitle = "Total today"
+            )
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "Unlocks",
+                value = "${state.totalScreenUnlocksToday}",
+                emoji = "🔓",
+                color = VibrantOrange,
+                subtitle = "Screen activations"
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "App Opens",
+                value = "${state.appUsagesToday.sumOf { it.openCount }}",
+                emoji = "📱",
+                color = LimeGreen,
+                subtitle = "App launches"
+            )
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "Focus Score",
+                value = calculateFocusScore(state),
+                emoji = "🎯",
+                color = LavenderPurple,
+                subtitle = "Productivity level"
+            )
+        }
+
+        QuickViewComponent(state)
+
+        // Weekly Trend Chart with playful styling
+        PlayfulCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            backgroundColor = SkyBlue.copy(alpha = 0.1f),
+            gradientBackground = true
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "📈",
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .background(
+                            SkyBlue.copy(alpha = 0.2f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(8.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    "Weekly Trend Analysis",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = SkyBlue
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            WeeklyTrendChart(state.historicalAppSummaries)
+        }
+
         CategoryBreakDown(expandedCategory, onCategoryExpand, state)
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
+}
+
+// Helper function to calculate focus score
+fun calculateFocusScore(state: DashboardState): String {
+    val totalTime = state.totalScreenTimeTodayMillis
+    val unlocks = state.totalScreenUnlocksToday
+    val opens = state.appUsagesToday.sumOf { it.openCount }
+    
+    val score = when {
+        totalTime < 3600000 && unlocks < 20 -> 95 // Less than 1 hour, few unlocks
+        totalTime < 7200000 && unlocks < 50 -> 80 // Less than 2 hours, moderate unlocks
+        totalTime < 14400000 && unlocks < 100 -> 65 // Less than 4 hours
+        else -> 45 // Heavy usage
+    }
+    
+    return "$score%"
 }
 
 @Composable

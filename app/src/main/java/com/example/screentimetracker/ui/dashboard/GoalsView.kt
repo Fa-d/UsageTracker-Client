@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,42 +25,108 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.screentimetracker.ui.components.PlayfulCard
+import com.example.screentimetracker.ui.components.PlayfulMetricCard
+import com.example.screentimetracker.ui.theme.*
 
 @Composable
 fun GoalsView(
     focusMode: Boolean, onFocusModeChange: (Boolean) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Text("Goals & Limits", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        // Focus Mode
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        LavenderPurple.copy(alpha = 0.05f),
+                        VibrantOrange.copy(alpha = 0.03f),
+                        LimeGreen.copy(alpha = 0.04f)
+                    )
+                )
+            )
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        // Playful Header
+        PlayfulCard(
+            backgroundColor = LavenderPurple.copy(alpha = 0.1f),
+            gradientBackground = true
         ) {
-            Column(Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    Text(
+                        "🎯 Goals & Digital Wellness",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = LavenderPurple
+                    )
+                    Text(
+                        "Transform your digital habits ✨",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LavenderPurple.copy(alpha = 0.7f)
+                    )
+                }
+                Text(
+                    "🧘",
+                    fontSize = 40.sp,
+                    modifier = Modifier
+                        .background(
+                            LavenderPurple.copy(alpha = 0.1f),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(12.dp)
+                )
+            }
+        }
+
+        // Daily Goals
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "Daily Limit",
+                value = "4h",
+                emoji = "⏰",
+                color = SkyBlue,
+                subtitle = "Screen time goal"
+            )
+            PlayfulMetricCard(
+                modifier = Modifier.weight(1f),
+                title = "Mindful Breaks",
+                value = "8",
+                emoji = "☕",
+                color = VibrantOrange,
+                subtitle = "Taken today"
+            )
+        }
+
+        // Focus Mode Card
+        PlayfulCard(
+            backgroundColor = if (focusMode) LimeGreen.copy(alpha = 0.15f) else PlayfulSecondary.copy(alpha = 0.1f),
+            gradientBackground = true
+        ) {
+            Column {
                 Row(
-                    Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            Modifier
-                                .size(32.dp)
-                                .background(
-                                    if (focusMode) Color(0xFFDCFCE7) else Color(0xFFF3F4F6),
-                                    shape = MaterialTheme.shapes.small
-                                )
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Column {
-                            Text("Focus Mode", fontWeight = FontWeight.Medium)
-                            Text("Block distracting apps", fontSize = 13.sp, color = Color.Gray)
-                        }
+                    Column {
+                        Text("Focus Mode", fontWeight = FontWeight.Medium)
+                        Text("Block distracting apps", fontSize = 13.sp, color = Color.Gray)
                     }
                     Switch(
                         checked = focusMode,
@@ -159,7 +229,6 @@ fun GoalsView(
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("App Limits", fontWeight = FontWeight.Medium)
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Placeholder for app limits
                     // appUsageData.take(3).forEach { app ->
                     //     Row(
                     //         Modifier.fillMaxWidth(),

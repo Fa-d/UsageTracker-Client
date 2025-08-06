@@ -42,14 +42,4 @@ interface AppSessionDao {
     fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<AppLastOpenedData>>
 }
 
-// Data class for the result of the aggregated query
-data class AppSessionDataAggregate(
-    val packageName: String,
-    val totalDuration: Long,
-    val sessionCount: Int // Represents open count for the day based on sessions
-)
 
-data class AppLastOpenedData(
-    val packageName: String,
-    val lastOpenedTimestamp: Long
-)

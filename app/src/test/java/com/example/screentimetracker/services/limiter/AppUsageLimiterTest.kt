@@ -23,6 +23,8 @@ import com.example.screentimetracker.data.local.toEntity // Import toEntity
 import android.app.Notification // Import Notification
 import com.example.screentimetracker.utils.ui.AppNotificationManager
 import com.example.screentimetracker.utils.ui.AppToastManager
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 
 class AppUsageLimiterTest {
 
@@ -49,7 +51,7 @@ class AppUsageLimiterTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        `when`(mockContext.packageManager).thenReturn(mockPackageManager)
+        whenever(mockContext.packageManager).thenReturn(mockPackageManager)
 
         appUsageLimiter = AppUsageLimiter(mockContext, mockRepository, mockAppLogger, mockAppNotificationManager, mockAppToastManager)
     }
@@ -61,7 +63,7 @@ class AppUsageLimiterTest {
             DataLimitedApp("com.app1", 60000L),
             DataLimitedApp("com.app2", 120000L)
         )
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
 
         // When
         appUsageLimiter.loadLimitedAppSettings()
@@ -80,7 +82,7 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis()
         val limitedApp = LimitedApp(packageName, 60000L)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings() // Load settings first
 
         // When
@@ -99,7 +101,7 @@ class AppUsageLimiterTest {
         val dataLimitedApps = listOf(
             DataLimitedApp("com.app1", 60000L)
         )
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
 
         // When
@@ -117,7 +119,7 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis()
         val limitedApp = LimitedApp(packageName, 60000L)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
@@ -137,12 +139,12 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - limitMillis - 1000 // Exceed limit by 1 second
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Mock getApplicationLabel to return a dummy app name
-        `when`(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
 
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
@@ -160,12 +162,12 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - (limitMillis * 3) - 1000 // Exceed 3x limit
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Mock getApplicationLabel to return a dummy app name
-        `when`(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
 
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
@@ -184,7 +186,7 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - (limitMillis / 2) // Half limit
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
@@ -204,7 +206,7 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - (limitMillis * 2) // Between 1x and 3x
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
@@ -225,11 +227,11 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - limitMillis - 1000 // Exceed limit
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
-        `when`(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
 
         // First check - warning should be shown
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
@@ -258,11 +260,11 @@ class AppUsageLimiterTest {
         val startTime = System.currentTimeMillis() - (limitMillis * 3) - 1000 // Exceed 3x limit
         val limitedApp = LimitedApp(packageName, limitMillis)
         val dataLimitedApps = listOf(limitedApp.toEntity())
-        `when`(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
         appUsageLimiter.loadLimitedAppSettings()
         appUsageLimiter.onNewSession(packageName, startTime)
 
-        `when`(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
 
         // First check - dissuasion should be executed
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())

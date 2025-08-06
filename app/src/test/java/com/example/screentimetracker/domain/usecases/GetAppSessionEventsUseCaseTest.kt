@@ -9,8 +9,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.whenever
 
 class GetAppSessionEventsUseCaseTest {
 
@@ -35,7 +35,7 @@ class GetAppSessionEventsUseCaseTest {
                 1000L, "com.1=", 1500L, 500L, durationMillis = 300L
             ), AppSessionEvent(1600L, "com.app2", 1800L, 200L, durationMillis = 600L)
         )
-        `when`(mockRepository.getAllSessionsInRange(anyLong(), anyLong())).thenReturn(
+        whenever(mockRepository.getAllSessionsInRange(startTime, endTime)).thenReturn(
             flowOf(
                 mockEvents
             )

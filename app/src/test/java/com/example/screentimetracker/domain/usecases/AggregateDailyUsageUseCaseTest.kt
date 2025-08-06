@@ -22,6 +22,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.never
 import java.util.Calendar
 import org.mockito.ArgumentMatcher // Import ArgumentMatcher
+import org.mockito.kotlin.whenever
 
 class AggregateDailyUsageUseCaseTest {
 
@@ -70,11 +71,11 @@ class AggregateDailyUsageUseCaseTest {
             AppSessionDataAggregate("com.app1", 10000L, 5),
             AppSessionDataAggregate("com.app2", 20000L, 10)
         )
-        `when`(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
+        whenever(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
             .thenReturn(mockAppSessionAggregates)
 
         val mockUnlockCount = 15
-        `when`(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
+        whenever(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
             .thenReturn(mockUnlockCount)
 
         // When
@@ -121,11 +122,11 @@ class AggregateDailyUsageUseCaseTest {
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val endOfYesterdayMillis = calendar.timeInMillis
 
-        `when`(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
+        whenever(mockRepository.getAggregatedSessionDataForDay(startOfYesterdayMillis, endOfYesterdayMillis))
             .thenReturn(emptyList())
 
         val mockUnlockCount = 5
-        `when`(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
+        whenever(mockRepository.getUnlockCountForDay(startOfYesterdayMillis, endOfYesterdayMillis))
             .thenReturn(mockUnlockCount)
 
         // When
@@ -134,6 +135,6 @@ class AggregateDailyUsageUseCaseTest {
         // Then
         verify(mockAppLogger).d(anyString(), argThat(StringContainsMatcher("No app session data to aggregate for yesterday.")))
         verify(mockRepository, never()).insertDailyAppSummaries(any())
-        verify(mockRepository).insertDailyScreenUnlockSummary(any(DailyScreenUnlockSummary::class.java))
+        verify(mockRepository).insertDailyScreenUnlockSummary(dailyScreenUnlockSummaryCaptor.capture())
     }
 }

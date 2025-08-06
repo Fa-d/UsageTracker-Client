@@ -35,16 +35,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.screentimetracker.ui.theme.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
+import com.example.screentimetracker.ui.components.PlayfulBottomNav
 import com.example.screentimetracker.ui.limiter.LimiterConfigScreen
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
@@ -69,20 +72,62 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding.asPaddingValues()),
-            color = if (darkMode) Color(0xFF18181B) else Color(0xFFF9FAFB)
+            color = if (darkMode) Color(0xFF18181B) else PlayfulPrimary.copy(alpha = 0.02f)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Header
-                Row(
+                // Playful Header
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(if (darkMode) Color(0xFF27272A) else Color.White)
-                        .padding(horizontal = 24.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .then(
+                            if (darkMode) {
+                                Modifier.background(Color(0xFF27272A))
+                            } else {
+                                Modifier.background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            PlayfulPrimary.copy(alpha = 0.1f),
+                                            VibrantOrange.copy(alpha = 0.1f),
+                                            LimeGreen.copy(alpha = 0.1f)
+                                        )
+                                    )
+                                )
+                            }
+                        )
+                        .padding(horizontal = 24.dp, vertical = 20.dp)
                 ) {
-                  //  Text("Screen Time", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    // Add focus mode indicator and eye icon here if needed
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column {
+                            Text(
+                                text = "📱 Screen Time Tracker",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (darkMode) Color.White else PlayfulPrimary
+                            )
+                            Text(
+                                text = "Your digital wellness companion ✨",
+                                fontSize = 14.sp,
+                                color = if (darkMode) Color.White.copy(alpha = 0.7f) 
+                                      else PlayfulPrimary.copy(alpha = 0.7f)
+                            )
+                        }
+                        if (focusMode) {
+                            Text(
+                                text = "🧘",
+                                fontSize = 24.sp,
+                                modifier = Modifier
+                                    .background(
+                                        LavenderPurple.copy(alpha = 0.2f),
+                                        shape = androidx.compose.foundation.shape.CircleShape
+                                    )
+                                    .padding(8.dp)
+                            )
+                        }
+                    }
                 }
 
                 // Content
@@ -120,52 +165,24 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
                     }
                 }
 
-                // Bottom Navigation
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(if (darkMode) Color(0xFF27272A) else Color.White)
-                        .padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround
-                ) { // Make this LazyRow scrollable
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        val tabs = listOf(
-                            "dashboard_route" to "Dashboard",
-                            "timeline_route" to "Timeline",
-                            "goals_route" to "Goals",
-                            "limiter_route" to "Limiter",
-                            "settings_route" to "Settings"
-                        )
-                        items(tabs) { (route, label) ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp)
-                                    .background(
-                                        if (currentRoute == route) Color(0xFFE0E7FF) else Color.Transparent,
-                                        shape = MaterialTheme.shapes.small
-                                    )
-                                    .padding(8.dp)
-                                    .clickable(
-                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        navController.navigate(route) {
-                                            popUpTo(navController.graph.startDestinationId)
-                                            launchSingleTop = true
-                                        }
-                                    }) {
-                                // TODO: Add icons
-                                Text(
-                                    label,
-                                    fontSize = 12.sp,
-                                    color = if (currentRoute == route) Color(0xFF2563EB) else Color.Gray,
+                // Playful Bottom Navigation
+                PlayfulBottomNav(
+                    navController = navController,
+                    currentRoute = currentRoute,
+                    modifier = if (darkMode) {
+                        Modifier.background(Color(0xFF27272A))
+                    } else {
+                        Modifier.background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0.95f),
+                                    PlayfulPrimary.copy(alpha = 0.05f),
+                                    VibrantOrange.copy(alpha = 0.05f)
                                 )
-                            }
-                        }
-                    } // End of LazyRow
-                }
+                            )
+                        )
+                    }
+                )
             }
         }
     }

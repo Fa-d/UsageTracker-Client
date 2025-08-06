@@ -24,9 +24,4 @@ interface AppUsageDao {
     fun getAppOpenCountsSince(sinceTimestamp: Long): Flow<List<AppOpenData>>
 }
 
-// Data class for the result of the grouped query
-data class AppOpenData(
-    val packageName: String,
-    val openCount: Int,
-    val lastOpenedTimestamp: Long
-)
+
