@@ -18,7 +18,7 @@ data class HistoricalData(
 class GetHistoricalDataUseCase @Inject constructor(
     private val repository: TrackerRepository
 ) {
-    suspend operator fun invoke(daysAgo: Int = 7): HistoricalData {
+    operator fun invoke(daysAgo: Int = 7): Flow<HistoricalData> {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
@@ -34,6 +34,6 @@ class GetHistoricalDataUseCase @Inject constructor(
 
         return combine(appSummariesFlow, unlockSummariesFlow) { apps, unlocks ->
             HistoricalData(appSummaries = apps, unlockSummaries = unlocks)
-        }.first()
+        }
     }
 }

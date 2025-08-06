@@ -1,28 +1,13 @@
 package com.example.screentimetracker.ui.dashboard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.screentimetracker.ui.theme.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,14 +33,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
 import com.example.screentimetracker.ui.components.PlayfulBottomNav
 import com.example.screentimetracker.ui.limiter.LimiterConfigScreen
+import com.example.screentimetracker.ui.theme.LavenderPurple
+import com.example.screentimetracker.ui.theme.LimeGreen
+import com.example.screentimetracker.ui.theme.PlayfulPrimary
+import com.example.screentimetracker.ui.theme.VibrantOrange
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
 @Composable
-fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
+fun ScreenTimeTracker(viewModel: DashboardViewModel) {
     CompositionLocalProvider(LocalDashboardViewModel provides viewModel) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
-        LaunchedEffect(Unit) { viewModel.loadData() }
+        
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -69,9 +57,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel, padding: WindowInsets) {
         var expandedCategory by remember { mutableStateOf<Int?>(null) }
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding.asPaddingValues()),
+            modifier = Modifier.fillMaxSize(),
             color = if (darkMode) Color(0xFF18181B) else PlayfulPrimary.copy(alpha = 0.02f)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {

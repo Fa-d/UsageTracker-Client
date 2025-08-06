@@ -49,15 +49,15 @@ class GetDashboardDataUseCaseTest {
             AppLastOpenedData("com.app2", 2500L)
         )
 
-        `when`(mockRepository.getUnlockCountForDay(anyLong(), anyLong()))
-            .thenReturn(mockUnlockCount)
-        `when`(mockRepository.getAggregatedSessionDataForDay(anyLong(), anyLong()))
-            .thenReturn(mockSessionAggregates)
-        `when`(mockRepository.getLastOpenedTimestampsForAppsInRange(anyLong(), anyLong()))
-            .thenReturn(mockLastOpenedTimestamps)
+        `when`(mockRepository.getUnlockCountForDayFlow(anyLong(), anyLong()))
+            .thenReturn(kotlinx.coroutines.flow.flowOf(mockUnlockCount))
+        `when`(mockRepository.getAggregatedSessionDataForDayFlow(anyLong(), anyLong()))
+            .thenReturn(kotlinx.coroutines.flow.flowOf(mockSessionAggregates))
+        `when`(mockRepository.getLastOpenedTimestampsForAppsInRangeFlow(anyLong(), anyLong()))
+            .thenReturn(kotlinx.coroutines.flow.flowOf(mockLastOpenedTimestamps))
 
         // When
-        val result = getDashboardDataUseCase()
+        val result = getDashboardDataUseCase().first()
 
         // Then
         assert(result.totalScreenUnlocksToday == mockUnlockCount)

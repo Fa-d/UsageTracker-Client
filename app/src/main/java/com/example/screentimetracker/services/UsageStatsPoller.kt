@@ -46,8 +46,11 @@ class UsageStatsPoller @Inject constructor(
         val lastTrackedEventTimeForPolling = System.currentTimeMillis() - POLLING_INTERVAL_MS
         pollingJob = scope.launch(Dispatchers.IO) {
             appLogger.d(TAG, "Starting usage stats polling loop.")
+            var lastTrackedEventTime = System.currentTimeMillis() - POLLING_INTERVAL_MS
             while (isActive) {
-                pollUsageStats(lastTrackedEventTimeForPolling)
+                val currentTime = System.currentTimeMillis()
+                lastTrackedEventTime = pollUsageStats(lastTrackedEventTime, currentTime)
+                lastTrackedEventTime = currentTime
                 delay(POLLING_INTERVAL_MS)
             }
             appLogger.d(TAG, "Exited usage stats polling loop.")
@@ -60,9 +63,9 @@ class UsageStatsPoller @Inject constructor(
         appLogger.d(TAG, "Usage stats polling stopped.")
     }
 
-    private suspend fun pollUsageStats(lastTrackedEventTimeForPolling: Long) {
-        val currentTime = System.currentTimeMillis()
-        val usageEvents = usageStatsManager.queryEvents(lastTrackedEventTimeForPolling, currentTime)
+    private suspend fun pollUsageStats(startTime: Long, endTime: Long): Long {
+        var newLastTrackedEventTime = startTime
+        val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
         var latestForegroundEvent: ForegroundEventInfo? = null
         val tempEvent = UsageEvents.Event()
 
@@ -84,11 +87,12 @@ class UsageStatsPoller @Inject constructor(
                     appLogger.d(TAG, "New foreground event detected by poller: ${tempEvent.packageName}")
                 }
             }
+            newLastTrackedEventTime = tempEvent.timeStamp
         }
-        // lastTrackedEventTimeForPolling = currentTime // This is now passed as a parameter
 
         latestForegroundEvent?.let {
             _foregroundEvents.emit(it)
         }
+        return newLastTrackedEventTime
     }
 }

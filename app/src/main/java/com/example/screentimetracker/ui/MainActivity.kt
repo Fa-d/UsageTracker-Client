@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -54,11 +55,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             ScreenTimeTrackerTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(WindowInsets.systemBars.asPaddingValues()),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel = hiltViewModel<DashboardViewModel>()
-                    PermissionWrapper(viewModel, WindowInsets(0,0,0,0))
+                    PermissionWrapper(viewModel)
                 }
             }
         }
@@ -66,7 +69,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PermissionWrapper(viewModel: DashboardViewModel, systemBarsPadding: WindowInsets) {
+fun PermissionWrapper(viewModel: DashboardViewModel) {
     val context = LocalContext.current
     val hasUsageStatsPermission by produceState(initialValue = PermissionUtils.hasUsageStatsPermission(context)) {
         while (true) {
@@ -94,21 +97,20 @@ fun PermissionWrapper(viewModel: DashboardViewModel, systemBarsPadding: WindowIn
         LaunchedEffect(Unit) {
             context.startService(Intent(context, AppUsageTrackingService::class.java))
         }
-        ScreenTimeTracker(viewModel, systemBarsPadding)
+        ScreenTimeTracker(viewModel)
     } else {
-        RequestUsagePermissionScreen(systemBarsPadding) {
+        RequestUsagePermissionScreen {
             PermissionUtils.requestUsageStatsPermission(context)
         }
     }
 }
 
 @Composable
-fun RequestUsagePermissionScreen(systemBarsPadding: WindowInsets, onRequestPermission: () -> Unit) {
+fun RequestUsagePermissionScreen(onRequestPermission: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .padding(systemBarsPadding.asPaddingValues()),
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

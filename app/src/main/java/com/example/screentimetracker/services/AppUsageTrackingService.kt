@@ -6,25 +6,21 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.os.Handler // For Toast on main thread
 import android.os.IBinder
-import android.os.Looper // For Toast on main thread
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.example.screentimetracker.R
-import com.example.screentimetracker.data.local.AppSessionEvent
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import com.example.screentimetracker.domain.usecases.RecordAppSessionUseCase
 import com.example.screentimetracker.domain.usecases.RecordAppUsageEventUseCase
-import com.example.screentimetracker.ui.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import com.example.screentimetracker.services.limiter.AppUsageLimiter
+import com.example.screentimetracker.ui.MainActivity
 import com.example.screentimetracker.utils.logger.AppLogger
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppUsageTrackingService : Service() {
@@ -66,7 +62,9 @@ class AppUsageTrackingService : Service() {
     private fun createForegroundServiceNotificationChannel() {
         val manager = getSystemService(NotificationManager::class.java)
         val serviceChannel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID, "App Usage Tracking Service Channel", NotificationManager.IMPORTANCE_DEFAULT
+            NOTIFICATION_CHANNEL_ID,
+            "App Usage Tracking Service Channel",
+            NotificationManager.IMPORTANCE_MIN
         )
         manager?.createNotificationChannel(serviceChannel)
     }

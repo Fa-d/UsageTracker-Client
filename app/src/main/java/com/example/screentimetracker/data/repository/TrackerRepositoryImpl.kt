@@ -47,6 +47,10 @@ class TrackerRepositoryImpl @Inject constructor(
         return screenUnlockDao.getUnlockCountForDay(dayStartMillis, dayEndMillis).first()
     }
 
+    override fun getUnlockCountForDayFlow(dayStartMillis: Long, dayEndMillis: Long): Flow<Int> {
+        return screenUnlockDao.getUnlockCountForDay(dayStartMillis, dayEndMillis)
+    }
+
     // App Usage Event Methods
     override suspend fun insertAppUsageEvent(event: AppUsageEvent) {
         appUsageDao.insertAppUsageEvent(event)
@@ -80,10 +84,22 @@ class TrackerRepositoryImpl @Inject constructor(
         return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis).first()
     }
 
+    override fun getAggregatedSessionDataForDayFlow(
+        dayStartMillis: Long, dayEndMillis: Long
+    ): Flow<List<AppSessionDataAggregate>> {
+        return appSessionDao.getAggregatedSessionDataForDay(dayStartMillis, dayEndMillis)
+    }
+
     override suspend fun getLastOpenedTimestampsForAppsInRange(
         startTime: Long, endTime: Long
     ): List<com.example.screentimetracker.data.local.AppLastOpenedData> {
         return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime).first()
+    }
+
+    override fun getLastOpenedTimestampsForAppsInRangeFlow(
+        startTime: Long, endTime: Long
+    ): Flow<List<com.example.screentimetracker.data.local.AppLastOpenedData>> {
+        return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime)
     }
 
     // Daily Summary Methods

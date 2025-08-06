@@ -27,10 +27,9 @@ data class DashboardData(
 class GetDashboardDataUseCase @Inject constructor(
     private val repository: TrackerRepository
 ) {
-    suspend operator fun invoke(): DashboardData {
+    operator fun invoke(): Flow<DashboardData> {
         val calendar = Calendar.getInstance()
-        // For "today", we want data from the start of today up to the current moment.
-        val endOfTodayMillis = calendar.timeInMillis // Current time as end for "today"
+        val endOfTodayMillis = calendar.timeInMillis
 
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
@@ -38,27 +37,28 @@ class GetDashboardDataUseCase @Inject constructor(
         calendar.set(Calendar.MILLISECOND, 0)
         val startOfTodayMillis = calendar.timeInMillis
 
-        val screenUnlocks: Int = repository.getUnlockCountForDay(startOfTodayMillis, endOfTodayMillis)
-        // Use getAggregatedSessionDataForDay for today's app details
-        val aggregatedSessionsToday: List<AppSessionDataAggregate> = repository.getAggregatedSessionDataForDay(startOfTodayMillis, endOfTodayMillis)
-        val lastOpenedTimestamps: List<AppLastOpenedData> = repository.getLastOpenedTimestampsForAppsInRange(startOfTodayMillis, endOfTodayMillis)
+        return combine(
+            repository.getUnlockCountForDayFlow(startOfTodayMillis, endOfTodayMillis),
+            repository.getAggregatedSessionDataForDayFlow(startOfTodayMillis, endOfTodayMillis),
+            repository.getLastOpenedTimestampsForAppsInRangeFlow(startOfTodayMillis, endOfTodayMillis)
+        ) { screenUnlocks, aggregatedSessionsToday, lastOpenedTimestamps ->
+            val lastOpenedMap = lastOpenedTimestamps.associateBy { it.packageName }
+            val todaysAppDetails = aggregatedSessionsToday.map { aggregate ->
+                TodaysAppData(
+                    packageName = aggregate.packageName,
+                    totalDurationMillis = aggregate.totalDuration,
+                    sessionCount = aggregate.sessionCount,
+                    lastOpenedTimestamp = lastOpenedMap[aggregate.packageName]?.lastOpenedTimestamp ?: 0L
+                )
+            }
+            val totalScreenTime = aggregatedSessionsToday.sumOf { it.totalDuration }
 
-        val lastOpenedMap = lastOpenedTimestamps.associateBy { it.packageName }
-        val todaysAppDetails = aggregatedSessionsToday.map { aggregate ->
-            TodaysAppData(
-                packageName = aggregate.packageName,
-                totalDurationMillis = aggregate.totalDuration,
-                sessionCount = aggregate.sessionCount,
-                lastOpenedTimestamp = lastOpenedMap[aggregate.packageName]?.lastOpenedTimestamp ?: 0L
+            DashboardData(
+                totalScreenUnlocksToday = screenUnlocks,
+                appDetailsToday = todaysAppDetails,
+                totalScreenTimeFromSessionsToday = totalScreenTime
             )
         }
-        val totalScreenTime = aggregatedSessionsToday.sumOf { it.totalDuration }
-
-        return DashboardData(
-            totalScreenUnlocksToday = screenUnlocks,
-            appDetailsToday = todaysAppDetails,
-            totalScreenTimeFromSessionsToday = totalScreenTime
-        )
     }
 
     // This helper might not be strictly needed by external classes anymore if invoke is self-contained for "today"

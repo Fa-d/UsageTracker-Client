@@ -32,14 +32,12 @@ class DashboardViewModel @Inject constructor(
     private val _timelineEvents = MutableStateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>>(emptyList())
     val timelineEvents: StateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>> = _timelineEvents.asStateFlow()
 
-    fun loadData() { // Removed suspend, as flow collection is main async part
-        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
+    init {
         viewModelScope.launch {
-            try {
-                val todayData = getDashboardDataUseCase() // Call as suspend function
-                val historicalData = getHistoricalDataUseCase()
-
+            combine(
+                getDashboardDataUseCase(),
+                getHistoricalDataUseCase()
+            ) { todayData, historicalData ->
                 val appUsageUIModels = todayData.appDetailsToday.map { detail ->
                     AppUsageUIModel(
                         packageName = detail.packageName,
@@ -61,7 +59,7 @@ class DashboardViewModel @Inject constructor(
                     historicalData.unlockSummaries.map { it.unlockCount }.average().toInt()
                 } else 0
 
-                _uiState.value = DashboardState(
+                _uiState.value.copy(
                     isLoading = false,
                     totalScreenUnlocksToday = todayData.totalScreenUnlocksToday,
                     appUsagesToday = appUsageUIModels,
@@ -72,12 +70,14 @@ class DashboardViewModel @Inject constructor(
                     averageDailyUnlocksLastWeek = avgUnlocks,
                     error = null
                 )
-            } catch (exception: Exception) {
+            }.catch { exception ->
                 Log.e("DashboardViewModel", "Error loading dashboard data", exception)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     error = "Failed to load dashboard data: ${exception.localizedMessage ?: "Unknown error"}"
                 )
+            }.collect { newState ->
+                _uiState.value = newState
             }
         }
     }

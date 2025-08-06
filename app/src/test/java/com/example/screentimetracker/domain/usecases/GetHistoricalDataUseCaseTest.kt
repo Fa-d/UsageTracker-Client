@@ -37,7 +37,7 @@ class GetHistoricalDataUseCaseTest {
             .thenReturn(flowOf(mockUnlockSummaries))
 
         // When
-        val result = getHistoricalDataUseCase()
+        val result = getHistoricalDataUseCase().first()
 
         // Then
         assert(result.appSummaries == mockAppSummaries)
@@ -57,7 +57,7 @@ class GetHistoricalDataUseCaseTest {
             .thenReturn(flowOf(mockUnlockSummaries))
 
         // When
-        val result = getHistoricalDataUseCase(daysAgo)
+        val result = getHistoricalDataUseCase(daysAgo).first()
 
         // Then
         assert(result.appSummaries == mockAppSummaries)
