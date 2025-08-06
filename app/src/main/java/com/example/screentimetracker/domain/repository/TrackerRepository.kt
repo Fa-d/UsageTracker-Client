@@ -6,8 +6,14 @@ import com.example.screentimetracker.data.local.AppSessionEvent
 import com.example.screentimetracker.data.local.AppUsageEvent
 import com.example.screentimetracker.data.local.DailyAppSummary
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
-import com.example.screentimetracker.data.local.LimitedApp // Import LimitedApp
+import com.example.screentimetracker.data.local.LimitedApp
 import com.example.screentimetracker.data.local.ScreenUnlockEvent
+import com.example.screentimetracker.domain.model.Achievement
+import com.example.screentimetracker.domain.model.WellnessScore
+import com.example.screentimetracker.data.local.UserGoal
+import com.example.screentimetracker.data.local.Challenge
+import com.example.screentimetracker.data.local.FocusSession
+import com.example.screentimetracker.data.local.HabitTracker
 import kotlinx.coroutines.flow.Flow
 
 interface TrackerRepository {
@@ -40,11 +46,49 @@ interface TrackerRepository {
     fun getDailyAppSummaries(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyAppSummary>>
     fun getDailyScreenUnlockSummaries(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyScreenUnlockSummary>>
 
-    // --- New Limited App Methods ---
+    // --- Limited App Methods ---
     suspend fun insertLimitedApp(limitedApp: LimitedApp)
     suspend fun deleteLimitedApp(limitedApp: LimitedApp)
     fun getLimitedApp(packageName: String): Flow<LimitedApp?>
     suspend fun getLimitedAppOnce(packageName: String): LimitedApp?
     fun getAllLimitedApps(): Flow<List<LimitedApp>>
     suspend fun getAllLimitedAppsOnce(): List<LimitedApp>
+
+    // --- Achievement Methods ---
+    fun getAllAchievements(): Flow<List<Achievement>>
+    fun getUnlockedAchievements(): Flow<List<Achievement>>
+    suspend fun getAchievementById(id: String): Achievement?
+    suspend fun insertAchievements(achievements: List<Achievement>)
+    suspend fun updateAchievementProgress(id: String, progress: Int)
+    suspend fun unlockAchievement(id: String, unlockedDate: Long)
+
+    // --- Wellness Score Methods ---
+    fun getAllWellnessScores(): Flow<List<WellnessScore>>
+    suspend fun getWellnessScoreForDate(date: Long): WellnessScore?
+    suspend fun insertWellnessScore(wellnessScore: WellnessScore)
+
+    // --- User Goal Methods ---
+    fun getActiveGoals(): Flow<List<UserGoal>>
+    fun getGoalsByType(goalType: String): Flow<List<UserGoal>>
+    suspend fun insertGoal(goal: UserGoal): Long
+    suspend fun updateGoalProgress(id: Long, progress: Long)
+
+    // --- Challenge Methods ---
+    fun getAllChallenges(): Flow<List<Challenge>>
+    fun getActiveChallenges(currentTime: Long): Flow<List<Challenge>>
+    suspend fun insertChallenge(challenge: Challenge): Long
+    suspend fun updateChallengeProgress(id: Long, progress: Int)
+
+    // --- Focus Session Methods ---
+    fun getAllFocusSessions(): Flow<List<FocusSession>>
+    suspend fun getFocusSessionsForDate(date: Long): List<FocusSession>
+    suspend fun insertFocusSession(focusSession: FocusSession): Long
+
+    // --- Habit Tracker Methods ---
+    fun getAllHabits(): Flow<List<HabitTracker>>
+    fun getHabitsForDate(date: Long): Flow<List<HabitTracker>>
+    suspend fun insertHabit(habit: HabitTracker): Long
+
+    // --- Helper Methods for Wellness Calculation ---
+    suspend fun getAppUsageInTimeRange(startTime: Long, endTime: Long): List<DailyAppSummary>
 }

@@ -51,12 +51,19 @@ import com.example.screentimetracker.ui.components.PlayfulMetricCard
 import com.example.screentimetracker.ui.dashboard.components.OverviewCard
 import com.example.screentimetracker.ui.theme.*
 import com.example.screentimetracker.utils.millisToReadableTime
+import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.min
 
 @Composable
-fun DashboardView(expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, state: DashboardState) {
+fun DashboardView(
+    expandedCategory: Int?, 
+    onCategoryExpand: (Int?) -> Unit, 
+    state: DashboardState,
+    achievements: StateFlow<List<com.example.screentimetracker.domain.model.Achievement>>,
+    wellnessScore: StateFlow<com.example.screentimetracker.domain.model.WellnessScore?>
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -163,6 +170,21 @@ fun DashboardView(expandedCategory: Int?, onCategoryExpand: (Int?) -> Unit, stat
         }
 
         QuickViewComponent(state)
+
+        // Wellness Score Card
+        WellnessCard(
+            wellnessScore = wellnessScore.value,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        // Achievements Card
+        AchievementsCard(
+            achievements = achievements.value,
+            onAchievementClick = { achievement ->
+                // Handle achievement click - could show detail dialog
+            },
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         // Weekly Trend Chart with playful styling
         PlayfulCard(

@@ -12,9 +12,15 @@ import androidx.room.RoomDatabase
         AppSessionEvent::class,
         DailyAppSummary::class,
         DailyScreenUnlockSummary::class,
-        LimitedApp::class // Added LimitedApp
+        LimitedApp::class,
+        Achievement::class,
+        WellnessScore::class,
+        UserGoal::class,
+        Challenge::class,
+        FocusSession::class,
+        HabitTracker::class
     ],
-    version = 5, // Incremented version
+    version = 6, // Incremented version for new entities
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -23,7 +29,13 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSessionDao(): AppSessionDao
     abstract fun dailyAppSummaryDao(): DailyAppSummaryDao
     abstract fun dailyScreenUnlockSummaryDao(): DailyScreenUnlockSummaryDao
-    abstract fun limitedAppDao(): LimitedAppDao // Added abstract method for the new DAO
+    abstract fun limitedAppDao(): LimitedAppDao
+    abstract fun achievementDao(): AchievementDao
+    abstract fun wellnessScoreDao(): WellnessScoreDao
+    abstract fun userGoalDao(): UserGoalDao
+    abstract fun challengeDao(): ChallengeDao
+    abstract fun focusSessionDao(): FocusSessionDao
+    abstract fun habitTrackerDao(): HabitTrackerDao
 
     companion object {
         const val DATABASE_NAME = "screen_time_tracker_db"

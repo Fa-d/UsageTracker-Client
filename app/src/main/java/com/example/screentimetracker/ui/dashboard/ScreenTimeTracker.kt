@@ -44,6 +44,8 @@ val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { err
 fun ScreenTimeTracker(viewModel: DashboardViewModel) {
     CompositionLocalProvider(LocalDashboardViewModel provides viewModel) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
+        val achievements by viewModel.achievements.collectAsStateWithLifecycle()
+        val wellnessScore by viewModel.wellnessScore.collectAsStateWithLifecycle()
         
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -124,7 +126,13 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                 ) {
                     NavHost(navController = navController, startDestination = "dashboard_route") {
                         composable("dashboard_route") {
-                            DashboardView(expandedCategory, { expandedCategory = it }, state)
+                            DashboardView(
+                                expandedCategory = expandedCategory,
+                                onCategoryExpand = { expandedCategory = it },
+                                state = state,
+                                achievements = viewModel.achievements,
+                                wellnessScore = viewModel.wellnessScore
+                            )
                         }
 
                         composable("timeline_route") {

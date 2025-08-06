@@ -14,6 +14,10 @@ import com.example.screentimetracker.domain.usecases.RecordScreenUnlockUseCase
 import com.example.screentimetracker.domain.usecases.RemoveLimitedAppUseCase
 import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
 import com.example.screentimetracker.domain.usecases.UpdateLimitedAppUseCase
+import com.example.screentimetracker.domain.usecases.GetAchievementsUseCase
+import com.example.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
+import com.example.screentimetracker.domain.usecases.InitializeAchievementsUseCase
+import com.example.screentimetracker.domain.usecases.UpdateAchievementProgressUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -95,5 +99,29 @@ object DomainModule {
     @Singleton
     fun provideUpdateLimitedAppUseCase(repository: TrackerRepository): UpdateLimitedAppUseCase {
         return UpdateLimitedAppUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAchievementsUseCase(repository: TrackerRepository): GetAchievementsUseCase {
+        return GetAchievementsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCalculateWellnessScoreUseCase(repository: TrackerRepository): CalculateWellnessScoreUseCase {
+        return CalculateWellnessScoreUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitializeAchievementsUseCase(repository: TrackerRepository): InitializeAchievementsUseCase {
+        return InitializeAchievementsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateAchievementProgressUseCase(repository: TrackerRepository): UpdateAchievementProgressUseCase {
+        return UpdateAchievementProgressUseCase(repository)
     }
 }

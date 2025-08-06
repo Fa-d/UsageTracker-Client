@@ -17,6 +17,7 @@ val LavenderPurple = Color(0xFF9C27B0) // Material Purple
 val VibrantOrange = Color(0xFFFF6B35) // Orange Red
 val SkyBlue = Color(0xFF2196F3) // Material Light Blue
 val LimeGreen = Color(0xFF8BC34A) // Material Light Green
+val PlayfulAccent = Color(0xFFFF6B35) // Accent Orange
 val ErrorColor = Color(0xFFB00020) // Material Error Red
 
 // App category colors for colorful UI

@@ -26,4 +26,8 @@ interface DailyAppSummaryDao {
     // Get all summaries within a date range, good for overview charts
     @Query("SELECT * FROM daily_app_summary WHERE dateMillis >= :startDateMillis AND dateMillis <= :endDateMillis ORDER BY dateMillis ASC, totalDurationMillis DESC")
     fun getAllSummariesInRange(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyAppSummary>>
+
+    // Get summaries in time range for wellness calculation
+    @Query("SELECT * FROM daily_app_summary WHERE dateMillis >= :startTime AND dateMillis <= :endTime ORDER BY dateMillis ASC")
+    fun getDailyAppSummariesInRange(startTime: Long, endTime: Long): Flow<List<DailyAppSummary>>
 }

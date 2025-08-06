@@ -9,6 +9,11 @@ import com.example.screentimetracker.domain.usecases.GetDashboardDataUseCase
 import com.example.screentimetracker.domain.usecases.GetHistoricalDataUseCase
 import com.example.screentimetracker.domain.usecases.HistoricalData
 import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
+import com.example.screentimetracker.domain.usecases.GetAchievementsUseCase
+import com.example.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
+import com.example.screentimetracker.domain.usecases.InitializeAchievementsUseCase
+import com.example.screentimetracker.domain.model.Achievement
+import com.example.screentimetracker.domain.model.WellnessScore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +26,11 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val getDashboardDataUseCase: GetDashboardDataUseCase,
-    private val getHistoricalDataUseCase: GetHistoricalDataUseCase, // New UseCase
+    private val getHistoricalDataUseCase: GetHistoricalDataUseCase,
     private val getAppSessionEventsUseCase: GetAppSessionEventsUseCase,
+    private val getAchievementsUseCase: GetAchievementsUseCase,
+    private val calculateWellnessScoreUseCase: CalculateWellnessScoreUseCase,
+    private val initializeAchievementsUseCase: InitializeAchievementsUseCase,
     private val application: Application
 ) : ViewModel() {
 
@@ -32,12 +40,29 @@ class DashboardViewModel @Inject constructor(
     private val _timelineEvents = MutableStateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>>(emptyList())
     val timelineEvents: StateFlow<List<com.example.screentimetracker.data.local.AppSessionEvent>> = _timelineEvents.asStateFlow()
 
+    private val _achievements = MutableStateFlow<List<Achievement>>(emptyList())
+    val achievements: StateFlow<List<Achievement>> = _achievements.asStateFlow()
+
+    private val _wellnessScore = MutableStateFlow<WellnessScore?>(null)
+    val wellnessScore: StateFlow<WellnessScore?> = _wellnessScore.asStateFlow()
+
     init {
+        // Initialize achievements first
+        viewModelScope.launch {
+            try {
+                initializeAchievementsUseCase()
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error initializing achievements", e)
+            }
+        }
+
+        // Load dashboard data, achievements, and wellness score
         viewModelScope.launch {
             combine(
                 getDashboardDataUseCase(),
-                getHistoricalDataUseCase()
-            ) { todayData, historicalData ->
+                getHistoricalDataUseCase(),
+                getAchievementsUseCase()
+            ) { todayData, historicalData, achievements ->
                 val appUsageUIModels = todayData.appDetailsToday.map { detail ->
                     AppUsageUIModel(
                         packageName = detail.packageName,
@@ -58,6 +83,17 @@ class DashboardViewModel @Inject constructor(
                 val avgUnlocks = if (historicalData.unlockSummaries.isNotEmpty()) {
                     historicalData.unlockSummaries.map { it.unlockCount }.average().toInt()
                 } else 0
+
+                // Update achievements state
+                _achievements.value = achievements
+
+                // Calculate wellness score for today
+                try {
+                    val todayWellnessScore = calculateWellnessScoreUseCase(System.currentTimeMillis())
+                    _wellnessScore.value = todayWellnessScore
+                } catch (e: Exception) {
+                    Log.e("DashboardViewModel", "Error calculating wellness score", e)
+                }
 
                 _uiState.value.copy(
                     isLoading = false,
