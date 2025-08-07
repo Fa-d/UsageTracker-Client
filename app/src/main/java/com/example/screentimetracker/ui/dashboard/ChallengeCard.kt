@@ -33,12 +33,13 @@ fun ChallengeCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -47,16 +48,14 @@ fun ChallengeCard(
             ) {
                 Text(
                     text = "🏆 Weekly Challenges",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.headlineSmall
                 )
                 if (challenges.isNotEmpty()) {
                     val completedCount = challenges.count { it.status == "completed" }
                     Text(
                         text = "$completedCount/${challenges.size}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -114,25 +113,25 @@ private fun ChallengeItem(
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = challenge.emoji,
-                fontSize = 24.sp
+                style = MaterialTheme.typography.headlineSmall
             )
             
             Spacer(modifier = Modifier.height(4.dp))
             
             Text(
                 text = challenge.name,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelLarge,
                 textAlign = TextAlign.Center,
                 maxLines = 2
             )
@@ -160,9 +159,8 @@ private fun ChallengeItem(
             
             Text(
                 text = "${challenge.currentProgress}/${challenge.targetValue}",
-                style = MaterialTheme.typography.labelSmall,
-                color = statusColor,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelMedium,
+                color = statusColor
             )
             
             if (challenge.status == "completed") {
@@ -170,8 +168,7 @@ private fun ChallengeItem(
                 Text(
                     text = "✅ Complete!",
                     style = MaterialTheme.typography.labelSmall,
-                    color = statusColor,
-                    fontSize = 10.sp
+                    color = statusColor
                 )
             }
         }

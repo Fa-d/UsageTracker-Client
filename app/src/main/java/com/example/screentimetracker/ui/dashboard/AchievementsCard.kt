@@ -121,13 +121,13 @@ private fun AchievementItem(
             containerColor = if (achievement.isUnlocked) 
                 PlayfulAccent.copy(alpha = 0.2f) 
             else 
-                Color.White
+                MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -170,19 +170,17 @@ private fun AchievementItem(
             
             Text(
                 text = achievement.name,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Center,
-                color = if (achievement.isUnlocked) PlayfulAccent else Color.DarkGray,
+                color = if (achievement.isUnlocked) PlayfulAccent else MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2
             )
             
             if (!achievement.isUnlocked) {
                 Text(
                     text = "${achievement.currentProgress}/${achievement.targetValue}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    fontSize = 10.sp
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             } else {
                 // Sparkle animation for unlocked achievements
@@ -207,10 +205,8 @@ private fun AchievementProgressRing(
         
         Text(
             text = "${(progress * 100).toInt()}%",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-            color = PlayfulAccent,
-            fontSize = 10.sp
+            style = MaterialTheme.typography.labelSmall,
+            color = PlayfulAccent
         )
     }
 }

@@ -1,8 +1,10 @@
 package com.example.screentimetracker.ui.dashboard.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,33 +20,33 @@ fun OverviewCard(totalScreenTimeTodayMillis: Long, totalScreenUnlocksToday: Int,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF6366F1))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 "Today's Screen Time",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = Color.White
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 millisToReadableTime(totalScreenTimeTodayMillis),
-                fontWeight = FontWeight.Bold,
-                fontSize = 28.sp,
-                color = Color.White
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(Modifier.height(4.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     "$totalScreenUnlocksToday unlocks",
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
                 )
                 Text(
                     "$totalAppOpensToday app opens",
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
                 )
             }
         }

@@ -10,9 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun PlayfulMetricCard(
@@ -36,9 +34,9 @@ fun PlayfulMetricCard(
 
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(16.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Box(
             modifier = Modifier
@@ -46,7 +44,7 @@ fun PlayfulMetricCard(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color.White,
+                            MaterialTheme.colorScheme.surface,
                             color.copy(alpha = 0.05f)
                         )
                     )
@@ -54,15 +52,14 @@ fun PlayfulMetricCard(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(20.dp)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Animated emoji
                 Text(
                     text = emoji,
-                    fontSize = (24 + shimmer * 4).sp,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
                         .background(
                             color.copy(alpha = 0.1f + shimmer * 0.1f),
@@ -73,26 +70,23 @@ fun PlayfulMetricCard(
                 
                 Text(
                     text = value,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineLarge,
                     color = color
                 )
                 
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.DarkGray
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
             
-            // Subtle gradient overlay for premium feel
             Box(
                 modifier = Modifier
                     .fillMaxSize()

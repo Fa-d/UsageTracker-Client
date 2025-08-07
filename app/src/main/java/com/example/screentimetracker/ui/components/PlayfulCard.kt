@@ -174,24 +174,20 @@ fun StatCard(
                 Text(
                     text = "📊 $title",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.8f),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    color = contentColor.copy(alpha = 0.8f)
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = value,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = contentColor,
-                    fontWeight = FontWeight.Bold
+                    color = contentColor
                 )
                 if (subtitle != null) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "✨ $subtitle",
                         style = MaterialTheme.typography.bodySmall,
-                        color = contentColor.copy(alpha = 0.7f),
-                        fontSize = 12.sp
+                        color = contentColor.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -216,80 +212,3 @@ fun StatCard(
     }
 }
 
-@Composable
-fun PlayfulMetricCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    value: String,
-    emoji: String,
-    color: Color,
-    subtitle: String? = null
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "metric_animation")
-    val shimmer by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ), label = "shimmer"
-    )
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp)),
-        colors = CardDefaults.cardColors(
-            containerColor = color.copy(alpha = 0.1f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(20.dp)
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            color.copy(alpha = 0.05f + shimmer * 0.05f),
-                            color.copy(alpha = 0.1f + shimmer * 0.05f),
-                            color.copy(alpha = 0.05f + shimmer * 0.05f)
-                        )
-                    ),
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = emoji,
-                fontSize = 32.sp,
-                modifier = Modifier.scale(1f + shimmer * 0.1f)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = color,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineLarge,
-                color = color,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 28.sp
-            )
-            if (subtitle != null) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = color.copy(alpha = 0.7f),
-                    fontSize = 12.sp
-                )
-            }
-        }
-    }
-}
