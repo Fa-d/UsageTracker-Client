@@ -6,12 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +35,9 @@ fun SettingsView(
     privacyMode: Boolean,
     onPrivacyModeChange: (Boolean) -> Unit,
     syncEnabled: Boolean,
-    onSyncEnabledChange: (Boolean) -> Unit
+    onSyncEnabledChange: (Boolean) -> Unit,
+    onNavigateToPersonalization: () -> Unit = {},
+    onNavigateToProgressiveLimits: () -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         Text("Settings", fontWeight = FontWeight.Bold, fontSize = 20.sp)
@@ -150,6 +160,70 @@ fun SettingsView(
                             uncheckedThumbColor = Color.White,
                             uncheckedTrackColor = Color(0xFFD1D5DB)
                         )
+                    )
+                }
+            }
+        }
+
+        // Advanced Features
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("Advanced Features", fontWeight = FontWeight.Medium)
+                
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToPersonalization() }
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = null,
+                            tint = Color(0xFF8B5CF6),
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
+                        Column {
+                            Text("Personalization", fontWeight = FontWeight.Medium)
+                            Text("Themes, colors & personality modes", fontSize = 13.sp, color = Color.Gray)
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                }
+                
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToProgressiveLimits() }
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Timeline,
+                            contentDescription = null,
+                            tint = Color(0xFF06B6D4),
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
+                        Column {
+                            Text("Progressive Limits", fontWeight = FontWeight.Medium)
+                            Text("Gradually reduce screen time", fontSize = 13.sp, color = Color.Gray)
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = Color.Gray
                     )
                 }
             }

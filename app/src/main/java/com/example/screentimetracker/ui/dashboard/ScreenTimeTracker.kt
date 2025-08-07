@@ -33,6 +33,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
 import com.example.screentimetracker.ui.components.PlayfulBottomNav
 import com.example.screentimetracker.ui.limiter.LimiterConfigScreen
+import com.example.screentimetracker.ui.personalization.PersonalizationScreen
+import com.example.screentimetracker.ui.progressivelimits.ProgressiveLimitsScreen
 import com.example.screentimetracker.ui.theme.LavenderPurple
 import com.example.screentimetracker.ui.theme.LimeGreen
 import com.example.screentimetracker.ui.theme.PlayfulPrimary
@@ -151,10 +153,30 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 privacyMode,
                                 { privacyMode = it },
                                 syncEnabled,
-                                { syncEnabled = it })
+                                { syncEnabled = it },
+                                onNavigateToPersonalization = { 
+                                    navController.navigate("personalization_route") 
+                                },
+                                onNavigateToProgressiveLimits = {
+                                    navController.navigate("progressive_limits_route")
+                                }
+                            )
                         }
                         composable("app_search_route") {
                             AppSearchScreen(navController, viewModel)
+                        }
+                        composable("personalization_route") {
+                            PersonalizationScreen(
+                                onBackPressed = { navController.popBackStack() }
+                            )
+                        }
+                        composable("progressive_limits_route") {
+                            ProgressiveLimitsScreen(
+                                onBackPressed = { navController.popBackStack() },
+                                onAddNewLimit = { 
+                                    // Handle add new limit
+                                }
+                            )
                         }
                     }
                 }

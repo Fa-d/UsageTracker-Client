@@ -186,6 +186,24 @@ fun DashboardView(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
+        // Challenge Card
+        ChallengeCard(
+            challengeManager = LocalDashboardViewModel.current.challengeManagerUseCase,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        // Focus Session Card
+        FocusSessionCard(
+            focusSessionManager = LocalDashboardViewModel.current.focusSessionManagerUseCase,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        // Weekly Insights Card
+        WeeklyInsightsCard(
+            weeklyInsights = LocalDashboardViewModel.current.weeklyInsightsUseCase,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         // Weekly Trend Chart with playful styling
         PlayfulCard(
             modifier = Modifier

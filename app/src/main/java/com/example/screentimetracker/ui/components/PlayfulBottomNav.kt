@@ -39,6 +39,7 @@ fun PlayfulBottomNav(
         NavItem("timeline_route", "Timeline", Icons.Filled.Timeline, SkyBlue),
         NavItem("goals_route", "Goals", Icons.Filled.EmojiEvents, VibrantOrange),
         NavItem("limiter_route", "Limits", Icons.Filled.Timer, LavenderPurple),
+        NavItem("personalization_route", "Theme", Icons.Filled.Palette, LimeGreen),
         NavItem("settings_route", "Settings", Icons.Filled.Settings, PlayfulSecondary)
     )
 

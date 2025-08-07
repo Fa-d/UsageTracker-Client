@@ -12,6 +12,9 @@ import com.example.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
 import com.example.screentimetracker.domain.usecases.GetAchievementsUseCase
 import com.example.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
 import com.example.screentimetracker.domain.usecases.InitializeAchievementsUseCase
+import com.example.screentimetracker.domain.usecases.ChallengeManagerUseCase
+import com.example.screentimetracker.domain.usecases.FocusSessionManagerUseCase
+import com.example.screentimetracker.domain.usecases.WeeklyInsightsUseCase
 import com.example.screentimetracker.domain.model.Achievement
 import com.example.screentimetracker.domain.model.WellnessScore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +34,9 @@ class DashboardViewModel @Inject constructor(
     private val getAchievementsUseCase: GetAchievementsUseCase,
     private val calculateWellnessScoreUseCase: CalculateWellnessScoreUseCase,
     private val initializeAchievementsUseCase: InitializeAchievementsUseCase,
+    val challengeManagerUseCase: ChallengeManagerUseCase,
+    val focusSessionManagerUseCase: FocusSessionManagerUseCase,
+    val weeklyInsightsUseCase: WeeklyInsightsUseCase,
     private val application: Application
 ) : ViewModel() {
 

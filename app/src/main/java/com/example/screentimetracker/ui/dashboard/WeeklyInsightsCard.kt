@@ -186,7 +186,9 @@ private fun FullWeeklyReport(
     report: WeeklyInsightsUseCase.WeeklyReport,
     onCollapse: () -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier.heightIn(max = 400.dp)
+    ) {
         // Summary metrics
         item {
             WeeklyInsightsSummary(report = report, onExpand = {})
