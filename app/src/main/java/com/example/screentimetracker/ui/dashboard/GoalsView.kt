@@ -1,6 +1,7 @@
 package com.example.screentimetracker.ui.dashboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +27,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
 import com.example.screentimetracker.ui.theme.*
@@ -38,6 +45,8 @@ import com.example.screentimetracker.ui.theme.*
 fun GoalsView(
     focusMode: Boolean, onFocusModeChange: (Boolean) -> Unit
 ) {
+    val limiterViewModel: com.example.screentimetracker.ui.limiter.LimiterConfigViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val limiterState by limiterViewModel.uiState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -221,30 +230,128 @@ fun GoalsView(
                 }
             }
         }
-        // App Limits
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+        // App Limits - Enhanced Section
+        PlayfulCard(
+            backgroundColor = VibrantOrange.copy(alpha = 0.1f),
+            gradientBackground = true
         ) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("App Limits", fontWeight = FontWeight.Medium)
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // appUsageData.take(3).forEach { app ->
-                    //     Row(
-                    //         Modifier.fillMaxWidth(),
-                    //         horizontalArrangement = Arrangement.SpaceBetween,
-                    //         verticalAlignment = Alignment.CenterVertically
-                    //     ) {
-                    //         Row(verticalAlignment = Alignment.CenterVertically) {
-                    //             Text(app.icon, fontSize = 20.sp)
-                    //             Spacer(Modifier.width(8.dp))
-                    //             Text(app.app, fontWeight = FontWeight.Medium)
-                    //         }
-                    //         Text("${app.time} / 1h", fontSize = 13.sp, color = Color.Gray)
-                    //     }
-                    // }
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            "📱 App Usage Limits",
+                            fontWeight = FontWeight.Bold,
+                            color = VibrantOrange
+                        )
+                        Text(
+                            "Control your app usage",
+                            fontSize = 13.sp,
+                            color = VibrantOrange.copy(alpha = 0.7f)
+                        )
+                    }
+                    androidx.compose.material3.TextButton(
+                        onClick = { limiterViewModel.onAddAppClicked() }
+                    ) {
+                        androidx.compose.material3.Icon(
+                            androidx.compose.material.icons.Icons.Filled.Add,
+                            contentDescription = "Add limit",
+                            tint = VibrantOrange
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Add", color = VibrantOrange)
+                    }
+                }
+                
+                if (limiterState.limitedApps.isEmpty() && !limiterState.isLoading) {
+                    Text(
+                        "No apps are currently limited. Tap 'Add' to set usage limits for specific apps.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = VibrantOrange.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else {
+                    limiterState.limitedApps.take(3).forEach { app ->
+                        val formattedLimit = remember(app.timeLimitMillis) {
+                            val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(app.timeLimitMillis)
+                            "$minutes min"
+                        }
+                        
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { limiterViewModel.onEditAppClicked(app) },
+                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    coil3.compose.AsyncImage(
+                                        model = coil3.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                                            .data(androidx.compose.ui.platform.LocalContext.current.packageManager.getApplicationIcon(app.packageName))
+                                            .build(),
+                                        contentDescription = "${app.appName} icon",
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                    Spacer(Modifier.width(12.dp))
+                                    Column {
+                                        Text(
+                                            app.appName,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            "Limit: $formattedLimit",
+                                            fontSize = 12.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                                androidx.compose.material3.IconButton(
+                                    onClick = { limiterViewModel.onRemoveLimitedApp(app.packageName) }
+                                ) {
+                                    androidx.compose.material3.Icon(
+                                        androidx.compose.material.icons.Icons.Filled.Delete,
+                                        contentDescription = "Remove limit",
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (limiterState.limitedApps.size > 3) {
+                        Text(
+                            "...and ${limiterState.limitedApps.size - 3} more apps",
+                            fontSize = 12.sp,
+                            color = VibrantOrange.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
             }
+        }
+        
+        // App Limit Dialog
+        if (limiterState.showAppSelectionDialog) {
+            com.example.screentimetracker.ui.limiter.AppLimitSettingDialog(
+                installedApps = limiterState.installedAppsForSelection,
+                selectedApp = limiterState.selectedAppForLimit,
+                newLimitTimeMinutes = limiterState.newLimitTimeInputMinutes,
+                isLoadingApps = limiterState.isLoading && limiterState.selectedAppForLimit == null,
+                isEditing = limiterState.appBeingEdited != null,
+                onAppSelected = { limiterViewModel.onAppSelectedForLimiting(it) },
+                onTimeChanged = { limiterViewModel.onNewLimitTimeChanged(it) },
+                onConfirm = { limiterViewModel.onConfirmAddLimitedApp() },
+                onDismiss = { limiterViewModel.onDismissAppSelectionDialog() }
+            )
         }
     }
 }
