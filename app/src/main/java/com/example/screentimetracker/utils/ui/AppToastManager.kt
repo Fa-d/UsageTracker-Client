@@ -14,6 +14,7 @@ import javax.inject.Singleton
 interface AppToastManager {
     fun showDissuasionToast(appName: String)
     fun bringAppToForeground(packageName: String)
+    fun showContentBlockedToast(featureName: String)
 }
 
 @Singleton
@@ -44,5 +45,12 @@ class AppToastManagerImpl @Inject constructor(
         } catch (e: Exception) {
             appLogger.e(TAG, "Could not start MainActivity for dissuasion: ${e.message}", e)
         }
+    }
+
+    override fun showContentBlockedToast(featureName: String) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, "🚫 $featureName is blocked! Redirecting you away.", Toast.LENGTH_LONG).show()
+        }
+        appLogger.i(TAG, "Content blocked toast shown for: $featureName")
     }
 }

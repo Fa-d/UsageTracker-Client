@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
 
     <application
         android:name=".MainApplication"
@@ -27,6 +30,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.blocking.ContentBlockingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ScreenTimeTracker"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true" />
+
         <!-- Screen Unlock Receiver -->
         <receiver
             android:name=".receivers.ScreenUnlockReceiver"
@@ -37,11 +47,32 @@
             </intent-filter>
         </receiver>
 
+        <!-- Legacy service - can be deprecated in favor of smart services -->
         <service
             android:name=".services.AppUsageTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- New Smart Tracking Service -->
+        <service
+            android:name=".services.SmartUsageTrackingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Smart Accessibility Service for content blocking -->
+        <service
+            android:name=".services.SmartUsageAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
 
         <receiver
             android:name=".receivers.BootCompletedReceiver"
@@ -80,6 +111,10 @@
         <!-- For resolveActivity(ACTION_USAGE_ACCESS_SETTINGS) -->
         <intent>
             <action android:name="android.settings.ACTION_USAGE_ACCESS_SETTINGS" />
+        </intent>
+        <!-- For accessibility settings -->
+        <intent>
+            <action android:name="android.settings.ACCESSIBILITY_SETTINGS" />
         </intent>
     </queries>
 </manifest>

@@ -22,8 +22,8 @@ class AppUsageLimiter @Inject constructor(
     private val appToastManager: AppToastManager // Inject AppToastManager
 ) {
     private var limitedAppSettings: List<LimitedApp> = emptyList()
-    var currentLimitedAppDetails: LimitedApp? = null
-    var continuousUsageStartTimeForLimiterMillis: Long? = null
+    private var currentLimitedAppDetails: LimitedApp? = null
+    private var continuousUsageStartTimeForLimiterMillis: Long? = null
     private var warningShownForCurrentSessionApp: String? = null
     private var threeXActionTakenForCurrentSessionApp: String? = null
 
@@ -92,6 +92,58 @@ class AppUsageLimiter @Inject constructor(
                 }
             }
         }
+    }
+
+    // New methods for smart tracking integration
+    fun isAppLimited(packageName: String): Boolean {
+        return limitedAppSettings.any { it.packageName == packageName }
+    }
+
+    fun hasActiveLimitedApps(): Boolean {
+        return currentLimitedAppDetails != null
+    }
+
+    suspend fun performPeriodicLimitCheck() {
+        currentLimitedAppDetails?.let { limitedApp ->
+            continuousUsageStartTimeForLimiterMillis?.let { startTime ->
+                val currentTime = System.currentTimeMillis()
+                val continuousDuration = currentTime - startTime
+
+                // Check if we need to show warning
+                if (continuousDuration >= limitedApp.timeLimitMillis && 
+                    warningShownForCurrentSessionApp != limitedApp.packageName) {
+                    appNotificationManager.showWarningNotification(limitedApp, continuousDuration)
+                    warningShownForCurrentSessionApp = limitedApp.packageName
+                    appLogger.i(TAG, "Periodic check: Warning shown for ${limitedApp.packageName}")
+                }
+
+                // Check if we need to take action
+                if (continuousDuration >= (limitedApp.timeLimitMillis * 3) && 
+                    threeXActionTakenForCurrentSessionApp != limitedApp.packageName) {
+                    appToastManager.bringAppToForeground(limitedApp.packageName)
+                    appToastManager.showDissuasionToast(getAppName(limitedApp.packageName))
+                    threeXActionTakenForCurrentSessionApp = limitedApp.packageName
+                    appLogger.i(TAG, "Periodic check: 3X action taken for ${limitedApp.packageName}")
+                }
+            }
+        }
+    }
+
+    fun getCurrentLimitedAppDetails(): LimitedApp? {
+        return currentLimitedAppDetails
+    }
+
+    fun getRemainingTime(packageName: String): Long? {
+        val limitedApp = currentLimitedAppDetails ?: return null
+        val startTime = continuousUsageStartTimeForLimiterMillis ?: return null
+        
+        if (limitedApp.packageName != packageName) return null
+        
+        val currentTime = System.currentTimeMillis()
+        val usedTime = currentTime - startTime
+        val remainingTime = limitedApp.timeLimitMillis - usedTime
+        
+        return if (remainingTime > 0) remainingTime else 0
     }
 
     // This method is still needed here as it's used by AppToastManagerImpl

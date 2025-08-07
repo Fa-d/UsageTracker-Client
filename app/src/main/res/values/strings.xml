@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">ScreenTimeTracker</string>
+    <string name="accessibility_service_description">
+        Smart usage tracking and content blocking service. This service monitors app usage to enforce time limits and blocks specific content like Reels, Shorts, and TikTok videos. It helps you stay focused by automatically detecting when you access distracting content and redirecting you away.
+        
+        Features:
+        • Real-time app usage tracking
+        • Automatic content blocking (Instagram Reels, YouTube Shorts, TikTok)
+        • Usage limit enforcement
+        • Battery-optimized monitoring
+        
+        Your privacy is protected - all data stays on your device and is never shared.
+    </string>
 </resources>

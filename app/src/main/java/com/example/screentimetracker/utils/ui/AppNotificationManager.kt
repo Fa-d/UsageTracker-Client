@@ -30,6 +30,7 @@ interface AppNotificationManager {
     fun showFocusSessionStart(durationMinutes: Int)
     fun showFocusSessionComplete(durationMinutes: Int, success: Boolean)
     fun showMilestoneNotification(title: String, description: String)
+    fun showContentBlockedNotification(featureName: String)
 }
 
 @Singleton
@@ -47,6 +48,7 @@ class AppNotificationManagerImpl @Inject constructor(
         const val WEEKLY_REPORT_CHANNEL_ID = "WeeklyReportChannel"
         const val FOCUS_SESSION_CHANNEL_ID = "FocusSessionChannel"
         const val MILESTONE_CHANNEL_ID = "MilestoneChannel"
+        const val CONTENT_BLOCKED_CHANNEL_ID = "ContentBlockedChannel"
         
         private const val WARNING_NOTIFICATION_ID_BASE = 1000
         private const val TIME_WARNING_ID = 2000
@@ -56,6 +58,7 @@ class AppNotificationManagerImpl @Inject constructor(
         private const val WEEKLY_REPORT_ID = 6000
         private const val FOCUS_SESSION_ID = 7000
         private const val MILESTONE_ID = 8000
+        private const val CONTENT_BLOCKED_ID = 9000
         private const val TAG = "AppNotificationManager"
     }
 
@@ -130,10 +133,18 @@ class AppNotificationManagerImpl @Inject constructor(
             lightColor = Color.MAGENTA
         }
         
+        val contentBlockedChannel = NotificationChannel(
+            CONTENT_BLOCKED_CHANNEL_ID, "Content Blocked", NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications when blocked content (Reels, Shorts, etc.) is accessed."
+            enableVibration(true)
+            lightColor = Color.RED
+        }
+        
         manager.createNotificationChannels(listOf(
             warningChannel, timeWarningChannel, breakReminderChannel, 
             achievementChannel, motivationChannel, weeklyReportChannel, 
-            focusSessionChannel, milestoneChannel
+            focusSessionChannel, milestoneChannel, contentBlockedChannel
         ))
     }
 
@@ -348,6 +359,28 @@ class AppNotificationManagerImpl @Inject constructor(
         try { notificationManager.notify(MILESTONE_ID, notification) } 
         catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for milestone.", e) }
         appLogger.i(TAG, "Milestone notification shown: $title")
+    }
+
+    override fun showContentBlockedNotification(featureName: String) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        
+        val notification = NotificationCompat.Builder(context, CONTENT_BLOCKED_CHANNEL_ID)
+            .setContentTitle("🚫 Content Blocked")
+            .setContentText("$featureName is blocked. Stay focused!")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVibrate(longArrayOf(0, 300, 100, 300))
+            .build()
+        
+        try { notificationManager.notify(CONTENT_BLOCKED_ID, notification) } 
+        catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for content blocked.", e) }
+        appLogger.i(TAG, "Content blocked notification shown for: $featureName")
     }
 
     private fun getAppName(packageName: String): String {
