@@ -30,4 +30,8 @@ interface DailyAppSummaryDao {
     // Get summaries in time range for wellness calculation
     @Query("SELECT * FROM daily_app_summary WHERE dateMillis >= :startTime AND dateMillis <= :endTime ORDER BY dateMillis ASC")
     fun getDailyAppSummariesInRange(startTime: Long, endTime: Long): Flow<List<DailyAppSummary>>
+
+    // Export methods
+    @Query("SELECT * FROM daily_app_summary ORDER BY dateMillis ASC, packageName ASC")
+    suspend fun getAllDailyAppSummariesForExport(): List<DailyAppSummary>
 }

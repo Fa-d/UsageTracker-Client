@@ -28,6 +28,10 @@ interface AppSessionDao {
     @Query("SELECT SUM(durationMillis) FROM app_session_events WHERE packageName = :packageName AND startTimeMillis >= :startTime AND endTimeMillis <= :endTime")
     fun getTotalDurationForAppInRange(packageName: String, startTime: Long, endTime: Long): Flow<Long?> // Long? because SUM can be null if no rows
 
+    // Export methods
+    @Query("SELECT * FROM app_session_events ORDER BY startTimeMillis DESC")
+    suspend fun getAllAppSessionEventsForExport(): List<AppSessionEvent>
+
     // Get total duration for all apps within a time range (total screen time from app sessions)
     @Query("SELECT SUM(durationMillis) FROM app_session_events WHERE startTimeMillis >= :startTime AND endTimeMillis <= :endTime")
     fun getTotalScreenTimeFromSessionsInRange(startTime: Long, endTime: Long): Flow<Long?>

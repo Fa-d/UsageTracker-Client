@@ -2,6 +2,7 @@ package com.example.screentimetracker.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 // import androidx.room.migration.Migration
 // import androidx.sqlite.db.SupportSQLiteDatabase
 
@@ -22,11 +23,15 @@ import androidx.room.RoomDatabase
         TimeRestriction::class,
         ProgressiveLimit::class,
         ProgressiveMilestone::class,
-        UserPreferences::class
+        UserPreferences::class,
+        PrivacySettings::class,
+        MindfulnessSession::class,
+        ReplacementActivity::class
     ],
-    version = 9, // Incremented version for User Preferences entity
+    version = 10, // Incremented version for Privacy Settings entity
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun screenUnlockDao(): ScreenUnlockDao
     abstract fun appUsageDao(): AppUsageDao
@@ -44,6 +49,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun progressiveLimitDao(): ProgressiveLimitDao
     abstract fun progressiveMilestoneDao(): ProgressiveMilestoneDao
     abstract fun userPreferencesDao(): UserPreferencesDao
+    abstract fun privacySettingsDao(): PrivacySettingsDao
+    abstract fun mindfulnessSessionDao(): MindfulnessSessionDao
+    abstract fun replacementActivityDao(): ReplacementActivityDao
 
     companion object {
         const val DATABASE_NAME = "screen_time_tracker_db"

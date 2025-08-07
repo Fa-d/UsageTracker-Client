@@ -31,4 +31,8 @@ interface ChallengeDao {
 
     @Query("SELECT * FROM challenges WHERE endDate < :currentTime AND status = 'active'")
     suspend fun getExpiredChallenges(currentTime: Long): List<Challenge>
+
+    // Export methods
+    @Query("SELECT * FROM challenges ORDER BY startDate ASC")
+    suspend fun getAllChallengesForExport(): List<Challenge>
 }

@@ -22,6 +22,10 @@ interface AppUsageDao {
     // More specific queries for dashboard will be needed, e.g., counts per app
     @Query("SELECT packageName, COUNT(id) as openCount, MAX(timestamp) as lastOpenedTimestamp FROM app_usage_events WHERE eventName = 'opened' AND timestamp >= :sinceTimestamp GROUP BY packageName")
     fun getAppOpenCountsSince(sinceTimestamp: Long): Flow<List<AppOpenData>>
+    
+    // Export methods
+    @Query("SELECT * FROM app_usage_events ORDER BY timestamp DESC")
+    suspend fun getAllAppUsageEventsForExport(): List<AppUsageEvent>
 }
 
 

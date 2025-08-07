@@ -17,3 +17,4 @@
 *.aar
 *.zip
 *.jar
+/app/build/

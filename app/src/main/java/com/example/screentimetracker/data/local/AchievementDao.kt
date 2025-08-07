@@ -29,6 +29,10 @@ interface AchievementDao {
     @Query("UPDATE achievements SET isUnlocked = 1, unlockedDate = :unlockedDate WHERE achievementId = :id")
     suspend fun unlockAchievement(id: String, unlockedDate: Long)
 
+    // Export methods
+    @Query("SELECT * FROM achievements ORDER BY achievementId ASC")
+    suspend fun getAllAchievementsForExport(): List<Achievement>
+
     @Query("SELECT COUNT(*) FROM achievements WHERE isUnlocked = 1")
     suspend fun getUnlockedAchievementsCount(): Int
 }

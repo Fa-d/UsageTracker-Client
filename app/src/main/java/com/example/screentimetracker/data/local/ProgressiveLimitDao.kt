@@ -32,4 +32,8 @@ interface ProgressiveLimitDao {
     
     @Query("SELECT COUNT(*) FROM progressive_limits WHERE is_active = 1")
     suspend fun getActiveLimitsCount(): Int
+
+    // Export methods
+    @Query("SELECT * FROM progressive_limits ORDER BY created_at ASC")
+    suspend fun getAllProgressiveLimitsForExport(): List<ProgressiveLimit>
 }

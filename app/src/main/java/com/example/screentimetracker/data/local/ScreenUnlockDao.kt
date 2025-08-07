@@ -19,4 +19,8 @@ interface ScreenUnlockDao {
 
     @Query("SELECT COUNT(id) FROM screen_unlock_events WHERE timestamp >= :dayStartMillis AND timestamp < :dayEndMillis")
     fun getUnlockCountForDay(dayStartMillis: Long, dayEndMillis: Long): Flow<Int>
+
+    // Export methods
+    @Query("SELECT * FROM screen_unlock_events ORDER BY timestamp ASC")
+    suspend fun getAllScreenUnlockEventsForExport(): List<ScreenUnlockEvent>
 }

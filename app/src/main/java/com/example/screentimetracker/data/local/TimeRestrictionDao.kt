@@ -40,4 +40,8 @@ interface TimeRestrictionDao {
 
     @Query("DELETE FROM time_restrictions WHERE restrictionType = :type")
     suspend fun deleteRestrictionsByType(type: String)
+
+    // Export methods
+    @Query("SELECT * FROM time_restrictions ORDER BY createdAt ASC")
+    suspend fun getAllTimeRestrictionsForExport(): List<TimeRestriction>
 }

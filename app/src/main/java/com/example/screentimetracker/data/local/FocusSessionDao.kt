@@ -31,4 +31,8 @@ interface FocusSessionDao {
 
     @Delete
     suspend fun deleteFocusSession(focusSession: FocusSession)
+
+    // Export methods
+    @Query("SELECT * FROM focus_sessions ORDER BY startTime ASC")
+    suspend fun getAllFocusSessionsForExport(): List<FocusSession>
 }

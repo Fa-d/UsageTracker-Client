@@ -34,4 +34,8 @@ interface UserGoalDao {
 
     @Query("SELECT * FROM user_goals WHERE deadline < :currentTime AND isActive = 1")
     suspend fun getExpiredGoals(currentTime: Long): List<UserGoal>
+
+    // Export methods
+    @Query("SELECT * FROM user_goals ORDER BY createdAt ASC")
+    suspend fun getAllUserGoalsForExport(): List<UserGoal>
 }

@@ -34,4 +34,8 @@ interface HabitTrackerDao {
 
     @Delete
     suspend fun deleteHabit(habit: HabitTracker)
+
+    // Export methods
+    @Query("SELECT * FROM habit_tracker ORDER BY date ASC, habitId ASC")
+    suspend fun getAllHabitTrackersForExport(): List<HabitTracker>
 }

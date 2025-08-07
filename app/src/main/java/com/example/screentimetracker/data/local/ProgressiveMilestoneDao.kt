@@ -29,4 +29,8 @@ interface ProgressiveMilestoneDao {
     
     @Query("SELECT COUNT(*) FROM progressive_milestones WHERE limit_id = :limitId AND is_achieved = 1")
     suspend fun getAchievedMilestonesCount(limitId: Long): Int
+
+    // Export methods
+    @Query("SELECT * FROM progressive_milestones ORDER BY limit_id ASC, milestone_percentage ASC")
+    suspend fun getAllProgressiveMilestonesForExport(): List<ProgressiveMilestone>
 }

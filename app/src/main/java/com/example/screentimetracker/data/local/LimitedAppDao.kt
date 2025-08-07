@@ -27,4 +27,8 @@ interface LimitedAppDao {
 
     @Query("SELECT * FROM limited_apps")
     suspend fun getAllLimitedAppsOnce(): List<LimitedApp> // Suspend fun for one-time fetch of the list
+
+    // Export methods
+    @Query("SELECT * FROM limited_apps ORDER BY packageName ASC")
+    suspend fun getAllLimitedAppsForExport(): List<LimitedApp>
 }

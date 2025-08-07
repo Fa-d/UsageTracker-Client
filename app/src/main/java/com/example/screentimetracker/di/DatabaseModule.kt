@@ -19,6 +19,9 @@ import com.example.screentimetracker.data.local.TimeRestrictionDao
 import com.example.screentimetracker.data.local.ProgressiveLimitDao
 import com.example.screentimetracker.data.local.ProgressiveMilestoneDao
 import com.example.screentimetracker.data.local.UserPreferencesDao
+import com.example.screentimetracker.data.local.MindfulnessSessionDao
+import com.example.screentimetracker.data.local.PrivacySettingsDao
+import com.example.screentimetracker.data.local.ReplacementActivityDao
 import com.example.screentimetracker.data.repository.TrackerRepositoryImpl
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import dagger.Module
@@ -145,5 +148,23 @@ object DatabaseModule {
     @Singleton
     fun provideUserPreferencesDao(db: AppDatabase): UserPreferencesDao {
         return db.userPreferencesDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMindfulnessSessionDao(db: AppDatabase): MindfulnessSessionDao {
+        return db.mindfulnessSessionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providePrivacySettingsDao(db: AppDatabase): PrivacySettingsDao {
+        return db.privacySettingsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReplacementActivityDao(db: AppDatabase): ReplacementActivityDao {
+        return db.replacementActivityDao()
     }
 }

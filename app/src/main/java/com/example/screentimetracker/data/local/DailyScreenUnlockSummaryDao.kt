@@ -22,4 +22,8 @@ interface DailyScreenUnlockSummaryDao {
     // Get summaries for a date range (for trends)
     @Query("SELECT * FROM daily_screen_unlock_summary WHERE dateMillis >= :startDateMillis AND dateMillis <= :endDateMillis ORDER BY dateMillis ASC")
     fun getSummariesInRange(startDateMillis: Long, endDateMillis: Long): Flow<List<DailyScreenUnlockSummary>>
+
+    // Export methods
+    @Query("SELECT * FROM daily_screen_unlock_summary ORDER BY dateMillis ASC")
+    suspend fun getAllDailyScreenUnlockSummariesForExport(): List<DailyScreenUnlockSummary>
 }

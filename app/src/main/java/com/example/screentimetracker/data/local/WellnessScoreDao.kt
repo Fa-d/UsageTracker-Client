@@ -28,4 +28,8 @@ interface WellnessScoreDao {
 
     @Query("DELETE FROM wellness_scores WHERE date < :cutoffDate")
     suspend fun deleteOldWellnessScores(cutoffDate: Long)
+
+    // Export methods
+    @Query("SELECT * FROM wellness_scores ORDER BY date ASC")
+    suspend fun getAllWellnessScoresForExport(): List<WellnessScore>
 }
