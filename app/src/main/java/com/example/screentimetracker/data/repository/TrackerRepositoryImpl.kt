@@ -314,4 +314,16 @@ class TrackerRepositoryImpl @Inject constructor(
     override suspend fun getAppUsageInTimeRange(startTime: Long, endTime: Long): List<DailyAppSummary> {
         return dailyAppSummaryDao.getDailyAppSummariesInRange(startTime, endTime).first()
     }
+    
+    // --- Progressive Limits Helper Methods ---
+    override suspend fun getAverageAppUsageLast7Days(packageName: String): Long {
+        val endTime = System.currentTimeMillis()
+        val startTime = endTime - (7 * 24 * 60 * 60 * 1000L) // 7 days ago
+        
+        val sessions = appSessionDao.getSessionsForAppInRangeOnce(packageName, startTime, endTime)
+        if (sessions.isEmpty()) return 0L
+        
+        val totalUsage = sessions.sumOf { it.durationMillis }
+        return totalUsage / 7 // Average per day
+    }
 }

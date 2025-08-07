@@ -29,6 +29,7 @@ interface AppNotificationManager {
     fun showWeeklyReport(totalScreenTime: Long, goalsAchieved: Int, totalGoals: Int)
     fun showFocusSessionStart(durationMinutes: Int)
     fun showFocusSessionComplete(durationMinutes: Int, success: Boolean)
+    fun showMilestoneNotification(title: String, description: String)
 }
 
 @Singleton
@@ -45,6 +46,7 @@ class AppNotificationManagerImpl @Inject constructor(
         const val MOTIVATION_CHANNEL_ID = "MotivationChannel"
         const val WEEKLY_REPORT_CHANNEL_ID = "WeeklyReportChannel"
         const val FOCUS_SESSION_CHANNEL_ID = "FocusSessionChannel"
+        const val MILESTONE_CHANNEL_ID = "MilestoneChannel"
         
         private const val WARNING_NOTIFICATION_ID_BASE = 1000
         private const val TIME_WARNING_ID = 2000
@@ -53,6 +55,7 @@ class AppNotificationManagerImpl @Inject constructor(
         private const val MOTIVATION_ID = 5000
         private const val WEEKLY_REPORT_ID = 6000
         private const val FOCUS_SESSION_ID = 7000
+        private const val MILESTONE_ID = 8000
         private const val TAG = "AppNotificationManager"
     }
 
@@ -119,9 +122,18 @@ class AppNotificationManagerImpl @Inject constructor(
             lightColor = Color.BLUE
         }
         
+        val milestoneChannel = NotificationChannel(
+            MILESTONE_CHANNEL_ID, "Progressive Milestones", NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Milestone achievements for progressive limits."
+            enableVibration(true)
+            lightColor = Color.MAGENTA
+        }
+        
         manager.createNotificationChannels(listOf(
             warningChannel, timeWarningChannel, breakReminderChannel, 
-            achievementChannel, motivationChannel, weeklyReportChannel, focusSessionChannel
+            achievementChannel, motivationChannel, weeklyReportChannel, 
+            focusSessionChannel, milestoneChannel
         ))
     }
 
@@ -313,6 +325,29 @@ class AppNotificationManagerImpl @Inject constructor(
         try { notificationManager.notify(FOCUS_SESSION_ID + 1, notification) } 
         catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for focus session complete.", e) }
         appLogger.i(TAG, "Focus session complete notification shown. Success: $success")
+    }
+
+    override fun showMilestoneNotification(title: String, description: String) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        
+        val notification = NotificationCompat.Builder(context, MILESTONE_CHANNEL_ID)
+            .setContentTitle("🎯 $title")
+            .setContentText(description)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVibrate(longArrayOf(0, 400, 200, 400, 200, 400))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(description))
+            .build()
+        
+        try { notificationManager.notify(MILESTONE_ID, notification) } 
+        catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for milestone.", e) }
+        appLogger.i(TAG, "Milestone notification shown: $title")
     }
 
     private fun getAppName(packageName: String): String {

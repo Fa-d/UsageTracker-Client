@@ -9,6 +9,16 @@ import com.example.screentimetracker.data.local.DailyAppSummaryDao
 import com.example.screentimetracker.data.local.DailyScreenUnlockSummaryDao
 import com.example.screentimetracker.data.local.LimitedAppDao // Import LimitedAppDao
 import com.example.screentimetracker.data.local.ScreenUnlockDao
+import com.example.screentimetracker.data.local.AchievementDao
+import com.example.screentimetracker.data.local.WellnessScoreDao
+import com.example.screentimetracker.data.local.UserGoalDao
+import com.example.screentimetracker.data.local.ChallengeDao
+import com.example.screentimetracker.data.local.FocusSessionDao
+import com.example.screentimetracker.data.local.HabitTrackerDao
+import com.example.screentimetracker.data.local.TimeRestrictionDao
+import com.example.screentimetracker.data.local.ProgressiveLimitDao
+import com.example.screentimetracker.data.local.ProgressiveMilestoneDao
+import com.example.screentimetracker.data.local.UserPreferencesDao
 import com.example.screentimetracker.data.repository.TrackerRepositoryImpl
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import dagger.Module
@@ -75,5 +85,65 @@ object DatabaseModule {
     @Singleton
     fun provideLimitedAppDao(db: AppDatabase): LimitedAppDao { // Provide LimitedAppDao
         return db.limitedAppDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAchievementDao(db: AppDatabase): AchievementDao {
+        return db.achievementDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWellnessScoreDao(db: AppDatabase): WellnessScoreDao {
+        return db.wellnessScoreDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserGoalDao(db: AppDatabase): UserGoalDao {
+        return db.userGoalDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideChallengeDao(db: AppDatabase): ChallengeDao {
+        return db.challengeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFocusSessionDao(db: AppDatabase): FocusSessionDao {
+        return db.focusSessionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHabitTrackerDao(db: AppDatabase): HabitTrackerDao {
+        return db.habitTrackerDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTimeRestrictionDao(db: AppDatabase): TimeRestrictionDao {
+        return db.timeRestrictionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProgressiveLimitDao(db: AppDatabase): ProgressiveLimitDao {
+        return db.progressiveLimitDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProgressiveMilestoneDao(db: AppDatabase): ProgressiveMilestoneDao {
+        return db.progressiveMilestoneDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesDao(db: AppDatabase): UserPreferencesDao {
+        return db.userPreferencesDao()
     }
 }

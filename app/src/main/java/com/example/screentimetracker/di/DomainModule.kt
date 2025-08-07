@@ -18,6 +18,11 @@ import com.example.screentimetracker.domain.usecases.GetAchievementsUseCase
 import com.example.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
 import com.example.screentimetracker.domain.usecases.InitializeAchievementsUseCase
 import com.example.screentimetracker.domain.usecases.UpdateAchievementProgressUseCase
+import com.example.screentimetracker.domain.usecases.ProgressiveLimitsUseCase
+import com.example.screentimetracker.domain.usecases.UserPreferencesUseCase
+import com.example.screentimetracker.data.local.ProgressiveLimitDao
+import com.example.screentimetracker.data.local.ProgressiveMilestoneDao
+import com.example.screentimetracker.data.local.UserPreferencesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -123,5 +128,23 @@ object DomainModule {
     @Singleton
     fun provideUpdateAchievementProgressUseCase(repository: TrackerRepository): UpdateAchievementProgressUseCase {
         return UpdateAchievementProgressUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProgressiveLimitsUseCase(
+        progressiveLimitDao: ProgressiveLimitDao,
+        progressiveMilestoneDao: ProgressiveMilestoneDao,
+        trackerRepository: TrackerRepository
+    ): ProgressiveLimitsUseCase {
+        return ProgressiveLimitsUseCase(progressiveLimitDao, progressiveMilestoneDao, trackerRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesUseCase(
+        userPreferencesDao: UserPreferencesDao
+    ): UserPreferencesUseCase {
+        return UserPreferencesUseCase(userPreferencesDao)
     }
 }

@@ -40,6 +40,10 @@ interface AppSessionDao {
     // Get the latest end time for each package within a time range
     @Query("SELECT packageName, MAX(endTimeMillis) as lastOpenedTimestamp FROM app_session_events WHERE startTimeMillis >= :startTime AND endTimeMillis <= :endTime GROUP BY packageName")
     fun getLastOpenedTimestampsForAppsInRange(startTime: Long, endTime: Long): Flow<List<AppLastOpenedData>>
+    
+    // Suspend version for progressive limits calculation
+    @Query("SELECT * FROM app_session_events WHERE packageName = :packageName AND startTimeMillis >= :startTime AND endTimeMillis <= :endTime ORDER BY startTimeMillis DESC")
+    suspend fun getSessionsForAppInRangeOnce(packageName: String, startTime: Long, endTime: Long): List<AppSessionEvent>
 }
 
 

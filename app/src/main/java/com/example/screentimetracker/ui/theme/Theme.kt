@@ -8,6 +8,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.ColorScheme
+import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
+import com.example.screentimetracker.data.local.ThemeMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
@@ -15,7 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
+// Default Dark Color Scheme
+private val DefaultDarkColorScheme = darkColorScheme(
     primary = PlayfulPrimary,
     secondary = PlayfulSecondary,
     tertiary = LavenderPurple,
@@ -30,7 +34,40 @@ private val DarkColorScheme = darkColorScheme(
     onError = Purple80
 )
 
-private val LightColorScheme = lightColorScheme(
+// Colorful Dark Color Scheme
+private val ColorfulDarkColorScheme = darkColorScheme(
+    primary = ColorfulDarkPrimary,
+    secondary = ColorfulDarkSecondary,
+    tertiary = ColorfulDarkTertiary,
+    background = ColorfulDarkBackground,
+    surface = ColorfulDarkSurface,
+    error = ColorfulError,
+    onPrimary = androidx.compose.ui.graphics.Color.Black,
+    onSecondary = androidx.compose.ui.graphics.Color.Black,
+    onTertiary = androidx.compose.ui.graphics.Color.Black,
+    onBackground = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.87f),
+    onSurface = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.87f),
+    onError = androidx.compose.ui.graphics.Color.White
+)
+
+// Minimal Dark Color Scheme
+private val MinimalDarkColorScheme = darkColorScheme(
+    primary = MinimalDarkPrimary,
+    secondary = MinimalDarkSecondary,
+    tertiary = MinimalDarkTertiary,
+    background = MinimalDarkBackground,
+    surface = MinimalDarkSurface,
+    error = MinimalError,
+    onPrimary = androidx.compose.ui.graphics.Color.Black,
+    onSecondary = androidx.compose.ui.graphics.Color.Black,
+    onTertiary = androidx.compose.ui.graphics.Color.Black,
+    onBackground = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.87f),
+    onSurface = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.87f),
+    onError = androidx.compose.ui.graphics.Color.White
+)
+
+// Default Light Color Scheme
+private val DefaultLightColorScheme = lightColorScheme(
     primary = PlayfulPrimary,
     secondary = PlayfulSecondary,
     tertiary = VibrantOrange,
@@ -45,19 +82,70 @@ private val LightColorScheme = lightColorScheme(
     onError = Purple80
 )
 
+// Colorful Light Color Scheme
+private val ColorfulLightColorScheme = lightColorScheme(
+    primary = ColorfulPrimary,
+    secondary = ColorfulSecondary,
+    tertiary = ColorfulTertiary,
+    background = ColorfulBackground,
+    surface = ColorfulSurface,
+    error = ColorfulError,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    onTertiary = androidx.compose.ui.graphics.Color.White,
+    onBackground = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
+    onSurface = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
+    onError = androidx.compose.ui.graphics.Color.White
+)
+
+// Minimal Light Color Scheme
+private val MinimalLightColorScheme = lightColorScheme(
+    primary = MinimalPrimary,
+    secondary = MinimalSecondary,
+    tertiary = MinimalTertiary,
+    background = MinimalBackground,
+    surface = MinimalSurface,
+    error = MinimalError,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    onTertiary = androidx.compose.ui.graphics.Color.White,
+    onBackground = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
+    onSurface = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
+    onError = androidx.compose.ui.graphics.Color.White
+)
+
 @Composable
 fun ScreenTimeTrackerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    colorScheme: AppColorScheme = AppColorScheme.DEFAULT,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val darkTheme = when (themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
+    val materialColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+            when (colorScheme) {
+                AppColorScheme.COLORFUL -> ColorfulDarkColorScheme
+                AppColorScheme.MINIMAL -> MinimalDarkColorScheme
+                AppColorScheme.DEFAULT -> DefaultDarkColorScheme
+            }
+        }
+        else -> {
+            when (colorScheme) {
+                AppColorScheme.COLORFUL -> ColorfulLightColorScheme
+                AppColorScheme.MINIMAL -> MinimalLightColorScheme
+                AppColorScheme.DEFAULT -> DefaultLightColorScheme
+            }
+        }
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -69,8 +157,23 @@ fun ScreenTimeTrackerTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = materialColorScheme,
         typography = Typography,
+        content = content
+    )
+}
+
+// Backward compatibility wrapper
+@Composable
+fun ScreenTimeTrackerTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    ScreenTimeTrackerTheme(
+        themeMode = if (darkTheme) ThemeMode.DARK else ThemeMode.LIGHT,
+        colorScheme = AppColorScheme.DEFAULT,
+        dynamicColor = dynamicColor,
         content = content
     )
 }

@@ -33,3 +33,32 @@ val CategoryColors = listOf(
     Color(0xFF607D8B), // Blue Grey
     Color(0xFF009688)  // Teal
 )
+
+// Colorful Theme Colors - Bright and vibrant
+val ColorfulPrimary = Color(0xFFFF6B35) // Vibrant Orange
+val ColorfulSecondary = Color(0xFF4285F4) // Google Blue
+val ColorfulTertiary = Color(0xFF34A853) // Google Green
+val ColorfulBackground = Color(0xFFFFFBFE)
+val ColorfulSurface = Color(0xFFF7F2FA)
+val ColorfulError = Color(0xFFBA1A1A)
+
+// Minimal Theme Colors - Muted and subtle
+val MinimalPrimary = Color(0xFF6750A4) // Muted purple
+val MinimalSecondary = Color(0xFF625B71) // Grey purple
+val MinimalTertiary = Color(0xFF7D5260) // Muted pink
+val MinimalBackground = Color(0xFFFEFBFF)
+val MinimalSurface = Color(0xFFFEFBFF)
+val MinimalError = Color(0xFFBA1A1A)
+
+// Dark theme variants
+val ColorfulDarkPrimary = Color(0xFFFFB4AB)
+val ColorfulDarkSecondary = Color(0xFFBB86FC)
+val ColorfulDarkTertiary = Color(0xFF03DAC6)
+val ColorfulDarkBackground = Color(0xFF121212)
+val ColorfulDarkSurface = Color(0xFF1E1E1E)
+
+val MinimalDarkPrimary = Color(0xFFCFBCFF)
+val MinimalDarkSecondary = Color(0xFFCCC2DC)
+val MinimalDarkTertiary = Color(0xFFEFB8C8)
+val MinimalDarkBackground = Color(0xFF1C1B1F)
+val MinimalDarkSurface = Color(0xFF2B2930)

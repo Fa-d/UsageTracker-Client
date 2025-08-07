@@ -104,4 +104,7 @@ interface TrackerRepository {
 
     // --- Helper Methods for Wellness Calculation ---
     suspend fun getAppUsageInTimeRange(startTime: Long, endTime: Long): List<DailyAppSummary>
+    
+    // --- Progressive Limits Helper Methods ---
+    suspend fun getAverageAppUsageLast7Days(packageName: String): Long
 }
