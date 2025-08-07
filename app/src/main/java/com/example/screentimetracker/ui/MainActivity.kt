@@ -32,8 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.screentimetracker.services.AppUsageTrackingService
-import com.example.screentimetracker.ui.dashboard.DashboardViewModel
-import com.example.screentimetracker.ui.dashboard.ScreenTimeTracker
+import com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
+import com.example.screentimetracker.ui.dashboard.utils.ScreenTimeTracker
 import com.example.screentimetracker.ui.theme.ScreenTimeTrackerTheme
 import com.example.screentimetracker.utils.PermissionUtils
 import dagger.hilt.android.AndroidEntryPoint

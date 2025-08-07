@@ -25,81 +25,67 @@ fun PlayfulCard(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    elevation: Int = 4,
-    withAnimation: Boolean = true,
+    elevation: Int = 2,
+    withAnimation: Boolean = false, // Disabled by default for better accessibility
     gradientBackground: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    // Playful animations
-    val infiniteTransition = rememberInfiniteTransition(label = "playful_animation")
-    val animatedScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (withAnimation) 1.02f else 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOutCubic),
-            repeatMode = RepeatMode.Reverse
-        ), label = "scale_animation"
+    // Subtle, accessibility-friendly animations
+    val animatedElevation by animateFloatAsState(
+        targetValue = if (withAnimation) elevation + 2f else elevation.toFloat(),
+        animationSpec = tween(durationMillis = 300, easing = EaseInOutCubic),
+        label = "elevation_animation"
     )
-
-    val animatedRotation by infiniteTransition.animateFloat(
-        initialValue = -0.5f,
-        targetValue = if (withAnimation) 0.5f else 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = EaseInOutSine),
-            repeatMode = RepeatMode.Reverse
-        ), label = "rotation_animation"
+    
+    val animatedScale by animateFloatAsState(
+        targetValue = if (withAnimation) 1.02f else 1f,
+        animationSpec = tween(durationMillis = 200, easing = EaseInOutCubic),
+        label = "scale_animation"
     )
 
     val cardModifier = if (gradientBackground) {
         modifier
             .scale(animatedScale)
-            .rotate(animatedRotation)
             .shadow(
-                elevation = elevation.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = backgroundColor.copy(alpha = 0.3f),
-                spotColor = backgroundColor.copy(alpha = 0.3f)
+                elevation = animatedElevation.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.15f),
+                spotColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.25f)
             )
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
                         backgroundColor,
-                        backgroundColor.copy(alpha = 0.7f),
-                        backgroundColor.copy(alpha = 0.9f)
+                        backgroundColor.copy(alpha = 0.8f)
                     )
                 ),
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(16.dp)
             )
             .border(
                 width = 1.dp,
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        contentColor.copy(alpha = 0.1f),
-                        contentColor.copy(alpha = 0.3f)
-                    )
-                ),
-                shape = RoundedCornerShape(20.dp)
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(16.dp)
             )
     } else {
         modifier
             .scale(animatedScale)
             .shadow(
-                elevation = elevation.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = backgroundColor.copy(alpha = 0.2f),
-                spotColor = backgroundColor.copy(alpha = 0.2f)
+                elevation = animatedElevation.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.15f),
+                spotColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.25f)
             )
     }
 
     Card(
         modifier = cardModifier,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (gradientBackground) Color.Transparent else backgroundColor
         )
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(16.dp),
             content = content
         )
     }
@@ -117,11 +103,11 @@ fun GradientCard(
         modifier = modifier
             .shadow(
                 elevation = elevation.dp,
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(16.dp),
                 ambientColor = gradientColors.first().copy(alpha = 0.3f),
                 spotColor = gradientColors.first().copy(alpha = 0.3f)
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -144,8 +130,8 @@ fun StatCard(
     title: String,
     value: String,
     icon: @Composable () -> Unit,
-    backgroundColor: Color = PlayfulPrimary.copy(alpha = 0.1f),
-    contentColor: Color = PlayfulPrimary,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     subtitle: String? = null
 ) {
     // Pulsing animation for the icon
@@ -172,7 +158,7 @@ fun StatCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "📊 $title",
+                    text = title,
                     style = MaterialTheme.typography.bodyMedium,
                     color = contentColor.copy(alpha = 0.8f)
                 )
@@ -185,7 +171,7 @@ fun StatCard(
                 if (subtitle != null) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "✨ $subtitle",
+                        text = subtitle,
                         style = MaterialTheme.typography.bodySmall,
                         color = contentColor.copy(alpha = 0.7f)
                     )

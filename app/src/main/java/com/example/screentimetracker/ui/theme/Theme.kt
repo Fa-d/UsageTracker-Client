@@ -72,14 +72,18 @@ private val DefaultLightColorScheme = lightColorScheme(
     secondary = PlayfulSecondary,
     tertiary = VibrantOrange,
     background = Purple80.copy(alpha = 0.05f),
-    surface = Purple40.copy(alpha = 0.02f),
+    surface = androidx.compose.ui.graphics.Color.White,
     error = ErrorColor,
-    onPrimary = Purple80,
-    onSecondary = Purple80,
-    onTertiary = Purple80,
-    onBackground = Purple40,
-    onSurface = Purple40,
-    onError = Purple80
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    onTertiary = androidx.compose.ui.graphics.Color.White,
+    onBackground = AccessibleTextOnLight,
+    onSurface = AccessibleTextOnLight,
+    onError = androidx.compose.ui.graphics.Color.White,
+    surfaceVariant = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f),
+    onSurfaceVariant = AccessibleTextSecondary,
+    outline = AccessibleTextTertiary,
+    outlineVariant = AccessibleTextTertiary.copy(alpha = 0.5f)
 )
 
 // Colorful Light Color Scheme
@@ -90,12 +94,16 @@ private val ColorfulLightColorScheme = lightColorScheme(
     background = ColorfulBackground,
     surface = ColorfulSurface,
     error = ColorfulError,
-    onPrimary = androidx.compose.ui.graphics.Color.White,
-    onSecondary = androidx.compose.ui.graphics.Color.White,
-    onTertiary = androidx.compose.ui.graphics.Color.White,
-    onBackground = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
-    onSurface = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
-    onError = androidx.compose.ui.graphics.Color.White
+    onPrimary = ColorfulOnPrimary,
+    onSecondary = ColorfulOnSecondary,
+    onTertiary = ColorfulOnTertiary,
+    onBackground = ColorfulOnBackground,
+    onSurface = ColorfulOnSurface,
+    onError = androidx.compose.ui.graphics.Color.White,
+    surfaceVariant = ColorfulSurface.copy(alpha = 0.8f),
+    onSurfaceVariant = AccessibleTextSecondary,
+    outline = AccessibleTextTertiary,
+    outlineVariant = AccessibleTextTertiary.copy(alpha = 0.5f)
 )
 
 // Minimal Light Color Scheme
@@ -106,12 +114,16 @@ private val MinimalLightColorScheme = lightColorScheme(
     background = MinimalBackground,
     surface = MinimalSurface,
     error = MinimalError,
-    onPrimary = androidx.compose.ui.graphics.Color.White,
-    onSecondary = androidx.compose.ui.graphics.Color.White,
-    onTertiary = androidx.compose.ui.graphics.Color.White,
-    onBackground = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
-    onSurface = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.87f),
-    onError = androidx.compose.ui.graphics.Color.White
+    onPrimary = MinimalOnPrimary,
+    onSecondary = MinimalOnSecondary,
+    onTertiary = MinimalOnTertiary,
+    onBackground = MinimalOnBackground,
+    onSurface = MinimalOnSurface,
+    onError = androidx.compose.ui.graphics.Color.White,
+    surfaceVariant = MinimalSurface.copy(alpha = 0.8f),
+    onSurfaceVariant = AccessibleTextSecondary,
+    outline = AccessibleTextTertiary,
+    outlineVariant = AccessibleTextTertiary.copy(alpha = 0.5f)
 )
 
 @Composable

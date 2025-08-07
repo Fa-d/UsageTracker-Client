@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.screentimetracker.ui.dashboard.DashboardViewModel
+import com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
 import com.example.screentimetracker.utils.millisToReadableTime
 
 @OptIn(ExperimentalMaterial3Api::class)
