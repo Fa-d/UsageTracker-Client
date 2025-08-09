@@ -54,6 +54,7 @@ import com.example.screentimetracker.ui.dashboard.cards.ChallengeCard
 import com.example.screentimetracker.ui.dashboard.cards.FocusSessionCard
 import com.example.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
 import com.example.screentimetracker.ui.dashboard.cards.WellnessCard
+import com.example.screentimetracker.ui.dashboard.cards.HabitCard
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.dashboard.utils.getCategoryDataFromAppUsages
 import com.example.screentimetracker.ui.dashboard.utils.LocalDashboardViewModel
@@ -71,7 +72,8 @@ fun DashboardView(
     onCategoryExpand: (Int?) -> Unit, 
     state: DashboardState,
     achievements: StateFlow<List<com.example.screentimetracker.domain.model.Achievement>>,
-    wellnessScore: StateFlow<com.example.screentimetracker.domain.model.WellnessScore?>
+    wellnessScore: StateFlow<com.example.screentimetracker.domain.model.WellnessScore?>,
+    onNavigateToHabits: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -185,6 +187,14 @@ fun DashboardView(
             wellnessScore = wellnessScore.value,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
+
+        // Habits Card
+        onNavigateToHabits?.let { navigateToHabits ->
+            HabitCard(
+                onNavigateToHabits = navigateToHabits,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
 
         // Achievements Card
         AchievementsCard(

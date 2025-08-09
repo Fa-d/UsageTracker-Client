@@ -38,6 +38,7 @@ fun PlayfulBottomNav(
         NavItem("dashboard_route", "Dashboard", Icons.Filled.Dashboard, MaterialTheme.colorScheme.primary),
         NavItem("timeline_route", "Timeline", Icons.Filled.Timeline, MaterialTheme.colorScheme.secondary),
         NavItem("goals_route", "Goals", Icons.Filled.EmojiEvents, MaterialTheme.colorScheme.tertiary),
+        NavItem("habits_route", "Habits", Icons.Filled.FitnessCenter, MaterialTheme.colorScheme.tertiary),
         NavItem("settings_route", "Settings", Icons.Filled.Settings, MaterialTheme.colorScheme.secondary)
     )
 

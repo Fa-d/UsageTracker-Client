@@ -36,6 +36,7 @@ import com.example.screentimetracker.ui.limiter.screens.LimiterConfigScreen
 import com.example.screentimetracker.ui.privacy.screens.PrivacySettingsScreen
 import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScreen
 import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
+import com.example.screentimetracker.ui.habits.screens.HabitsScreen
 import com.example.screentimetracker.ui.theme.PlayfulPrimary
 import com.example.screentimetracker.ui.theme.VibrantOrange
 
@@ -134,7 +135,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 onCategoryExpand = { expandedCategory = it },
                                 state = state,
                                 achievements = viewModel.achievements,
-                                wellnessScore = viewModel.wellnessScore
+                                wellnessScore = viewModel.wellnessScore,
+                                onNavigateToHabits = { navController.navigate("habits_route") }
                             )
                         }
 
@@ -206,6 +208,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                             ReplacementActivitiesScreen(
                                 onBackPressed = { navController.popBackStack() }
                             )
+                        }
+                        composable("habits_route") {
+                            HabitsScreen()
                         }
                     }
                 }

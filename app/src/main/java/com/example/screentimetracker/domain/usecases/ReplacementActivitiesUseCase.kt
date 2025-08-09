@@ -253,6 +253,7 @@ class ReplacementActivitiesUseCase @Inject constructor(
             // This is a simplified version since we don't have separate completion table
             // In a full implementation, we'd have a separate completions table
             emptyList<ActivityCompletion>()
+
         } catch (e: Exception) {
             emptyList()
         }
