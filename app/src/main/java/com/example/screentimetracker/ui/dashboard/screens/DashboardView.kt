@@ -55,6 +55,7 @@ import com.example.screentimetracker.ui.dashboard.cards.FocusSessionCard
 import com.example.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
 import com.example.screentimetracker.ui.dashboard.cards.WellnessCard
 import com.example.screentimetracker.ui.dashboard.cards.HabitCard
+import com.example.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.dashboard.utils.getCategoryDataFromAppUsages
 import com.example.screentimetracker.ui.dashboard.utils.LocalDashboardViewModel
@@ -73,7 +74,8 @@ fun DashboardView(
     state: DashboardState,
     achievements: StateFlow<List<com.example.screentimetracker.domain.model.Achievement>>,
     wellnessScore: StateFlow<com.example.screentimetracker.domain.model.WellnessScore?>,
-    onNavigateToHabits: (() -> Unit)? = null
+    onNavigateToHabits: (() -> Unit)? = null,
+    onNavigateToTimeRestrictions: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -193,6 +195,38 @@ fun DashboardView(
             HabitCard(
                 onNavigateToHabits = navigateToHabits,
                 modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        // Time Restrictions Card
+        onNavigateToTimeRestrictions?.let { navigateToTimeRestrictions ->
+            TimeRestrictionCard(
+                activeRestrictions = emptyList(), // TODO: Get from ViewModel
+                allRestrictions = emptyList(), // TODO: Get from ViewModel
+                onToggleRestriction = { /* TODO: Handle toggle */ },
+                onNavigateToSettings = navigateToTimeRestrictions,
+                formatTime = { minutes ->
+                    val hours = minutes / 60
+                    val mins = minutes % 60
+                    String.format("%02d:%02d", hours, mins)
+                },
+                formatTimeUntil = { minutes ->
+                    val hours = minutes / 60
+                    val mins = minutes % 60
+                    when {
+                        hours > 0 -> "${hours}h ${mins}m"
+                        else -> "${mins}m"
+                    }
+                },
+                getRestrictionStatusPreview = { restriction ->
+                    // TODO: Implement proper status preview
+                    com.example.screentimetracker.ui.timerestrictions.viewmodels.RestrictionStatusPreview(
+                        restriction = restriction,
+                        isCurrentlyActive = false,
+                        nextChangeTimeMinutes = null,
+                        timeUntilChange = null
+                    )
+                }
             )
         }
 

@@ -53,7 +53,7 @@ class SmartGoalSettingUseCase @Inject constructor(
                 GoalRecommendation(
                     goalType = DAILY_SCREEN_TIME,
                     title = "Reduce Daily Screen Time",
-                    description = "Based on your usage, try reducing daily screen time by 10%",
+                    description = "Based on your usage, try reducing daily scredid en time by 10%",
                     targetValue = recommendedScreenTime,
                     currentAverage = avgDailyScreenTime,
                     confidence = calculateConfidence(sessionData.size),

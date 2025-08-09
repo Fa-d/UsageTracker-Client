@@ -38,6 +38,7 @@ import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScr
 import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import com.example.screentimetracker.ui.habits.screens.HabitsScreen
 import com.example.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
+import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
 import com.example.screentimetracker.ui.theme.PlayfulPrimary
 import com.example.screentimetracker.ui.theme.VibrantOrange
 
@@ -137,7 +138,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 state = state,
                                 achievements = viewModel.achievements,
                                 wellnessScore = viewModel.wellnessScore,
-                                onNavigateToHabits = { navController.navigate("habits_route") }
+                                onNavigateToHabits = { navController.navigate("habits_route") },
+                                onNavigateToTimeRestrictions = { navController.navigate("time_restrictions_route") }
                             )
                         }
 
@@ -219,6 +221,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("smart_goals_route") {
                             SmartGoalsScreen()
+                        }
+                        composable("time_restrictions_route") {
+                            TimeRestrictionsScreen()
                         }
                     }
                 }
