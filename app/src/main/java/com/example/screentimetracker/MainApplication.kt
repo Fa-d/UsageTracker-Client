@@ -9,6 +9,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.screentimetracker.domain.usecases.InitializeAppUseCase
 import com.example.screentimetracker.receivers.ScreenUnlockReceiver
+import com.example.screentimetracker.services.NotificationScheduler
 import com.example.screentimetracker.workers.DailyAggregationWorker
 import com.example.screentimetracker.workers.HabitTrackerWorker
 import dagger.hilt.android.HiltAndroidApp
@@ -20,6 +21,9 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory // Inject HiltWorkerFactory
+    
+    @Inject
+    lateinit var notificationScheduler: NotificationScheduler
 
 
     override val workManagerConfiguration: Configuration
@@ -34,6 +38,7 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
         initializeAppUseCase()
         scheduleDailyAggregationWork()
         scheduleHabitTrackerWork()
+        scheduleWeeklyReportNotifications()
         ScreenUnlockReceiver.register(this)
     }
 
@@ -66,6 +71,11 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
             workRequest
         )
         Log.d("MainApplication", "Habit tracker worker scheduled (hourly).")
+    }
+
+    private fun scheduleWeeklyReportNotifications() {
+        notificationScheduler.schedulePeriodicWeeklyReports()
+        Log.d("MainApplication", "Weekly report notifications scheduled.")
     }
 
     // Optional: Helper to calculate delay to run worker around midnight
