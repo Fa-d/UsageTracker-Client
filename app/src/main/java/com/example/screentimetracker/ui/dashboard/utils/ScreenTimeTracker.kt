@@ -37,6 +37,7 @@ import com.example.screentimetracker.ui.privacy.screens.PrivacySettingsScreen
 import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScreen
 import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import com.example.screentimetracker.ui.habits.screens.HabitsScreen
+import com.example.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
 import com.example.screentimetracker.ui.theme.PlayfulPrimary
 import com.example.screentimetracker.ui.theme.VibrantOrange
 
@@ -144,7 +145,11 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                             TimelineScreen()
                         }
                         composable("goals_route") {
-                            GoalsView(focusMode) { focusMode = it }
+                            GoalsView(
+                                focusMode = focusMode,
+                                onFocusModeChange = { focusMode = it },
+                                onNavigateToSmartGoals = { navController.navigate("smart_goals_route") }
+                            )
                         }
                         composable("settings_route") {
                             SettingsView(
@@ -211,6 +216,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("habits_route") {
                             HabitsScreen()
+                        }
+                        composable("smart_goals_route") {
+                            SmartGoalsScreen()
                         }
                     }
                 }

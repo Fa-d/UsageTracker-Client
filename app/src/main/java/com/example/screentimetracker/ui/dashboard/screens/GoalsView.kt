@@ -41,14 +41,19 @@ import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
 import com.example.screentimetracker.ui.limiter.viewmodels.LimiterConfigViewModel
 import com.example.screentimetracker.ui.limiter.screens.AppLimitSettingDialog
+import com.example.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
+import com.example.screentimetracker.ui.smartgoals.components.GoalRecommendationCard
 import com.example.screentimetracker.ui.theme.*
 
 @Composable
 fun GoalsView(
-    focusMode: Boolean, onFocusModeChange: (Boolean) -> Unit
+    focusMode: Boolean, onFocusModeChange: (Boolean) -> Unit,
+    onNavigateToSmartGoals: (() -> Unit)? = null
 ) {
     val limiterViewModel: LimiterConfigViewModel = hiltViewModel()
     val limiterState by limiterViewModel.uiState
+    val smartGoalsViewModel: SmartGoalsViewModel = hiltViewModel()
+    val smartGoalsState by smartGoalsViewModel.uiState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -232,6 +237,83 @@ fun GoalsView(
                 }
             }
         }
+        
+        // Smart Goal Recommendations Section
+        PlayfulCard(
+            backgroundColor = SkyBlue.copy(alpha = 0.1f),
+            gradientBackground = true
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            "🤖 Smart Recommendations",
+                            fontWeight = FontWeight.Bold,
+                            color = SkyBlue
+                        )
+                        Text(
+                            "AI-powered goal suggestions",
+                            fontSize = 13.sp,
+                            color = SkyBlue.copy(alpha = 0.7f)
+                        )
+                    }
+                    androidx.compose.material3.TextButton(
+                        onClick = { 
+                            onNavigateToSmartGoals?.invoke() ?: smartGoalsViewModel.generateAIRecommendations() 
+                        }
+                    ) {
+                        Text("View All", color = SkyBlue)
+                    }
+                }
+                
+                if (smartGoalsState.recommendations.isNotEmpty()) {
+                    // Show first recommendation as preview
+                    val firstRecommendation = smartGoalsState.recommendations.first()
+                    GoalRecommendationCard(
+                        recommendation = firstRecommendation,
+                        onAccept = { smartGoalsViewModel.acceptRecommendation(firstRecommendation) },
+                        onReject = { smartGoalsViewModel.rejectRecommendation(firstRecommendation) }
+                    )
+                    
+                    if (smartGoalsState.recommendations.size > 1) {
+                        Text(
+                            "...and ${smartGoalsState.recommendations.size - 1} more recommendations available",
+                            fontSize = 12.sp,
+                            color = SkyBlue.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                } else if (smartGoalsState.isLoadingRecommendations) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = SkyBlue
+                        )
+                        Text(
+                            "Analyzing your usage patterns...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SkyBlue.copy(alpha = 0.7f)
+                        )
+                    }
+                } else {
+                    Text(
+                        "Tap 'View All' to get personalized goal recommendations based on your usage patterns.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = SkyBlue.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+            }
+        }
+        
         // App Limits - Enhanced Section
         PlayfulCard(
             backgroundColor = VibrantOrange.copy(alpha = 0.1f),
