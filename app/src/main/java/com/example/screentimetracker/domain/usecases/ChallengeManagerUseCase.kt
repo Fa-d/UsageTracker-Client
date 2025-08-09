@@ -18,8 +18,6 @@ class ChallengeManagerUseCase @Inject constructor(
 ) {
     companion object {
         private const val TAG = "ChallengeManagerUseCase"
-        
-        // Challenge IDs matching requirements.md
         const val PHONE_FREE_MEAL = "phone_free_meal"
         const val DIGITAL_SUNSET = "digital_sunset"
         const val FOCUS_MARATHON = "focus_marathon"

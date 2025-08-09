@@ -43,7 +43,6 @@ class FocusSessionManagerUseCase @Inject constructor(
             currentSessionId = sessionId
             currentSessionStartTime = startTime
             
-            // Show notification
             notificationManager.showFocusSessionStart(durationMinutes)
             
             appLogger.i(TAG, "Focus session started: ${durationMinutes} minutes, blocking ${appsToBlock.size} apps")

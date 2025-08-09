@@ -23,6 +23,8 @@ import com.example.screentimetracker.domain.usecases.UserPreferencesUseCase
 import com.example.screentimetracker.data.local.ProgressiveLimitDao
 import com.example.screentimetracker.data.local.ProgressiveMilestoneDao
 import com.example.screentimetracker.data.local.UserPreferencesDao
+import com.example.screentimetracker.utils.ui.AppNotificationManager
+import com.example.screentimetracker.utils.logger.AppLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -126,8 +128,12 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideUpdateAchievementProgressUseCase(repository: TrackerRepository): UpdateAchievementProgressUseCase {
-        return UpdateAchievementProgressUseCase(repository)
+    fun provideUpdateAchievementProgressUseCase(
+        repository: TrackerRepository,
+        notificationManager: AppNotificationManager,
+        appLogger: AppLogger
+    ): UpdateAchievementProgressUseCase {
+        return UpdateAchievementProgressUseCase(repository, notificationManager, appLogger)
     }
 
     @Provides

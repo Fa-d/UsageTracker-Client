@@ -26,7 +26,6 @@ class GetInstalledAppsUseCase @Inject constructor(
         val installedApps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             pm.queryIntentActivities(mainIntent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong()))
         } else {
-            @Suppress("DEPRECATION")
             pm.queryIntentActivities(mainIntent, PackageManager.MATCH_ALL)
         }
 

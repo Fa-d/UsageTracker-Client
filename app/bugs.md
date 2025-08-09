@@ -10,3 +10,4 @@ you are a very expert programmer. You have the best sense of UX, and you are com
 app/src/main/java/com/example/screentimetracker/requirements.md understand is very clearly the checked ones are already completed.  you have to refactor the project according to this requiremnt. implement each section
 and check off those and complete the full requirement. Generate test cases while generating code,and execute them.  so you know your solutions are correct.
 
+#ChallengeManagerWorker not used anywhere
