@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import com.example.screentimetracker.domain.usecases.InitializeAppUseCase
 import com.example.screentimetracker.receivers.ScreenUnlockReceiver
 import com.example.screentimetracker.workers.DailyAggregationWorker
+import com.example.screentimetracker.workers.HabitTrackerWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -32,6 +33,7 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
         val initializeAppUseCase = InitializeAppUseCase(this, WorkManager.getInstance(this))
         initializeAppUseCase()
         scheduleDailyAggregationWork()
+        scheduleHabitTrackerWork()
         ScreenUnlockReceiver.register(this)
     }
 
@@ -49,6 +51,21 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
             workRequest
         )
         Log.d("MainApplication", "Daily aggregation worker scheduled.")
+    }
+
+    private fun scheduleHabitTrackerWork() {
+        val workRequest = PeriodicWorkRequestBuilder<HabitTrackerWorker>(
+            repeatInterval = 1, // Repeat once per hour
+            repeatIntervalTimeUnit = TimeUnit.HOURS
+        )
+        .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            HabitTrackerWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP, // Keep existing work if it's already scheduled
+            workRequest
+        )
+        Log.d("MainApplication", "Habit tracker worker scheduled (hourly).")
     }
 
     // Optional: Helper to calculate delay to run worker around midnight

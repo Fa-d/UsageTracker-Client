@@ -65,6 +65,7 @@ class HabitTrackerViewModelTest {
     private fun setupDefaultMocks() {
         every { mockHabitTrackerUseCase.getTodaysHabits() } returns flowOf(sampleHabits)
         coEvery { mockHabitTrackerUseCase.initializeDigitalWellnessHabits() } just Runs
+        coEvery { mockHabitTrackerUseCase.checkAndCompleteHabitsAutomatically() } just Runs
         coEvery { mockHabitTrackerUseCase.completeHabit(any()) } returns true
         coEvery { mockHabitTrackerUseCase.createCustomHabit(any(), any(), any()) } returns 1L
         coEvery { mockHabitTrackerUseCase.resetHabitStreak(any()) } returns true
@@ -439,5 +440,73 @@ class HabitTrackerViewModelTest {
         val state = viewModel.uiState.first()
         assertFalse(state.isLoading)
         assertTrue(state.error?.contains("Failed to load habits") == true)
+    }
+
+    // ===== NEW TESTS FOR AUTOMATIC DETECTION =====
+    
+    @Test
+    fun `initialization should call checkAndCompleteHabitsAutomatically`() = runTest {
+        // When ViewModel is initialized (already done in setup)
+        
+        // Then
+        coVerify { mockHabitTrackerUseCase.checkAndCompleteHabitsAutomatically() }
+    }
+
+    @Test
+    fun `checkHabitsAutomatically should call use case method`() = runTest {
+        // When
+        viewModel.checkHabitsAutomatically()
+        advanceUntilIdle()
+
+        // Then
+        coVerify { mockHabitTrackerUseCase.checkAndCompleteHabitsAutomatically() }
+    }
+
+    @Test
+    fun `checkHabitsAutomatically should handle errors gracefully`() = runTest {
+        // Given
+        coEvery { mockHabitTrackerUseCase.checkAndCompleteHabitsAutomatically() } throws RuntimeException("Auto check failed")
+
+        // When
+        viewModel.checkHabitsAutomatically()
+        advanceUntilIdle()
+
+        // Then
+        val state = viewModel.uiState.first()
+        assertTrue(state.error?.contains("Failed to check habits automatically") == true)
+    }
+
+    @Test
+    fun `manual completeHabit should still work for override cases`() = runTest {
+        // Given
+        val habitId = "phone_free_social" // This one allows manual completion
+        val manualHabit = sampleHabits.first { !it.isCompleted }.copy(habitId = habitId)
+        val habitsWithManual = listOf(manualHabit)
+        every { mockHabitTrackerUseCase.getTodaysHabits() } returns flowOf(habitsWithManual)
+        
+        // Recreate viewModel to get updated habits
+        viewModel = HabitTrackerViewModel(mockHabitTrackerUseCase)
+
+        // When
+        viewModel.completeHabit(habitId)
+        advanceUntilIdle()
+
+        // Then
+        coVerify { mockHabitTrackerUseCase.completeHabit(habitId) }
+        
+        val state = viewModel.uiState.first()
+        assertNotNull(state.completionCelebration)
+        assertEquals(manualHabit.habitName, state.completionCelebration?.habitName)
+    }
+
+    @Test
+    fun `automatic detection should be called on ViewModel creation`() = runTest {
+        // Given - fresh ViewModel creation
+        val freshViewModel = HabitTrackerViewModel(mockHabitTrackerUseCase)
+        advanceUntilIdle()
+
+        // Then - automatic detection should be called during initialization
+        coVerify(exactly = 2) { mockHabitTrackerUseCase.checkAndCompleteHabitsAutomatically() }
+        // Called twice: once for original viewModel in setup, once for freshViewModel
     }
 }

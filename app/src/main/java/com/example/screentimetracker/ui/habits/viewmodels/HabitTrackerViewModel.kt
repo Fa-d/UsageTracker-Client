@@ -47,6 +47,7 @@ class HabitTrackerViewModel @Inject constructor(
     init {
         loadTodaysHabits()
         initializeHabits()
+        checkHabitsAutomatically()
     }
 
     private fun initializeHabits() {
@@ -56,6 +57,21 @@ class HabitTrackerViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to initialize habits: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+
+    /**
+     * NEW: Automatically check and complete habits based on user behavior
+     */
+    fun checkHabitsAutomatically() {
+        viewModelScope.launch {
+            try {
+                habitTrackerUseCase.checkAndCompleteHabitsAutomatically()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to check habits automatically: ${e.localizedMessage}"
                 )
             }
         }
@@ -80,6 +96,10 @@ class HabitTrackerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Manual habit completion - mainly for manual override/edge cases
+     * Most habits should be completed automatically by checkHabitsAutomatically()
+     */
     fun completeHabit(habitId: String) {
         viewModelScope.launch {
             try {

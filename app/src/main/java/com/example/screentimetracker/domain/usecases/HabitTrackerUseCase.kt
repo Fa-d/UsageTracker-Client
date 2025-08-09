@@ -14,7 +14,9 @@ import javax.inject.Singleton
 class HabitTrackerUseCase @Inject constructor(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
-    private val appLogger: AppLogger
+    private val appLogger: AppLogger,
+    private val focusSessionManagerUseCase: FocusSessionManagerUseCase,
+    private val getDashboardDataUseCase: GetDashboardDataUseCase
 ) {
     companion object {
         private const val TAG = "HabitTrackerUseCase"
@@ -246,6 +248,211 @@ class HabitTrackerUseCase @Inject constructor(
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to create custom habit: $habitName", e)
             throw e
+        }
+    }
+
+    /**
+     * NEW: Automatic habit detection based on actual user behavior
+     * This method should be called periodically (e.g., every hour or when app resumes)
+     * to automatically complete habits when user achieves the behavior
+     */
+    suspend fun checkAndCompleteHabitsAutomatically() {
+        try {
+            val today = getTodayStart()
+            val todaysHabits = repository.getHabitsForDate(today).first()
+            
+            // Check each habit type for automatic completion
+            todaysHabits.forEach { habit ->
+                if (!habit.isCompleted) {
+                    when (habit.habitId) {
+                        FOCUS_TIME -> checkFocusTimeHabit(habit)
+                        MORNING_NO_PHONE -> checkMorningNoPhoneHabit(habit)
+                        BEDTIME_ROUTINE -> checkBedtimeRoutineHabit(habit)
+                        BREAK_EVERY_HOUR -> checkBreakEveryHourHabit(habit)
+                        MINDFUL_EATING -> checkMindfulEatingHabit(habit)
+                        // PHONE_FREE_SOCIAL -> manual for now, could be location-based
+                    }
+                }
+            }
+            
+            appLogger.i(TAG, "Completed automatic habit checking")
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check habits automatically", e)
+        }
+    }
+
+    /**
+     * Auto-complete FOCUS_TIME habit when user completes 25+ minute focus session
+     */
+    private suspend fun checkFocusTimeHabit(habit: HabitTracker) {
+        try {
+            val today = getTodayStart()
+            val todaysFocusSessions = focusSessionManagerUseCase.getFocusSessionsForDate(today)
+            
+            // Check if user has completed at least one successful focus session of 25+ minutes
+            val hasSuccessfulSession = todaysFocusSessions.any { session ->
+                session.wasSuccessful && session.actualDurationMillis >= (25 * 60 * 1000L)
+            }
+            
+            if (hasSuccessfulSession) {
+                autoCompleteHabit(habit, "Completed 25+ minute focus session")
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check focus time habit", e)
+        }
+    }
+
+    /**
+     * Auto-complete MORNING_NO_PHONE habit if no phone usage in first hour after typical wake time
+     */
+    private suspend fun checkMorningNoPhoneHabit(habit: HabitTracker) {
+        try {
+            val today = getTodayStart()
+            
+            // Assume typical wake time is 7 AM (could be made configurable)
+            val wakeTime = today + (7 * 60 * 60 * 1000L) // 7 AM
+            val firstHourEnd = wakeTime + (60 * 60 * 1000L) // 8 AM
+            
+            // If it's past 8 AM, check if there was usage in the first hour
+            val now = System.currentTimeMillis()
+            if (now >= firstHourEnd) {
+                val dashboardData = getDashboardDataUseCase().first()
+                
+                // Check if any app was used between 7-8 AM
+                val hadMorningUsage = dashboardData.appDetailsToday.any { appData ->
+                    appData.lastOpenedTimestamp in wakeTime..firstHourEnd && appData.totalDurationMillis > 0
+                }
+                
+                if (!hadMorningUsage) {
+                    autoCompleteHabit(habit, "No phone usage detected in first hour after waking")
+                }
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check morning no phone habit", e)
+        }
+    }
+
+    /**
+     * Auto-complete BEDTIME_ROUTINE habit if no phone usage 1 hour before typical bedtime
+     */
+    private suspend fun checkBedtimeRoutineHabit(habit: HabitTracker) {
+        try {
+            val today = getTodayStart()
+            
+            // Assume typical bedtime is 10 PM (could be made configurable)
+            val bedtime = today + (22 * 60 * 60 * 1000L) // 10 PM
+            val digitalSunsetStart = bedtime - (60 * 60 * 1000L) // 9 PM
+            
+            // If it's past bedtime, check if there was usage in the hour before
+            val now = System.currentTimeMillis()
+            if (now >= bedtime) {
+                val dashboardData = getDashboardDataUseCase().first()
+                
+                // Check if any app was used between 9-10 PM
+                val hadPreBedtimeUsage = dashboardData.appDetailsToday.any { appData ->
+                    appData.lastOpenedTimestamp in digitalSunsetStart..bedtime && appData.totalDurationMillis > 0
+                }
+                
+                if (!hadPreBedtimeUsage) {
+                    autoCompleteHabit(habit, "No phone usage detected 1 hour before bedtime")
+                }
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check bedtime routine habit", e)
+        }
+    }
+
+    /**
+     * Auto-complete BREAK_EVERY_HOUR habit if usage shows regular hourly breaks
+     */
+    private suspend fun checkBreakEveryHourHabit(habit: HabitTracker) {
+        try {
+            // This is more complex - need to analyze usage patterns throughout the day
+            // For now, simplified: check if user has had at least 4 breaks of 5+ minutes
+            val today = getTodayStart()
+            val now = System.currentTimeMillis()
+            
+            // Only check after 5 PM to see full day pattern
+            val afternoonCheck = today + (17 * 60 * 60 * 1000L) // 5 PM
+            if (now >= afternoonCheck) {
+                val dashboardData = getDashboardDataUseCase().first()
+                val totalUsageTime = dashboardData.totalScreenTimeFromSessionsToday
+                val totalAppsUsed = dashboardData.appDetailsToday.size
+                
+                // Heuristic: If total usage < 6 hours and used multiple apps (indicating breaks)
+                // This is simplified - real implementation would analyze session gaps
+                if (totalUsageTime < (6 * 60 * 60 * 1000L) && totalAppsUsed >= 3) {
+                    autoCompleteHabit(habit, "Usage pattern suggests regular breaks taken")
+                }
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check break every hour habit", e)
+        }
+    }
+
+    /**
+     * Auto-complete MINDFUL_EATING habit if no phone usage during typical meal times
+     */
+    private suspend fun checkMindfulEatingHabit(habit: HabitTracker) {
+        try {
+            val today = getTodayStart()
+            val now = System.currentTimeMillis()
+            
+            // Check after dinner time (8 PM) to see if all meals were phone-free
+            val dinnerEnd = today + (20 * 60 * 60 * 1000L) // 8 PM
+            if (now >= dinnerEnd) {
+                val dashboardData = getDashboardDataUseCase().first()
+                
+                // Define meal time ranges (could be made configurable)
+                val breakfastRange = (today + 8 * 60 * 60 * 1000L) to (today + 9 * 60 * 60 * 1000L) // 8-9 AM
+                val lunchRange = (today + 12 * 60 * 60 * 1000L) to (today + 13 * 60 * 60 * 1000L) // 12-1 PM  
+                val dinnerRange = (today + 18 * 60 * 60 * 1000L) to (today + 19 * 60 * 60 * 1000L) // 6-7 PM
+                
+                val mealRanges = listOf(breakfastRange, lunchRange, dinnerRange)
+                
+                // Check if any app was used during meal times
+                val hadMealTimeUsage = dashboardData.appDetailsToday.any { appData ->
+                    mealRanges.any { (start, end) ->
+                        appData.lastOpenedTimestamp in start..end && appData.totalDurationMillis > 0
+                    }
+                }
+                
+                if (!hadMealTimeUsage) {
+                    autoCompleteHabit(habit, "No phone usage detected during meal times")
+                }
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to check mindful eating habit", e)
+        }
+    }
+
+    /**
+     * Internal method to automatically complete a habit with celebration
+     */
+    private suspend fun autoCompleteHabit(habit: HabitTracker, reason: String) {
+        try {
+            val newStreak = habit.currentStreak + 1
+            val newBestStreak = maxOf(newStreak, habit.bestStreak)
+            
+            val updatedHabit = habit.copy(
+                isCompleted = true,
+                currentStreak = newStreak,
+                bestStreak = newBestStreak,
+                completedAt = System.currentTimeMillis()
+            )
+            
+            repository.updateHabit(updatedHabit)
+            
+            // Show automatic completion notification
+            notificationManager.showMotivationBoost(
+                "🎉 Habit Auto-Completed: '${habit.habitName}'! " +
+                "Streak: $newStreak days. Reason: $reason"
+            )
+            
+            appLogger.i(TAG, "Auto-completed habit: ${habit.habitId}, reason: $reason, new streak: $newStreak")
+            
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Failed to auto-complete habit: ${habit.habitId}", e)
         }
     }
 

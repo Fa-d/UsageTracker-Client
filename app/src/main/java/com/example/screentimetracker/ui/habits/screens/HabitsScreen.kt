@@ -228,10 +228,10 @@ fun ProgressOverviewCard(
             Spacer(modifier = Modifier.height(8.dp))
             
             val progressText = when {
-                completed == 0 -> "Let's start your wellness journey! 🌱"
-                completed == total && total > 0 -> "Amazing! All habits completed! 🎉"
-                progress >= 0.7f -> "You're doing great! Keep it up! 💪"
-                else -> "Good progress, you've got this! ⭐"
+                completed == 0 -> "Habits auto-tracked based on your behavior! 🤖"
+                completed == total && total > 0 -> "Amazing! All habits auto-completed! 🎉"
+                progress >= 0.7f -> "Great digital wellness patterns detected! 💪"
+                else -> "Keep building healthy habits - we're watching! 👀"
             }
             
             Text(
@@ -262,7 +262,9 @@ fun HabitItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = !habit.isCompleted) { onComplete() }
+                .clickable(
+                    enabled = !habit.isCompleted && habit.habitId == "phone_free_social"
+                ) { onComplete() } // Only allow manual completion for social habit
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -301,8 +303,14 @@ fun HabitItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 
+                val trackingText = if (habit.habitId == "phone_free_social") {
+                    "${habit.description} (Tap to complete manually)"
+                } else {
+                    "${habit.description} 🤖 Auto-tracked"
+                }
+                
                 Text(
-                    text = habit.description,
+                    text = trackingText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
