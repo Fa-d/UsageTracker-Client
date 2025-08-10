@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.concurrent.TimeUnit
 
 class GetAllLimitedAppsUseCaseTest {
@@ -32,7 +33,7 @@ class GetAllLimitedAppsUseCaseTest {
             LimitedApp("com.facebook.katana", TimeUnit.MINUTES.toMillis(30)),
             LimitedApp("com.twitter.android", TimeUnit.MINUTES.toMillis(45))
         )
-        every { mockRepository.getAllLimitedApps() } returns(flowOf(expectedLimitedApps))
+        every { mockRepository.getAllLimitedApps() } returns flowOf(expectedLimitedApps)
 
         // When
         val result = getAllLimitedAppsUseCase().first()
@@ -51,7 +52,7 @@ class GetAllLimitedAppsUseCaseTest {
     @Test
     fun `invoke should return empty flow when no limited apps exist`() = runTest {
         // Given
-        every { mockRepository.getAllLimitedApps() } returns(flowOf(emptyList()))
+        every { mockRepository.getAllLimitedApps() } returns flowOf(emptyList())
 
         // When
         val result = getAllLimitedAppsUseCase().first()
@@ -88,7 +89,7 @@ class GetAllLimitedAppsUseCaseTest {
         val singleApp = listOf(
             LimitedApp("com.single.app", TimeUnit.MINUTES.toMillis(15))
         )
-        every { mockRepository.getAllLimitedApps() } returns(flowOf(singleApp))
+        every { mockRepository.getAllLimitedApps() } returns flowOf(singleApp)
 
         // When
         val result = getAllLimitedAppsUseCase().first()
@@ -108,7 +109,7 @@ class GetAllLimitedAppsUseCaseTest {
             LimitedApp("com.medium.limit", TimeUnit.HOURS.toMillis(1)),
             LimitedApp("com.long.limit", TimeUnit.HOURS.toMillis(8))
         )
-        every { mockRepository.getAllLimitedApps() } returns(flowOf(appsWithVariousLimits))
+        every { mockRepository.getAllLimitedApps() } returns flowOf(appsWithVariousLimits)
 
         // When
         val result = getAllLimitedAppsUseCase().first()

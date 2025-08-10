@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import com.example.screentimetracker.data.local.LimitedApp as DataLimitedApp
 import com.example.screentimetracker.utils.ui.AppNotificationManager
 import com.example.screentimetracker.utils.ui.AppToastManager
@@ -74,13 +75,13 @@ class AppUsageLimiterTest {
             DataLimitedApp("com.app1", 60000L),
             DataLimitedApp("com.app2", 120000L)
         )
-        every { mockRepository.getAllLimitedAppsOnce() } returns dataLimitedApps
+        coEvery { mockRepository.getAllLimitedAppsOnce() } returns dataLimitedApps
 
         // When
         appUsageLimiter.loadLimitedAppSettings()
 
         // Then
-        verify { mockRepository.getAllLimitedAppsOnce() }
+        coVerify { mockRepository.getAllLimitedAppsOnce() }
         verify { mockAppLogger.d(any(), any()) }
         // Internal state is private, so we can't directly assert on limitedAppSettings
         // We rely on subsequent calls to checkUsageLimits to verify correct loading

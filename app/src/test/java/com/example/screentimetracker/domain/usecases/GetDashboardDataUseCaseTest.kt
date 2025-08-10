@@ -4,13 +4,11 @@ import com.example.screentimetracker.data.local.AppLastOpenedData
 import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.flow.first
 import org.junit.Before
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.first
 import org.junit.Test
-import org.junit.runner.RunWith
-import kotlinx.coroutines.flow.first
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.Calendar
 
 class GetDashboardDataUseCaseTest {

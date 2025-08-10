@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 
 class GetAppSessionEventsUseCaseTest {
 
@@ -29,7 +30,7 @@ class GetAppSessionEventsUseCaseTest {
         val endTime = 2000L
         val mockEvents = listOf(
             AppSessionEvent(
-                1000L, "com.1=", 1500L, 500L, durationMillis = 300L
+                1000L, "com.app1", 1500L, 500L, durationMillis = 300L
             ), AppSessionEvent(1600L, "com.app2", 1800L, 200L, durationMillis = 600L)
         )
         every { mockRepository.getAllSessionsInRange(startTime, endTime) } returns flowOf(mockEvents)

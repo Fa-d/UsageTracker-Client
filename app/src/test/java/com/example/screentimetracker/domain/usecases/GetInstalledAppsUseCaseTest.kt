@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -107,9 +108,9 @@ class GetInstalledAppsUseCaseTest {
     }
 
     private fun createMockResolveInfo(packageName: String, appName: String): ResolveInfo {
-        val mockResolveInfo = mock<ResolveInfo>()
-        val mockActivityInfo = mock<ActivityInfo>()
-        val mockApplicationInfo = mock<ApplicationInfo>()
+        val mockResolveInfo = mockk<ResolveInfo>()
+        val mockActivityInfo = mockk<ActivityInfo>()
+        val mockApplicationInfo = mockk<ApplicationInfo>()
         
         mockResolveInfo.activityInfo = mockActivityInfo
         mockActivityInfo.packageName = packageName

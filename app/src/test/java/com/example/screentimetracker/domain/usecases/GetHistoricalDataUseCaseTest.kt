@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.flow.first
 
 class GetHistoricalDataUseCaseTest {
@@ -29,10 +30,8 @@ class GetHistoricalDataUseCaseTest {
         val mockAppSummaries = listOf(DailyAppSummary(1L, "pkg1", 100L, 1))
         val mockUnlockSummaries = listOf(DailyScreenUnlockSummary(1L, 5))
 
-        every { mockRepository.getDailyAppSummaries(any(), any()) }
-            returns flowOf(mockAppSummaries)
-        every { mockRepository.getDailyScreenUnlockSummaries(any(), any()) }
-            returns flowOf(mockUnlockSummaries)
+        every { mockRepository.getDailyAppSummaries(any(), any()) } returns flowOf(mockAppSummaries)
+        every { mockRepository.getDailyScreenUnlockSummaries(any(), any()) } returns flowOf(mockUnlockSummaries)
 
         // When
         val result = getHistoricalDataUseCase().first()
@@ -49,10 +48,8 @@ class GetHistoricalDataUseCaseTest {
         val mockAppSummaries = listOf(DailyAppSummary(2L, "pkg2", 200L, 2))
         val mockUnlockSummaries = listOf(DailyScreenUnlockSummary(2L, 10))
 
-        every { mockRepository.getDailyAppSummaries(any(), any()) }
-            returns flowOf(mockAppSummaries)
-        every { mockRepository.getDailyScreenUnlockSummaries(any(), any()) }
-            returns flowOf(mockUnlockSummaries)
+        every { mockRepository.getDailyAppSummaries(any(), any()) } returns flowOf(mockAppSummaries)
+        every { mockRepository.getDailyScreenUnlockSummaries(any(), any()) } returns flowOf(mockUnlockSummaries)
 
         // When
         val result = getHistoricalDataUseCase(daysAgo).first()

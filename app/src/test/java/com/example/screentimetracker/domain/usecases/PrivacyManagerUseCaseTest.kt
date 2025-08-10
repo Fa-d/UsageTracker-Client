@@ -2,13 +2,22 @@ package com.example.screentimetracker.domain.usecases
 
 import com.example.screentimetracker.data.local.PrivacySettings
 import com.example.screentimetracker.data.local.PrivacySettingsDao
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.Assert.*
 import java.security.MessageDigest
 
 class PrivacyManagerUseCaseTest {
@@ -60,14 +69,14 @@ class PrivacyManagerUseCaseTest {
         // Given
         val password = "mySecretPassword"
         val currentSettings = PrivacySettings()
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
-        every { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
+        coEvery { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
 
         // When
         privacyManagerUseCase.enableStealthMode(password)
 
         // Then
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
         coVerify { 
             mockPrivacySettingsDao.insertPrivacySettings(
                 match { settings ->
@@ -88,8 +97,8 @@ class PrivacyManagerUseCaseTest {
             excludedAppsFromTracking = listOf("com.app2"),
             dataExportEnabled = false
         )
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
-        every { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
+        coEvery { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
 
         // When
         privacyManagerUseCase.enableStealthMode(password)
@@ -110,7 +119,7 @@ class PrivacyManagerUseCaseTest {
     @Test
     fun `disableStealthMode should call dao to disable stealth mode`() = runTest {
         // Given
-        every { mockPrivacySettingsDao.setStealthModeEnabled(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.setStealthModeEnabled(any()) } just Runs
 
         // When
         privacyManagerUseCase.disableStealthMode()
@@ -128,14 +137,14 @@ class PrivacyManagerUseCaseTest {
             isStealthModeEnabled = true,
             stealthModePassword = hashedPassword
         )
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.verifyStealthModePassword(originalPassword)
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
@@ -148,41 +157,41 @@ class PrivacyManagerUseCaseTest {
             isStealthModeEnabled = true,
             stealthModePassword = hashedPassword
         )
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.verifyStealthModePassword(wrongPassword)
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
     fun `verifyStealthModePassword should return true when stealth mode is disabled`() = runTest {
         // Given
         val settings = PrivacySettings(isStealthModeEnabled = false)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.verifyStealthModePassword("anyPassword")
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
     fun `verifyStealthModePassword should return true when settings are null`() = runTest {
         // Given
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
 
         // When
         val result = privacyManagerUseCase.verifyStealthModePassword("anyPassword")
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     // Test guest mode functionality
@@ -190,7 +199,7 @@ class PrivacyManagerUseCaseTest {
     fun `enableGuestMode should set guest mode with correct timestamps`() = runTest {
         // Given
         val durationMinutes = 30
-        every { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
+        coEvery { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
 
         val beforeCall = System.currentTimeMillis()
 
@@ -202,7 +211,7 @@ class PrivacyManagerUseCaseTest {
         // Then
         coVerify { 
             mockPrivacySettingsDao.setGuestMode(
-                isEnabled = true,
+                enabled = true,
                 startTime = match { it >= beforeCall && it <= afterCall },
                 endTime = match { 
                     val expectedEndTime = beforeCall + (durationMinutes * 60 * 1000L)
@@ -215,7 +224,7 @@ class PrivacyManagerUseCaseTest {
     @Test
     fun `disableGuestMode should disable guest mode and reset timestamps`() = runTest {
         // Given
-        every { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
+        coEvery { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
 
         // When
         privacyManagerUseCase.disableGuestMode()
@@ -232,14 +241,14 @@ class PrivacyManagerUseCaseTest {
             isGuestModeEnabled = true,
             guestModeEndTime = futureEndTime
         )
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isGuestModeActive()
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
@@ -250,28 +259,28 @@ class PrivacyManagerUseCaseTest {
             isGuestModeEnabled = true,
             guestModeEndTime = pastEndTime
         )
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isGuestModeActive()
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
     fun `isGuestModeActive should return false when guest mode is disabled`() = runTest {
         // Given
         val settings = PrivacySettings(isGuestModeEnabled = false)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isGuestModeActive()
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     // Test hidden apps functionality
@@ -281,8 +290,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.app1", "com.app2")
         val newPackage = "com.app3"
         val settings = PrivacySettings(hiddenAppsPackages = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.addHiddenApp(newPackage)
@@ -301,8 +310,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.app1", "com.app2")
         val duplicatePackage = "com.app1"
         val settings = PrivacySettings(hiddenAppsPackages = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.addHiddenApp(duplicatePackage)
@@ -315,8 +324,8 @@ class PrivacyManagerUseCaseTest {
     fun `addHiddenApp should handle null settings gracefully`() = runTest {
         // Given
         val newPackage = "com.app1"
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
-        every { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
+        coEvery { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.addHiddenApp(newPackage)
@@ -331,8 +340,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.app1", "com.app2", "com.app3")
         val packageToRemove = "com.app2"
         val settings = PrivacySettings(hiddenAppsPackages = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateHiddenApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.removeHiddenApp(packageToRemove)
@@ -352,8 +361,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.system1")
         val newPackage = "com.system2"
         val settings = PrivacySettings(excludedAppsFromTracking = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.addExcludedApp(newPackage)
@@ -372,8 +381,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.system1", "com.system2")
         val duplicatePackage = "com.system1"
         val settings = PrivacySettings(excludedAppsFromTracking = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.addExcludedApp(duplicatePackage)
@@ -388,8 +397,8 @@ class PrivacyManagerUseCaseTest {
         val existingPackages = listOf("com.system1", "com.system2", "com.system3")
         val packageToRemove = "com.system2"
         val settings = PrivacySettings(excludedAppsFromTracking = existingPackages)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
-        every { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.updateExcludedApps(any()) } just Runs
 
         // When
         privacyManagerUseCase.removeExcludedApp(packageToRemove)
@@ -408,14 +417,14 @@ class PrivacyManagerUseCaseTest {
         // Given
         val hiddenApps = listOf("com.app1", "com.app2")
         val settings = PrivacySettings(hiddenAppsPackages = hiddenApps)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isAppHidden("com.app1")
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
@@ -423,27 +432,27 @@ class PrivacyManagerUseCaseTest {
         // Given
         val hiddenApps = listOf("com.app1", "com.app2")
         val settings = PrivacySettings(hiddenAppsPackages = hiddenApps)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isAppHidden("com.app3")
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
     fun `isAppHidden should return false when settings are null`() = runTest {
         // Given
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns null
 
         // When
         val result = privacyManagerUseCase.isAppHidden("com.app1")
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
@@ -451,14 +460,14 @@ class PrivacyManagerUseCaseTest {
         // Given
         val excludedApps = listOf("com.system1", "com.system2")
         val settings = PrivacySettings(excludedAppsFromTracking = excludedApps)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isAppExcludedFromTracking("com.system1")
 
         // Then
         assertTrue(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     @Test
@@ -466,21 +475,21 @@ class PrivacyManagerUseCaseTest {
         // Given
         val excludedApps = listOf("com.system1", "com.system2")
         val settings = PrivacySettings(excludedAppsFromTracking = excludedApps)
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns settings
 
         // When
         val result = privacyManagerUseCase.isAppExcludedFromTracking("com.app1")
 
         // Then
         assertFalse(result)
-        verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
+        coVerify { mockPrivacySettingsDao.getPrivacySettingsSync() }
     }
 
     // Test data export functionality
     @Test
     fun `updateLastExportTime should update export timestamp`() = runTest {
         // Given
-        every { mockPrivacySettingsDao.updateLastExportTime(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.updateLastExportTime(any()) } just Runs
         val beforeCall = System.currentTimeMillis()
 
         // When
@@ -502,8 +511,8 @@ class PrivacyManagerUseCaseTest {
         // Given
         val emptyPassword = ""
         val currentSettings = PrivacySettings()
-        every { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
-        every { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
+        coEvery { mockPrivacySettingsDao.getPrivacySettingsSync() } returns currentSettings
+        coEvery { mockPrivacySettingsDao.insertPrivacySettings(any()) } just Runs
 
         // When
         privacyManagerUseCase.enableStealthMode(emptyPassword)
@@ -523,7 +532,7 @@ class PrivacyManagerUseCaseTest {
     fun `enableGuestMode should handle zero duration`() = runTest {
         // Given
         val zeroDuration = 0
-        every { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
+        coEvery { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
 
         // When
         privacyManagerUseCase.enableGuestMode(zeroDuration)
@@ -531,7 +540,7 @@ class PrivacyManagerUseCaseTest {
         // Then
         coVerify { 
             mockPrivacySettingsDao.setGuestMode(
-                isEnabled = true,
+                enabled = true,
                 startTime = any(),
                 endTime = any() // Should still set end time even if duration is 0
             )
@@ -542,7 +551,7 @@ class PrivacyManagerUseCaseTest {
     fun `enableGuestMode should handle negative duration`() = runTest {
         // Given
         val negativeDuration = -10
-        every { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
+        coEvery { mockPrivacySettingsDao.setGuestMode(any(), any(), any()) } just Runs
 
         // When
         privacyManagerUseCase.enableGuestMode(negativeDuration)
@@ -550,7 +559,7 @@ class PrivacyManagerUseCaseTest {
         // Then
         coVerify { 
             mockPrivacySettingsDao.setGuestMode(
-                isEnabled = true,
+                enabled = true,
                 startTime = any(),
                 endTime = any() // Should still set end time
             )

@@ -169,7 +169,7 @@ class ReplacementActivitiesUseCaseTest {
         coEvery { mockReplacementActivityDao.getSmartSuggestions(any(), any(), any(), any()) } returns mockSuggestions
 
         // When
-        val result = replacementActivitiesUseCase.getSmartSuggestions()
+        val result = replacementActivitiesUseCase.getSmartSuggestions(availableMinutes = 15)
 
         // Then
         coVerify { 
@@ -291,7 +291,7 @@ class ReplacementActivitiesUseCaseTest {
         val contextTrigger = "timer_expired"
         val expectedCompletionId = 456L
 
-        coEvery { mockReplacementActivityDao.insertCompletion(any()) } returns expectedCompletionId
+        coEvery { mockReplacementActivityDao.insertActivityCompletion(any()) } returns expectedCompletionId
         coEvery { mockReplacementActivityDao.incrementCompletionCount(any(), any()) } just Runs
         every { mockReplacementActivityDao.getCompletionsForActivity(any()) } returns flowOf(listOf(
             createMockActivityCompletion(1L, activityId, userRating = 4),
@@ -316,7 +316,7 @@ class ReplacementActivitiesUseCaseTest {
         assertEquals(expectedCompletionId, result)
         
         coVerify { 
-            mockReplacementActivityDao.insertCompletion(
+            mockReplacementActivityDao.insertActivityCompletion(
                 match { completion ->
                     completion.activityId == activityId &&
                     completion.actualDurationMinutes == actualDurationMinutes &&
@@ -362,7 +362,7 @@ class ReplacementActivitiesUseCaseTest {
 
         // Then
         coVerify { 
-            mockReplacementActivityDao.insertCompletion(
+            mockReplacementActivityDao.insertActivityCompletion(
                 match { completion ->
                     completion.notes == "" &&
                     completion.contextTrigger == ""
@@ -655,7 +655,7 @@ class ReplacementActivitiesUseCaseTest {
         // Then
         assertEquals(1L, result)
         coVerify { 
-            mockReplacementActivityDao.insertCompletion(
+            mockReplacementActivityDao.insertActivityCompletion(
                 match { completion -> completion.actualDurationMinutes == 0 }
             )
         }
@@ -682,7 +682,7 @@ class ReplacementActivitiesUseCaseTest {
         // Then
         assertEquals(1L, result)
         coVerify { 
-            mockReplacementActivityDao.insertCompletion(
+            mockReplacementActivityDao.insertActivityCompletion(
                 match { completion -> completion.actualDurationMinutes == -5 }
             )
         }

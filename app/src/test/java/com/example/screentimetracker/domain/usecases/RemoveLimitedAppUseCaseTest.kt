@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.concurrent.TimeUnit
 
 class RemoveLimitedAppUseCaseTest {

@@ -12,6 +12,7 @@ import com.example.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -63,7 +64,7 @@ class ErrorHandlingTest {
         val result = timeRestrictionUseCase.getAllTimeRestrictions()
 
         // Then - Should return empty list and log error
-        assertTrue("Should return empty list on database error", result.value.isEmpty())
+        assertTrue("Should return empty list on database error", result.first().isEmpty())
         verify { appLogger.e("TimeRestrictionManagerUseCase", "Failed to get all time restrictions", any()) }
     }
 
@@ -240,8 +241,8 @@ class ErrorHandlingTest {
         val secondResult = timeRestrictionUseCase.getAllTimeRestrictions()
 
         // Then
-        assertTrue("First call should handle error", firstResult.value.isEmpty())
-        assertTrue("Second call should succeed", secondResult.value.isEmpty()) // Empty but no error
+        assertTrue("First call should handle error", firstResult.first().isEmpty())
+        assertTrue("Second call should succeed", secondResult.first().isEmpty()) // Empty but no error
         verify(exactly = 1) { appLogger.e("TimeRestrictionManagerUseCase", any(), any()) }
     }
 
@@ -268,22 +269,32 @@ class ErrorHandlingTest {
         val maliciousPackageName = "'; DROP TABLE time_restrictions; --"
         val maliciousRestriction = TimeRestriction(
             id = 0,
-            packageName = maliciousPackageName,
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "security_test",
+            name = "Test Restriction",
+            description = "Security test restriction",
+            startTimeMinutes = 9 * 60, // 9:00 AM
+            endTimeMinutes = 17 * 60, // 5:00 PM
+            appsBlocked = "[\"$maliciousPackageName\"]",
+            daysOfWeek = "[1,2,3,4,5]",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
 
         // When/Then - Should handle malicious input safely
-        val isRestricted = timeRestrictionUseCase.isAppCurrentlyRestricted(maliciousPackageName)
-        assertNotNull("Should handle malicious input safely", isRestricted)
+        val isBlocked = timeRestrictionUseCase.isAppBlockedByTimeRestriction(maliciousPackageName)
+        assertNotNull("Should handle malicious input safely", isBlocked)
 
         // The actual insertion would be handled by the repository layer with parameterized queries
         // This test ensures the use case layer doesn't crash on malicious input
-        val result = timeRestrictionUseCase.createTimeRestriction(maliciousRestriction)
+        val result = timeRestrictionUseCase.createCustomRestriction(
+            name = maliciousRestriction.name,
+            description = maliciousRestriction.description,
+            restrictionType = maliciousRestriction.restrictionType,
+            startTimeMinutes = maliciousRestriction.startTimeMinutes,
+            endTimeMinutes = maliciousRestriction.endTimeMinutes,
+            blockedApps = listOf(maliciousPackageName),
+            daysOfWeek = listOf(1,2,3,4,5)
+        )
         assertNotNull("Should return a result even with malicious input", result)
     }
 
@@ -348,7 +359,7 @@ class ErrorHandlingTest {
         val report = weeklyInsightsUseCase.generateWeeklyReport()
 
         // Then - State should remain consistent
-        assertTrue("Restrictions should be empty but valid", restrictions.value.isEmpty())
+        assertTrue("Restrictions should be empty but valid", restrictions.first().isEmpty())
         assertEquals("Report should be empty due to partial failure", 
             WeeklyInsightsUseCase.WeeklyReport.empty(), report)
         
