@@ -80,8 +80,26 @@ class EndToEndUserFlowTest {
     )
 
     private val sampleWellnessScores = listOf(
-        WellnessScore(1, 72, currentTime, weekStart),
-        WellnessScore(2, 68, currentTime, weekStart + TimeUnit.DAYS.toMillis(1))
+        WellnessScore(
+            date = weekStart,
+            totalScore = 72,
+            timeLimitScore = 18,
+            focusSessionScore = 18,
+            breaksScore = 18,
+            sleepHygieneScore = 18,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            calculatedAt = currentTime
+        ),
+        WellnessScore(
+            date = weekStart + TimeUnit.DAYS.toMillis(1),
+            totalScore = 68,
+            timeLimitScore = 17,
+            focusSessionScore = 17,
+            breaksScore = 17,
+            sleepHygieneScore = 17,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            calculatedAt = currentTime
+        )
     )
 
     @Before

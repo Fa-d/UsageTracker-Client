@@ -8,21 +8,19 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import io.mockk.*
 import java.util.concurrent.TimeUnit
 
 class GetAllLimitedAppsUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var getAllLimitedAppsUseCase: GetAllLimitedAppsUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         getAllLimitedAppsUseCase = GetAllLimitedAppsUseCase(mockRepository)
     }
 
@@ -34,13 +32,13 @@ class GetAllLimitedAppsUseCaseTest {
             LimitedApp("com.facebook.katana", TimeUnit.MINUTES.toMillis(30)),
             LimitedApp("com.twitter.android", TimeUnit.MINUTES.toMillis(45))
         )
-        whenever(mockRepository.getAllLimitedApps()).thenReturn(flowOf(expectedLimitedApps))
+        every { mockRepository.getAllLimitedApps() } returns(flowOf(expectedLimitedApps))
 
         // When
         val result = getAllLimitedAppsUseCase().first()
 
         // Then
-        verify(mockRepository).getAllLimitedApps()
+        verify { mockRepository.getAllLimitedApps() }
         assertEquals(3, result.size)
         assertEquals("com.instagram.android", result[0].packageName)
         assertEquals(TimeUnit.HOURS.toMillis(1), result[0].timeLimitMillis)
@@ -53,13 +51,13 @@ class GetAllLimitedAppsUseCaseTest {
     @Test
     fun `invoke should return empty flow when no limited apps exist`() = runTest {
         // Given
-        whenever(mockRepository.getAllLimitedApps()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllLimitedApps() } returns(flowOf(emptyList()))
 
         // When
         val result = getAllLimitedAppsUseCase().first()
 
         // Then
-        verify(mockRepository).getAllLimitedApps()
+        verify { mockRepository.getAllLimitedApps() }
         assertTrue(result.isEmpty())
     }
 
@@ -74,15 +72,13 @@ class GetAllLimitedAppsUseCaseTest {
             LimitedApp("com.app2", TimeUnit.HOURS.toMillis(1))
         )
         
-        whenever(mockRepository.getAllLimitedApps())
-            .thenReturn(flowOf(initialApps))
-            .thenReturn(flowOf(updatedApps))
+        every { mockRepository.getAllLimitedApps() } returns flowOf(initialApps)
 
         // When
         val flow = getAllLimitedAppsUseCase()
 
         // Then
-        verify(mockRepository).getAllLimitedApps()
+        verify { mockRepository.getAllLimitedApps() }
         assertNotNull(flow)
     }
 
@@ -92,13 +88,13 @@ class GetAllLimitedAppsUseCaseTest {
         val singleApp = listOf(
             LimitedApp("com.single.app", TimeUnit.MINUTES.toMillis(15))
         )
-        whenever(mockRepository.getAllLimitedApps()).thenReturn(flowOf(singleApp))
+        every { mockRepository.getAllLimitedApps() } returns(flowOf(singleApp))
 
         // When
         val result = getAllLimitedAppsUseCase().first()
 
         // Then
-        verify(mockRepository).getAllLimitedApps()
+        verify { mockRepository.getAllLimitedApps() }
         assertEquals(1, result.size)
         assertEquals("com.single.app", result[0].packageName)
         assertEquals(TimeUnit.MINUTES.toMillis(15), result[0].timeLimitMillis)
@@ -112,13 +108,13 @@ class GetAllLimitedAppsUseCaseTest {
             LimitedApp("com.medium.limit", TimeUnit.HOURS.toMillis(1)),
             LimitedApp("com.long.limit", TimeUnit.HOURS.toMillis(8))
         )
-        whenever(mockRepository.getAllLimitedApps()).thenReturn(flowOf(appsWithVariousLimits))
+        every { mockRepository.getAllLimitedApps() } returns(flowOf(appsWithVariousLimits))
 
         // When
         val result = getAllLimitedAppsUseCase().first()
 
         // Then
-        verify(mockRepository).getAllLimitedApps()
+        verify { mockRepository.getAllLimitedApps() }
         assertEquals(3, result.size)
         // Verify the different time limits
         val shortLimitApp = result.find { it.packageName == "com.short.limit" }

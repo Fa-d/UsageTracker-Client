@@ -5,21 +5,18 @@ import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
+import io.mockk.*
 
 class RecordScreenUnlockUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var recordScreenUnlockUseCase: RecordScreenUnlockUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         recordScreenUnlockUseCase = RecordScreenUnlockUseCase(mockRepository)
     }
 
@@ -29,6 +26,6 @@ class RecordScreenUnlockUseCaseTest {
         recordScreenUnlockUseCase()
 
         // Then
-        verify(mockRepository).insertScreenUnlockEvent(any<ScreenUnlockEvent>())
+        coVerify { mockRepository.insertScreenUnlockEvent(any<ScreenUnlockEvent>()) }
     }
 }

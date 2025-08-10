@@ -5,21 +5,19 @@ import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import io.mockk.*
 import java.util.concurrent.TimeUnit
 
 class RemoveLimitedAppUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var removeLimitedAppUseCase: RemoveLimitedAppUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         removeLimitedAppUseCase = RemoveLimitedAppUseCase(mockRepository)
     }
 
@@ -35,7 +33,7 @@ class RemoveLimitedAppUseCaseTest {
         removeLimitedAppUseCase(limitedApp)
 
         // Then
-        verify(mockRepository).deleteLimitedApp(limitedApp)
+        coVerify { mockRepository.deleteLimitedApp(limitedApp) }
     }
 
     @Test
@@ -52,7 +50,7 @@ class RemoveLimitedAppUseCaseTest {
 
         // Then
         limitedApps.forEach { 
-            verify(mockRepository).deleteLimitedApp(it)
+            coVerify { mockRepository.deleteLimitedApp(it) }
         }
     }
 
@@ -70,7 +68,7 @@ class RemoveLimitedAppUseCaseTest {
         testApps.forEach { packageName ->
             val limitedApp = LimitedApp(packageName, TimeUnit.MINUTES.toMillis(30))
             removeLimitedAppUseCase(limitedApp)
-            verify(mockRepository).deleteLimitedApp(limitedApp)
+            coVerify { mockRepository.deleteLimitedApp(limitedApp) }
         }
     }
 
@@ -86,6 +84,6 @@ class RemoveLimitedAppUseCaseTest {
         removeLimitedAppUseCase(limitedApp)
 
         // Then
-        verify(mockRepository).deleteLimitedApp(limitedApp)
+        coVerify { mockRepository.deleteLimitedApp(limitedApp) }
     }
 }

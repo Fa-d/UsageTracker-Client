@@ -5,23 +5,18 @@ import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.never
-import org.mockito.kotlin.argThat
+import io.mockk.*
 
 class RecordAppSessionUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var recordAppSessionUseCase: RecordAppSessionUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         recordAppSessionUseCase = RecordAppSessionUseCase(mockRepository)
     }
 
@@ -36,7 +31,7 @@ class RecordAppSessionUseCaseTest {
         recordAppSessionUseCase(packageName, startTime, endTime)
 
         // Then
-        verify(mockRepository).insertAppSession(any<AppSessionEvent>())
+        coVerify { mockRepository.insertAppSession(any<AppSessionEvent>()) }
     }
 
     @Test
@@ -53,7 +48,7 @@ class RecordAppSessionUseCaseTest {
         recordAppSessionUseCase(sessionEvent)
 
         // Then
-        verify(mockRepository).insertAppSession(sessionEvent)
+        coVerify { mockRepository.insertAppSession(sessionEvent) }
     }
 
     @Test
@@ -67,12 +62,12 @@ class RecordAppSessionUseCaseTest {
         recordAppSessionUseCase(packageName, startTime, endTime)
 
         // Then
-        verify(mockRepository).insertAppSession(argThat { event ->
+        coVerify { mockRepository.insertAppSession(match { event ->
             event.packageName == packageName &&
             event.startTimeMillis == startTime &&
             event.endTimeMillis == startTime &&
             event.durationMillis == 0L
-        })
+        }) }
     }
 
     @Test
@@ -89,12 +84,12 @@ class RecordAppSessionUseCaseTest {
         recordAppSessionUseCase(sessionEvent)
 
         // Then
-        verify(mockRepository).insertAppSession(argThat { event ->
+        coVerify { mockRepository.insertAppSession(match { event ->
             event.packageName == sessionEvent.packageName &&
             event.startTimeMillis == sessionEvent.startTimeMillis &&
             event.endTimeMillis == sessionEvent.startTimeMillis &&
             event.durationMillis == 0L
-        })
+        }) }
     }
 
     @Test
@@ -111,11 +106,11 @@ class RecordAppSessionUseCaseTest {
         recordAppSessionUseCase(sessionEvent)
 
         // Then
-        verify(mockRepository).insertAppSession(argThat { event ->
+        coVerify { mockRepository.insertAppSession(match { event ->
             event.packageName == sessionEvent.packageName &&
             event.startTimeMillis == sessionEvent.startTimeMillis &&
             event.endTimeMillis == sessionEvent.endTimeMillis &&
             event.durationMillis == 2000L
-        })
+        }) }
     }
 }

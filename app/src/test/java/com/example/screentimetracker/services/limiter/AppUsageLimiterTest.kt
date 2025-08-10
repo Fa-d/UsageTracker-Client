@@ -8,9 +8,7 @@ import com.example.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import io.mockk.*
 import com.example.screentimetracker.data.local.LimitedApp as DataLimitedApp
 import com.example.screentimetracker.utils.ui.AppNotificationManager
 import com.example.screentimetracker.utils.ui.AppToastManager
@@ -18,22 +16,22 @@ import java.lang.reflect.Field
 
 class AppUsageLimiterTest {
 
-    @Mock
+    @MockK
     private lateinit var mockContext: Context
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
-    @Mock
+    @MockK
     private lateinit var mockAppLogger: AppLogger
 
-    @Mock
+    @MockK
     private lateinit var mockPackageManager: PackageManager
 
-    @Mock
+    @MockK
     private lateinit var mockAppNotificationManager: AppNotificationManager // Mock the new interface
 
-    @Mock
+    @MockK
     private lateinit var mockAppToastManager: AppToastManager // Mock the new interface
 
     private lateinit var appUsageLimiter: AppUsageLimiter
@@ -63,8 +61,8 @@ class AppUsageLimiterTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        whenever(mockContext.packageManager).thenReturn(mockPackageManager)
+        MockKAnnotations.init(this, relaxUnitFun = true)
+        every { mockContext.packageManager } returns mockPackageManager
 
         appUsageLimiter = AppUsageLimiter(mockContext, mockRepository, mockAppLogger, mockAppNotificationManager, mockAppToastManager)
     }
@@ -76,14 +74,14 @@ class AppUsageLimiterTest {
             DataLimitedApp("com.app1", 60000L),
             DataLimitedApp("com.app2", 120000L)
         )
-        whenever(mockRepository.getAllLimitedAppsOnce()).thenReturn(dataLimitedApps)
+        every { mockRepository.getAllLimitedAppsOnce() } returns dataLimitedApps
 
         // When
         appUsageLimiter.loadLimitedAppSettings()
 
         // Then
-        verify(mockRepository).getAllLimitedAppsOnce()
-        verify(mockAppLogger).d(any(), any())
+        verify { mockRepository.getAllLimitedAppsOnce() }
+        verify { mockAppLogger.d(any(), any()) }
         // Internal state is private, so we can't directly assert on limitedAppSettings
         // We rely on subsequent calls to checkUsageLimits to verify correct loading
     }
@@ -100,7 +98,7 @@ class AppUsageLimiterTest {
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Then
-        verify(mockAppLogger).i(any(), any())
+        verify { mockAppLogger.i(any(), any()) }
         // Cannot directly assert on currentLimitedAppDetails due to private access
     }
 
@@ -116,7 +114,7 @@ class AppUsageLimiterTest {
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Then
-        verify(mockAppLogger, never()).i(any(), any())
+        verify(exactly = 0) { mockAppLogger.i(any(), any()) }
         // Cannot directly assert on currentLimitedAppDetails due to private access
     }
 
@@ -133,7 +131,7 @@ class AppUsageLimiterTest {
         appUsageLimiter.onSessionFinalized()
 
         // Then
-        verify(mockAppLogger).i(any(), any())
+        verify { mockAppLogger.i(any(), any()) }
         // Cannot directly assert on currentLimitedAppDetails due to private access
     }
 
@@ -148,14 +146,14 @@ class AppUsageLimiterTest {
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Mock getApplicationLabel to return a dummy app name
-        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        every { mockPackageManager.getApplicationLabel(any()) } returns "Test App"
 
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
         // Then
-        verify(mockAppLogger).i(any(), any())
-        verify(mockAppNotificationManager).showWarningNotification(any<LimitedApp>(), any<Long>())
+        verify { mockAppLogger.i(any(), any()) }
+        verify { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) }
     }
 
     @Test
@@ -169,15 +167,15 @@ class AppUsageLimiterTest {
         appUsageLimiter.onNewSession(packageName, startTime)
 
         // Mock getApplicationLabel to return a dummy app name
-        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        every { mockPackageManager.getApplicationLabel(any()) } returns "Test App"
 
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
         // Then
-        verify(mockAppLogger).i(any(), any())
-        verify(mockAppToastManager).bringAppToForeground(eq(packageName)) // Verify new interface call
-        verify(mockAppToastManager).showDissuasionToast(eq("Test App")) // Verify new interface call
+        verify { mockAppLogger.i(any(), any()) }
+        verify { mockAppToastManager.bringAppToForeground(packageName) } // Verify new interface call
+        verify { mockAppToastManager.showDissuasionToast("Test App") } // Verify new interface call
     }
 
     @Test
@@ -195,8 +193,8 @@ class AppUsageLimiterTest {
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
         // Then
-        verify(mockAppLogger, never()).i(any(), any())
-        verify(mockAppNotificationManager, never()).showWarningNotification(any<LimitedApp>(), any<Long>())
+        verify(exactly = 0) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 0) { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) }
     }
 
     @Test
@@ -213,9 +211,9 @@ class AppUsageLimiterTest {
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
         // Then
-        verify(mockAppLogger, never()).i(any(), any())
-        verify(mockAppToastManager, never()).bringAppToForeground(any()) // Verify no startActivity
-        verify(mockAppToastManager, never()).showDissuasionToast(any()) // Verify no toast
+        verify(exactly = 0) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 0) { mockAppToastManager.bringAppToForeground(any()) } // Verify no startActivity
+        verify(exactly = 0) { mockAppToastManager.showDissuasionToast(any()) } // Verify no toast
     }
 
     @Test
@@ -228,25 +226,25 @@ class AppUsageLimiterTest {
         appUsageLimiter.setLimitedAppSettings(listOf(limitedApp)) // Directly set for test
         appUsageLimiter.onNewSession(packageName, startTime)
 
-        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        every { mockPackageManager.getApplicationLabel(any()) } returns "Test App"
 
         // First check - warning should be shown
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
-        verify(mockAppLogger, times(1)).i(any(), any())
-        verify(mockAppNotificationManager, times(1)).showWarningNotification(
+        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 1) { mockAppNotificationManager.showWarningNotification(
             any<LimitedApp>(),
             any<Long>()
-        )
+        ) }
 
         // When - check again without new session
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis() + 1000)
 
         // Then - warning should not be re-shown
-        verify(mockAppLogger, times(1)).i(any(), any())
-        verify(mockAppNotificationManager, times(1)).showWarningNotification(
+        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 1) { mockAppNotificationManager.showWarningNotification(
             any<LimitedApp>(),
             any<Long>()
-        )
+        ) }
     }
 
     @Test
@@ -259,21 +257,21 @@ class AppUsageLimiterTest {
         appUsageLimiter.setLimitedAppSettings(listOf(limitedApp)) // Directly set for test
         appUsageLimiter.onNewSession(packageName, startTime)
 
-        whenever(mockPackageManager.getApplicationLabel(any())).thenReturn("Test App")
+        every { mockPackageManager.getApplicationLabel(any()) } returns "Test App"
 
         // First check - dissuasion should be executed
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
-        verify(mockAppLogger, times(1)).i(any(), any())
-        verify(mockAppToastManager, times(1)).bringAppToForeground(eq(packageName))
-        verify(mockAppToastManager, times(1)).showDissuasionToast(eq("Test App"))
+        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 1) { mockAppToastManager.bringAppToForeground(packageName) }
+        verify(exactly = 1) { mockAppToastManager.showDissuasionToast("Test App") }
 
         // When - check again without new session
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis() + 1000)
 
         // Then - dissuasion should not be re-executed
-        verify(mockAppLogger, times(1)).i(any(), any())
-        verify(mockAppToastManager, times(1)).bringAppToForeground(eq(packageName))
-        verify(mockAppToastManager, times(1)).showDissuasionToast(eq("Test App"))
+        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
+        verify(exactly = 1) { mockAppToastManager.bringAppToForeground(packageName) }
+        verify(exactly = 1) { mockAppToastManager.showDissuasionToast("Test App") }
     }
 
     

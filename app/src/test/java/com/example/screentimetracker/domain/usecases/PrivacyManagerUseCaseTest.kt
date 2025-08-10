@@ -68,7 +68,7 @@ class PrivacyManagerUseCaseTest {
 
         // Then
         verify { mockPrivacySettingsDao.getPrivacySettingsSync() }
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.insertPrivacySettings(
                 match { settings ->
                     settings.isStealthModeEnabled == true &&
@@ -95,7 +95,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.enableStealthMode(password)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.insertPrivacySettings(
                 match { settings ->
                     settings.isStealthModeEnabled == true &&
@@ -116,7 +116,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.disableStealthMode()
 
         // Then
-        verify { mockPrivacySettingsDao.setStealthModeEnabled(false) }
+        coVerify { mockPrivacySettingsDao.setStealthModeEnabled(false) }
     }
 
     @Test
@@ -200,7 +200,7 @@ class PrivacyManagerUseCaseTest {
         val afterCall = System.currentTimeMillis()
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.setGuestMode(
                 isEnabled = true,
                 startTime = match { it >= beforeCall && it <= afterCall },
@@ -221,7 +221,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.disableGuestMode()
 
         // Then
-        verify { mockPrivacySettingsDao.setGuestMode(false, 0L, 0L) }
+        coVerify { mockPrivacySettingsDao.setGuestMode(false, 0L, 0L) }
     }
 
     @Test
@@ -288,7 +288,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.addHiddenApp(newPackage)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.updateHiddenApps(
                 listOf("com.app1", "com.app2", "com.app3")
             )
@@ -308,7 +308,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.addHiddenApp(duplicatePackage)
 
         // Then
-        verify(exactly = 0) { mockPrivacySettingsDao.updateHiddenApps(any()) }
+        coVerify(exactly = 0) { mockPrivacySettingsDao.updateHiddenApps(any()) }
     }
 
     @Test
@@ -322,7 +322,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.addHiddenApp(newPackage)
 
         // Then
-        verify { mockPrivacySettingsDao.updateHiddenApps(listOf(newPackage)) }
+        coVerify { mockPrivacySettingsDao.updateHiddenApps(listOf(newPackage)) }
     }
 
     @Test
@@ -338,7 +338,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.removeHiddenApp(packageToRemove)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.updateHiddenApps(
                 listOf("com.app1", "com.app3")
             )
@@ -359,7 +359,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.addExcludedApp(newPackage)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.updateExcludedApps(
                 listOf("com.system1", "com.system2")
             )
@@ -379,7 +379,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.addExcludedApp(duplicatePackage)
 
         // Then
-        verify(exactly = 0) { mockPrivacySettingsDao.updateExcludedApps(any()) }
+        coVerify(exactly = 0) { mockPrivacySettingsDao.updateExcludedApps(any()) }
     }
 
     @Test
@@ -395,7 +395,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.removeExcludedApp(packageToRemove)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.updateExcludedApps(
                 listOf("com.system1", "com.system3")
             )
@@ -489,7 +489,7 @@ class PrivacyManagerUseCaseTest {
         val afterCall = System.currentTimeMillis()
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.updateLastExportTime(
                 match { it >= beforeCall && it <= afterCall }
             )
@@ -509,7 +509,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.enableStealthMode(emptyPassword)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.insertPrivacySettings(
                 match { settings ->
                     settings.isStealthModeEnabled == true &&
@@ -529,7 +529,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.enableGuestMode(zeroDuration)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.setGuestMode(
                 isEnabled = true,
                 startTime = any(),
@@ -548,7 +548,7 @@ class PrivacyManagerUseCaseTest {
         privacyManagerUseCase.enableGuestMode(negativeDuration)
 
         // Then
-        verify { 
+        coVerify { 
             mockPrivacySettingsDao.setGuestMode(
                 isEnabled = true,
                 startTime = any(),

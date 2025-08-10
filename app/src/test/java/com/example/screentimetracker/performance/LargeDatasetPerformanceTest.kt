@@ -296,26 +296,26 @@ class LargeDatasetPerformanceTest {
         }
     }
     
-    private fun generateLargeGoals(count: Int): List<Goal> {
+    private fun generateLargeGoals(count: Int): List<UserGoal> {
         return (1..count).map { i ->
-            Goal(
+            UserGoal(
                 id = i.toLong(),
-                name = "Goal $i",
-                targetValue = (60..300).random(),
-                currentValue = (0..350).random(),
+                goalType = "goal_type_$i",
+                targetValue = (60..300).random().toLong(),
+                currentProgress = (0..350).random().toLong(),
                 createdAt = currentTime - TimeUnit.DAYS.toMillis((i % 30).toLong()),
                 isActive = (i % 3) != 0 // About 2/3 active
             )
         }
     }
     
-    private fun generateLargeSessionsWithHours(count: Int): List<SessionData> {
+    private fun generateLargeSessionsWithHours(count: Int): List<AppSessionEvent> {
         return (1..count).map { i ->
             val startHour = (0..23).random()
             val startTime = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong()) + TimeUnit.HOURS.toMillis(startHour.toLong())
             val duration = TimeUnit.MINUTES.toMillis((1..60).random().toLong())
             
-            SessionData(
+            AppSessionEvent(
                 id = i.toLong(),
                 packageName = "com.test.app${i % 100}",
                 startTimeMillis = startTime,

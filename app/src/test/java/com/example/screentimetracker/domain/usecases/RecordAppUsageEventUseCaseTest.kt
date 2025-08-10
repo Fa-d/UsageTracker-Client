@@ -5,21 +5,18 @@ import com.example.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
+import io.mockk.*
 
 class RecordAppUsageEventUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var recordAppUsageEventUseCase: RecordAppUsageEventUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         recordAppUsageEventUseCase = RecordAppUsageEventUseCase(mockRepository)
     }
 
@@ -34,6 +31,6 @@ class RecordAppUsageEventUseCaseTest {
         recordAppUsageEventUseCase(packageName, eventName, timestamp)
 
         // Then
-        verify(mockRepository).insertAppUsageEvent(any<AppUsageEvent>())
+        coVerify { mockRepository.insertAppUsageEvent(any<AppUsageEvent>()) }
     }
 }

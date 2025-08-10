@@ -6,21 +6,20 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.concurrent.TimeUnit
 
 class AddLimitedAppUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var addLimitedAppUseCase: AddLimitedAppUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         addLimitedAppUseCase = AddLimitedAppUseCase(mockRepository)
     }
 
@@ -36,7 +35,7 @@ class AddLimitedAppUseCaseTest {
         addLimitedAppUseCase(limitedApp)
 
         // Then
-        verify(mockRepository).insertLimitedApp(limitedApp)
+        coVerify { mockRepository.insertLimitedApp(limitedApp) }
     }
 
     @Test
@@ -55,7 +54,7 @@ class AddLimitedAppUseCaseTest {
             assertEquals("Time limit must be positive.", e.message)
         }
         
-        verify(mockRepository, never()).insertLimitedApp(any())
+        coVerify(exactly = 0) { mockRepository.insertLimitedApp(any()) }
     }
 
     @Test
@@ -74,7 +73,7 @@ class AddLimitedAppUseCaseTest {
             assertEquals("Time limit must be positive.", e.message)
         }
         
-        verify(mockRepository, never()).insertLimitedApp(any())
+        coVerify(exactly = 0) { mockRepository.insertLimitedApp(any()) }
     }
 
     @Test
@@ -91,7 +90,7 @@ class AddLimitedAppUseCaseTest {
 
         // Then
         limitedApps.forEach { 
-            verify(mockRepository).insertLimitedApp(it)
+            coVerify { mockRepository.insertLimitedApp(it) }
         }
     }
 
@@ -107,6 +106,6 @@ class AddLimitedAppUseCaseTest {
         addLimitedAppUseCase(limitedApp)
 
         // Then
-        verify(mockRepository).insertLimitedApp(limitedApp)
+        coVerify { mockRepository.insertLimitedApp(limitedApp) }
     }
 }

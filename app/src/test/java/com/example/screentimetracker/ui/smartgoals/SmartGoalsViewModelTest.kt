@@ -11,16 +11,13 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.*
+import io.mockk.*
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
 class SmartGoalsViewModelTest {
 
-    @Mock
+    @MockK
     private lateinit var smartGoalSettingUseCase: SmartGoalSettingUseCase
 
     private lateinit var viewModel: SmartGoalsViewModel
@@ -29,6 +26,7 @@ class SmartGoalsViewModelTest {
 
     @Before
     fun setup() {
+        MockKAnnotations.init(this, relaxUnitFun = true)
         Dispatchers.setMain(testDispatcher)
         viewModel = SmartGoalsViewModel(smartGoalSettingUseCase)
     }
@@ -81,7 +79,7 @@ class SmartGoalsViewModelTest {
     fun `generateAIRecommendations success updates state correctly`() = runTest {
         // Given
         val recommendations = createSampleRecommendations()
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(recommendations)
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(recommendations)
 
         // When
         viewModel.generateAIRecommendations()
@@ -98,7 +96,7 @@ class SmartGoalsViewModelTest {
     @Test
     fun `generateAIRecommendations sets loading state during execution`() = runTest {
         // Given
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(emptyList())
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(emptyList())
 
         // When - start operation but don't complete
         viewModel.generateAIRecommendations()
@@ -117,7 +115,7 @@ class SmartGoalsViewModelTest {
     fun `generateAIRecommendations handles error correctly`() = runTest {
         // Given
         val errorMessage = "Network error"
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenThrow(RuntimeException(errorMessage))
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } throws(RuntimeException(errorMessage))
 
         // When
         viewModel.generateAIRecommendations()
@@ -133,13 +131,13 @@ class SmartGoalsViewModelTest {
     @Test
     fun `generateAIRecommendations clears previous error`() = runTest {
         // Given - previous error state
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenThrow(RuntimeException("First error"))
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } throws(RuntimeException("First error"))
         viewModel.generateAIRecommendations()
         testDispatcher.scheduler.advanceUntilIdle()
         assertNotNull(viewModel.uiState.value.error)
 
         // When - successful call
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(createSampleRecommendations())
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(createSampleRecommendations())
         viewModel.generateAIRecommendations()
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -154,7 +152,7 @@ class SmartGoalsViewModelTest {
         // Given
         val context = GoalContext.WORKDAY
         val recommendations = listOf(createSampleRecommendations().first())
-        whenever(smartGoalSettingUseCase.generateContextualGoals(context)).thenReturn(recommendations)
+        coEvery { smartGoalSettingUseCase.generateContextualGoals(context) } returns(recommendations)
 
         // When
         viewModel.generateContextualRecommendations(context)
@@ -173,7 +171,7 @@ class SmartGoalsViewModelTest {
         // Given
         val context = GoalContext.WEEKEND
         val errorMessage = "Context analysis failed"
-        whenever(smartGoalSettingUseCase.generateContextualGoals(context)).thenThrow(RuntimeException(errorMessage))
+        coEvery { smartGoalSettingUseCase.generateContextualGoals(context) } throws(RuntimeException(errorMessage))
 
         // When
         viewModel.generateContextualRecommendations(context)
@@ -191,14 +189,14 @@ class SmartGoalsViewModelTest {
         // Given
         val context = GoalContext.EVENING
         val recommendations = listOf(createSampleRecommendations().first())
-        whenever(smartGoalSettingUseCase.generateContextualGoals(context)).thenReturn(recommendations)
+        coEvery { smartGoalSettingUseCase.generateContextualGoals(context) } returns(recommendations)
 
         // When
         viewModel.setSelectedContext(context)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        verify(smartGoalSettingUseCase).generateContextualGoals(context)
+        coVerify { smartGoalSettingUseCase.generateContextualGoals(context) }
         assertEquals(context, viewModel.uiState.value.selectedContext)
         assertEquals(recommendations, viewModel.uiState.value.recommendations)
     }
@@ -210,7 +208,7 @@ class SmartGoalsViewModelTest {
         // Given
         val recommendation = createSampleRecommendations().first()
         val goalId = 123L
-        whenever(smartGoalSettingUseCase.createGoalFromRecommendation(recommendation)).thenReturn(goalId)
+        coEvery { smartGoalSettingUseCase.createGoalFromRecommendation(recommendation) } returns(goalId)
 
         // When
         viewModel.acceptRecommendation(recommendation)
@@ -223,7 +221,7 @@ class SmartGoalsViewModelTest {
         assertNull(state.error)
         
         // Verify use case called
-        verify(smartGoalSettingUseCase).createGoalFromRecommendation(recommendation)
+        coVerify { smartGoalSettingUseCase.createGoalFromRecommendation(recommendation) }
         
         // Test event emission
         val events = mutableListOf<SmartGoalsViewModel.SmartGoalsUiEvent>()
@@ -241,7 +239,7 @@ class SmartGoalsViewModelTest {
     fun `acceptRecommendation sets creating state during execution`() = runTest {
         // Given
         val recommendation = createSampleRecommendations().first()
-        whenever(smartGoalSettingUseCase.createGoalFromRecommendation(recommendation)).thenReturn(1L)
+        coEvery { smartGoalSettingUseCase.createGoalFromRecommendation(recommendation) } returns(1L)
 
         // When - start operation but don't complete
         viewModel.acceptRecommendation(recommendation)
@@ -261,7 +259,7 @@ class SmartGoalsViewModelTest {
         // Given
         val recommendation = createSampleRecommendations().first()
         val errorMessage = "Failed to save goal"
-        whenever(smartGoalSettingUseCase.createGoalFromRecommendation(recommendation)).thenThrow(RuntimeException(errorMessage))
+        coEvery { smartGoalSettingUseCase.createGoalFromRecommendation(recommendation) } throws(RuntimeException(errorMessage))
 
         // When
         viewModel.acceptRecommendation(recommendation)
@@ -278,7 +276,7 @@ class SmartGoalsViewModelTest {
     fun `rejectRecommendation removes recommendation from list`() = runTest {
         // Given
         val recommendations = createSampleRecommendations()
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(recommendations)
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(recommendations)
         viewModel.generateAIRecommendations()
         testDispatcher.scheduler.advanceUntilIdle()
         
@@ -301,7 +299,7 @@ class SmartGoalsViewModelTest {
         // Given
         val goalId = 1L
         val adjustment = createSampleAdjustment()
-        whenever(smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId)).thenReturn(adjustment)
+        coEvery { smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId) } returns(adjustment)
 
         // When
         viewModel.checkForGoalAdjustments(goalId)
@@ -328,7 +326,7 @@ class SmartGoalsViewModelTest {
     fun `checkForGoalAdjustments with no adjustment needed`() = runTest {
         // Given
         val goalId = 1L
-        whenever(smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId)).thenReturn(null)
+        coEvery { smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId) } returns(null)
 
         // When
         viewModel.checkForGoalAdjustments(goalId)
@@ -346,7 +344,7 @@ class SmartGoalsViewModelTest {
         // Given
         val goalId = 1L
         val errorMessage = "Analysis failed"
-        whenever(smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId)).thenThrow(RuntimeException(errorMessage))
+        coEvery { smartGoalSettingUseCase.adjustGoalBasedOnPerformance(goalId) } throws(RuntimeException(errorMessage))
 
         // When
         viewModel.checkForGoalAdjustments(goalId)
@@ -363,11 +361,11 @@ class SmartGoalsViewModelTest {
     fun `applyGoalAdjustment success clears adjustment and emits event`() = runTest {
         // Given
         val adjustment = createSampleAdjustment()
-        whenever(smartGoalSettingUseCase.applyGoalAdjustment(adjustment)).thenReturn(true)
+        coEvery { smartGoalSettingUseCase.applyGoalAdjustment(adjustment) } returns(true)
         
         // Set up initial state with pending adjustment
         viewModel.checkForGoalAdjustments(1L) // This sets up the adjustment
-        whenever(smartGoalSettingUseCase.adjustGoalBasedOnPerformance(1L)).thenReturn(adjustment)
+        coEvery { smartGoalSettingUseCase.adjustGoalBasedOnPerformance(1L) } returns(adjustment)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -393,7 +391,7 @@ class SmartGoalsViewModelTest {
     fun `applyGoalAdjustment failure keeps adjustment and sets error`() = runTest {
         // Given
         val adjustment = createSampleAdjustment()
-        whenever(smartGoalSettingUseCase.applyGoalAdjustment(adjustment)).thenReturn(false)
+        coEvery { smartGoalSettingUseCase.applyGoalAdjustment(adjustment) } returns(false)
 
         // When
         viewModel.applyGoalAdjustment(adjustment)
@@ -409,7 +407,7 @@ class SmartGoalsViewModelTest {
     fun `dismissAdjustment clears pending adjustment`() = runTest {
         // Given - set up adjustment
         val adjustment = createSampleAdjustment()
-        whenever(smartGoalSettingUseCase.adjustGoalBasedOnPerformance(1L)).thenReturn(adjustment)
+        coEvery { smartGoalSettingUseCase.adjustGoalBasedOnPerformance(1L) } returns(adjustment)
         viewModel.checkForGoalAdjustments(1L)
         testDispatcher.scheduler.advanceUntilIdle()
         
@@ -428,7 +426,7 @@ class SmartGoalsViewModelTest {
     @Test
     fun `clearError resets error state`() = runTest {
         // Given - error state
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenThrow(RuntimeException("Test error"))
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } throws(RuntimeException("Test error"))
         viewModel.generateAIRecommendations()
         testDispatcher.scheduler.advanceUntilIdle()
         assertNotNull(viewModel.uiState.value.error)
@@ -443,15 +441,15 @@ class SmartGoalsViewModelTest {
     @Test
     fun `refreshRecommendations calls correct method based on context`() = runTest {
         // Test 1: No context selected - should call AI recommendations
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(emptyList())
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(emptyList())
         viewModel.refreshRecommendations()
         testDispatcher.scheduler.advanceUntilIdle()
-        verify(smartGoalSettingUseCase).generateAIRecommendedGoals()
+        coVerify { smartGoalSettingUseCase.generateAIRecommendedGoals() }
 
         // Test 2: Context selected - should call contextual recommendations
-        clearInvocations(smartGoalSettingUseCase)
+        clearAllMocks()
         val context = GoalContext.WORKDAY
-        whenever(smartGoalSettingUseCase.generateContextualGoals(context)).thenReturn(emptyList())
+        coEvery { smartGoalSettingUseCase.generateContextualGoals(context) } returns(emptyList())
         viewModel.setSelectedContext(context)
         testDispatcher.scheduler.advanceUntilIdle()
         
@@ -459,7 +457,7 @@ class SmartGoalsViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
         
         // Should call contextual goals twice (once for setSelectedContext, once for refresh)
-        verify(smartGoalSettingUseCase, times(2)).generateContextualGoals(context)
+        coVerify(exactly = 2) { smartGoalSettingUseCase.generateContextualGoals(context) }
     }
 
     // ==================== EDGE CASES AND INTEGRATION TESTS ====================
@@ -468,8 +466,8 @@ class SmartGoalsViewModelTest {
     fun `multiple simultaneous operations handle state correctly`() = runTest {
         // Given
         val recommendations = createSampleRecommendations()
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(recommendations)
-        whenever(smartGoalSettingUseCase.createGoalFromRecommendation(any())).thenReturn(1L)
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(recommendations)
+        coEvery { smartGoalSettingUseCase.createGoalFromRecommendation(any()) } returns(1L)
 
         // When - trigger multiple operations
         viewModel.generateAIRecommendations()
@@ -492,7 +490,7 @@ class SmartGoalsViewModelTest {
     @Test
     fun `empty recommendations list handled gracefully`() = runTest {
         // Given
-        whenever(smartGoalSettingUseCase.generateAIRecommendedGoals()).thenReturn(emptyList())
+        coEvery { smartGoalSettingUseCase.generateAIRecommendedGoals() } returns(emptyList())
 
         // When
         viewModel.generateAIRecommendations()

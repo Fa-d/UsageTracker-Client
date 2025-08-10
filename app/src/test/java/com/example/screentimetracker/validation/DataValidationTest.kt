@@ -78,8 +78,8 @@ class DataValidationTest {
     }
 
     @Test
-    fun `SessionData validation should work correctly`() {
-        val validSession = SessionData(
+    fun `AppSessionEvent validation should work correctly`() {
+        val validSession = AppSessionEvent(
             id = 1,
             packageName = "com.instagram.android",
             startTimeMillis = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1),
@@ -97,9 +97,9 @@ class DataValidationTest {
     }
 
     @Test
-    fun `SessionData edge cases should be handled`() {
+    fun `AppSessionEvent edge cases should be handled`() {
         // Invalid session with negative duration
-        val invalidDuration = SessionData(
+        val invalidDuration = AppSessionEvent(
             id = 1,
             packageName = "com.test.app",
             startTimeMillis = System.currentTimeMillis(),
@@ -111,7 +111,7 @@ class DataValidationTest {
         assertTrue("End time should not be before start", invalidDuration.endTimeMillis < invalidDuration.startTimeMillis)
         
         // Session with mismatched duration
-        val mismatchedDuration = SessionData(
+        val mismatchedDuration = AppSessionEvent(
             id = 2,
             packageName = "com.test.app",
             startTimeMillis = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(2),
@@ -177,11 +177,11 @@ class DataValidationTest {
 
     @Test
     fun `Goal validation should work correctly`() {
-        val validGoal = Goal(
+        val validGoal = UserGoal(
             id = 1,
-            name = "Reduce Social Media",
+            goalType = "social_media_limit",
             targetValue = 60,
-            currentValue = 45,
+            currentProgress = 45,
             createdAt = System.currentTimeMillis(),
             isActive = true
         )

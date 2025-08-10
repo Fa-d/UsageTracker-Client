@@ -10,24 +10,19 @@ import kotlinx.coroutines.flow.first
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlinx.coroutines.flow.first
-import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
+import io.mockk.*
 import java.util.Calendar
 
-@RunWith(MockitoJUnitRunner::class)
 class GetDashboardDataUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var getDashboardDataUseCase: GetDashboardDataUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         getDashboardDataUseCase = GetDashboardDataUseCase(mockRepository)
     }
 
@@ -52,12 +47,9 @@ class GetDashboardDataUseCaseTest {
             AppLastOpenedData("com.app2", 2500L)
         )
 
-        `when`(mockRepository.getUnlockCountForDayFlow(anyLong(), anyLong()))
-            .thenReturn(kotlinx.coroutines.flow.flowOf(mockUnlockCount))
-        `when`(mockRepository.getAggregatedSessionDataForDayFlow(anyLong(), anyLong()))
-            .thenReturn(kotlinx.coroutines.flow.flowOf(mockSessionAggregates))
-        `when`(mockRepository.getLastOpenedTimestampsForAppsInRangeFlow(anyLong(), anyLong()))
-            .thenReturn(kotlinx.coroutines.flow.flowOf(mockLastOpenedTimestamps))
+        every { mockRepository.getUnlockCountForDayFlow(any(), any()) } returns kotlinx.coroutines.flow.flowOf(mockUnlockCount)
+        every { mockRepository.getAggregatedSessionDataForDayFlow(any(), any()) } returns kotlinx.coroutines.flow.flowOf(mockSessionAggregates)
+        every { mockRepository.getLastOpenedTimestampsForAppsInRangeFlow(any(), any()) } returns kotlinx.coroutines.flow.flowOf(mockLastOpenedTimestamps)
 
         // When
         val result = getDashboardDataUseCase().first()

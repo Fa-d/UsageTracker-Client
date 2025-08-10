@@ -7,22 +7,18 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.whenever
-import org.mockito.kotlin.eq
+import io.mockk.*
 
 class GetAppSessionEventsUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var getAppSessionEventsUseCase: GetAppSessionEventsUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         getAppSessionEventsUseCase = GetAppSessionEventsUseCase(mockRepository)
     }
 
@@ -36,11 +32,7 @@ class GetAppSessionEventsUseCaseTest {
                 1000L, "com.1=", 1500L, 500L, durationMillis = 300L
             ), AppSessionEvent(1600L, "com.app2", 1800L, 200L, durationMillis = 600L)
         )
-        whenever(mockRepository.getAllSessionsInRange(eq(startTime), eq(endTime))).thenReturn(
-            flowOf(
-                mockEvents
-            )
-        )
+        every { mockRepository.getAllSessionsInRange(startTime, endTime) } returns flowOf(mockEvents)
 
         // When
         val resultFlow = getAppSessionEventsUseCase(startTime, endTime)

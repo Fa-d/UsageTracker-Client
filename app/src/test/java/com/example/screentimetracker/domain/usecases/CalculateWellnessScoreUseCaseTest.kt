@@ -12,24 +12,21 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.whenever
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class CalculateWellnessScoreUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockRepository: TrackerRepository
 
     private lateinit var calculateWellnessScoreUseCase: CalculateWellnessScoreUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         calculateWellnessScoreUseCase = CalculateWellnessScoreUseCase(mockRepository)
     }
 
@@ -49,7 +46,7 @@ class CalculateWellnessScoreUseCaseTest {
             calculatedAt = System.currentTimeMillis() - 1000
         )
         
-        whenever(mockRepository.getAllWellnessScores()).thenReturn(flowOf(listOf(existingScore)))
+        every { mockRepository.getAllWellnessScores() } returns(flowOf(listOf(existingScore)))
 
         // When
         val result = calculateWellnessScoreUseCase(testDate)
@@ -65,7 +62,7 @@ class CalculateWellnessScoreUseCaseTest {
         val startOfDay = getStartOfDay(testDate)
         
         // Mock empty wellness scores
-        whenever(mockRepository.getAllWellnessScores()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllWellnessScores() } returns(flowOf(emptyList()))
         
         // Mock perfect day scenario
         setupMockForPerfectWellnessDay(startOfDay)
@@ -77,7 +74,7 @@ class CalculateWellnessScoreUseCaseTest {
         assertTrue("Total score should be high for perfect day", result.totalScore >= 85)
         assertEquals(WellnessLevel.WELLNESS_MASTER, result.level)
         assertEquals(startOfDay, result.date)
-        verify(mockRepository).insertWellnessScore(any())
+        coVerify { mockRepository.insertWellnessScore(any()) }
     }
     
     @Test
@@ -86,7 +83,7 @@ class CalculateWellnessScoreUseCaseTest {
         val testDate = System.currentTimeMillis()
         val startOfDay = getStartOfDay(testDate)
         
-        whenever(mockRepository.getAllWellnessScores()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllWellnessScores() } returns(flowOf(emptyList()))
         
         // Mock poor digital habits day
         setupMockForPoorWellnessDay(startOfDay)
@@ -97,7 +94,7 @@ class CalculateWellnessScoreUseCaseTest {
         // Then
         assertTrue("Total score should be low for poor habits", result.totalScore <= 40)
         assertEquals(WellnessLevel.DIGITAL_SPROUT, result.level)
-        verify(mockRepository).insertWellnessScore(any())
+        coVerify { mockRepository.insertWellnessScore(any()) }
     }
     
     @Test
@@ -106,7 +103,7 @@ class CalculateWellnessScoreUseCaseTest {
         val testDate = System.currentTimeMillis()
         val startOfDay = getStartOfDay(testDate)
         
-        whenever(mockRepository.getAllWellnessScores()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllWellnessScores() } returns(flowOf(emptyList()))
         
         // User has 2-hour daily limit goal
         val goal = UserGoal(
@@ -114,13 +111,13 @@ class CalculateWellnessScoreUseCaseTest {
             targetValue = TimeUnit.HOURS.toMillis(2), // 2 hours
             isActive = true
         )
-        whenever(mockRepository.getActiveGoals()).thenReturn(flowOf(listOf(goal)))
+        every { mockRepository.getActiveGoals() } returns(flowOf(listOf(goal)))
         
         // User used exactly 1.5 hours (under limit)
         val sessionData = listOf(
             AppSessionDataAggregate("com.example.app", TimeUnit.HOURS.toMillis(1) + TimeUnit.MINUTES.toMillis(30), 3)
         )
-        whenever(mockRepository.getAggregatedSessionDataForDayFlow(any(), any())).thenReturn(flowOf(sessionData))
+        every { mockRepository.getAggregatedSessionDataForDayFlow(any(), any()) } returns(flowOf(sessionData))
         
         // Mock other calculations to return neutral scores
         setupNeutralMocksExceptTimeLimits(startOfDay)
@@ -138,7 +135,7 @@ class CalculateWellnessScoreUseCaseTest {
         val testDate = System.currentTimeMillis()
         val startOfDay = getStartOfDay(testDate)
         
-        whenever(mockRepository.getAllWellnessScores()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllWellnessScores() } returns(flowOf(emptyList()))
         
         // Mock 3 successful focus sessions
         val focusSessions = listOf(
@@ -167,7 +164,7 @@ class CalculateWellnessScoreUseCaseTest {
                 wasSuccessful = true
             )
         )
-        whenever(mockRepository.getFocusSessionsForDate(startOfDay)).thenReturn(focusSessions)
+        coEvery { mockRepository.getFocusSessionsForDate(startOfDay) } returns(focusSessions)
         
         // Mock other calculations to return neutral scores
         setupNeutralMocksExceptFocus(startOfDay)
@@ -317,13 +314,13 @@ class CalculateWellnessScoreUseCaseTest {
             targetValue = TimeUnit.HOURS.toMillis(2),
             isActive = true
         )
-        whenever(mockRepository.getActiveGoals()).thenReturn(flowOf(listOf(perfectGoal)))
+        every { mockRepository.getActiveGoals() } returns(flowOf(listOf(perfectGoal)))
         
         // Light usage - 1 hour total
         val lightUsageData = listOf(
             AppSessionDataAggregate("com.example.app", TimeUnit.HOURS.toMillis(1), 2)
         )
-        whenever(mockRepository.getAggregatedSessionDataForDayFlow(any(), any())).thenReturn(flowOf(lightUsageData))
+        every { mockRepository.getAggregatedSessionDataForDayFlow(any(), any()) } returns(flowOf(lightUsageData))
         
         // Perfect focus sessions - 3 successful
         val perfectFocusSessions = listOf(
@@ -352,13 +349,13 @@ class CalculateWellnessScoreUseCaseTest {
                 wasSuccessful = true
             )
         )
-        whenever(mockRepository.getFocusSessionsForDate(startOfDay)).thenReturn(perfectFocusSessions)
+        coEvery { mockRepository.getFocusSessionsForDate(startOfDay) } returns(perfectFocusSessions)
         
         // Healthy breaks - low unlock frequency
-        whenever(mockRepository.getUnlockCountForDayFlow(any(), any())).thenReturn(flowOf(20))
+        every { mockRepository.getUnlockCountForDayFlow(any(), any()) } returns(flowOf(20))
         
         // No evening/bedtime usage - perfect sleep hygiene
-        whenever(mockRepository.getAllSessionsInRange(any(), any())).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllSessionsInRange(any(), any()) } returns(flowOf(emptyList()))
     }
     
     private suspend fun setupMockForPoorWellnessDay(startOfDay: Long) {
@@ -368,19 +365,19 @@ class CalculateWellnessScoreUseCaseTest {
             targetValue = TimeUnit.HOURS.toMillis(2), // 2 hour limit
             isActive = true
         )
-        whenever(mockRepository.getActiveGoals()).thenReturn(flowOf(listOf(exceededGoal)))
+        every { mockRepository.getActiveGoals() } returns(flowOf(listOf(exceededGoal)))
         
         // Heavy usage - 6 hours (3x over limit)
         val heavyUsageData = listOf(
             AppSessionDataAggregate("com.social.app", TimeUnit.HOURS.toMillis(6), 20)
         )
-        whenever(mockRepository.getAggregatedSessionDataForDayFlow(any(), any())).thenReturn(flowOf(heavyUsageData))
+        every { mockRepository.getAggregatedSessionDataForDayFlow(any(), any()) } returns(flowOf(heavyUsageData))
         
         // No focus sessions attempted
-        whenever(mockRepository.getFocusSessionsForDate(startOfDay)).thenReturn(emptyList())
+        coEvery { mockRepository.getFocusSessionsForDate(startOfDay) } returns(emptyList())
         
         // Very high unlock frequency (compulsive checking)
-        whenever(mockRepository.getUnlockCountForDayFlow(any(), any())).thenReturn(flowOf(200))
+        every { mockRepository.getUnlockCountForDayFlow(any(), any()) } returns(flowOf(200))
         
         // Heavy bedtime usage - poor sleep hygiene
         val bedtimeSessions = listOf(
@@ -391,31 +388,31 @@ class CalculateWellnessScoreUseCaseTest {
                 durationMillis = TimeUnit.HOURS.toMillis(2) // 2 hours of bedtime usage
             )
         )
-        whenever(mockRepository.getAllSessionsInRange(any(), any())).thenReturn(flowOf(bedtimeSessions))
+        every { mockRepository.getAllSessionsInRange(any(), any()) } returns(flowOf(bedtimeSessions))
     }
     
     private suspend fun setupNeutralMocksExceptTimeLimits(startOfDay: Long) {
         // Neutral focus sessions
-        whenever(mockRepository.getFocusSessionsForDate(startOfDay)).thenReturn(emptyList())
+        coEvery { mockRepository.getFocusSessionsForDate(startOfDay) } returns(emptyList())
         
         // Neutral breaks
-        whenever(mockRepository.getUnlockCountForDayFlow(any(), any())).thenReturn(flowOf(50))
+        every { mockRepository.getUnlockCountForDayFlow(any(), any()) } returns(flowOf(50))
         
         // Neutral sleep hygiene
-        whenever(mockRepository.getAllSessionsInRange(any(), any())).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllSessionsInRange(any(), any()) } returns(flowOf(emptyList()))
     }
     
     private suspend fun setupNeutralMocksExceptFocus(startOfDay: Long) {
         // Neutral goals - no daily screen time goals
-        whenever(mockRepository.getActiveGoals()).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getActiveGoals() } returns(flowOf(emptyList()))
         
         // Neutral usage
-        whenever(mockRepository.getAggregatedSessionDataForDayFlow(any(), any())).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAggregatedSessionDataForDayFlow(any(), any()) } returns(flowOf(emptyList()))
         
         // Neutral breaks
-        whenever(mockRepository.getUnlockCountForDayFlow(any(), any())).thenReturn(flowOf(50))
+        every { mockRepository.getUnlockCountForDayFlow(any(), any()) } returns(flowOf(50))
         
         // Neutral sleep hygiene
-        whenever(mockRepository.getAllSessionsInRange(any(), any())).thenReturn(flowOf(emptyList()))
+        every { mockRepository.getAllSessionsInRange(any(), any()) } returns(flowOf(emptyList()))
     }
 }

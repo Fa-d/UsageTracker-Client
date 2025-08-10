@@ -10,26 +10,24 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
+import io.mockk.*
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class GetInstalledAppsUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var mockApplication: Application
 
-    @Mock
+    @MockK
     private lateinit var mockPackageManager: PackageManager
 
     private lateinit var getInstalledAppsUseCase: GetInstalledAppsUseCase
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        whenever(mockApplication.packageManager).thenReturn(mockPackageManager)
+        MockKAnnotations.init(this, relaxUnitFun = true)
+        every { mockApplication.packageManager } returns mockPackageManager
         getInstalledAppsUseCase = GetInstalledAppsUseCase(mockApplication)
     }
 
@@ -42,8 +40,7 @@ class GetInstalledAppsUseCaseTest {
         
         val mockResolveInfoList = listOf(mockResolveInfo1, mockResolveInfo2, mockResolveInfo3)
         
-        whenever(mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()))
-            .thenReturn(mockResolveInfoList)
+        every { mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()) } returns mockResolveInfoList
 
         // When
         val result = getInstalledAppsUseCase()
@@ -62,8 +59,7 @@ class GetInstalledAppsUseCaseTest {
     @Test
     fun `invoke should handle empty app list`() = runTest {
         // Given
-        whenever(mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()))
-            .thenReturn(emptyList())
+        every { mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()) } returns emptyList()
 
         // When
         val result = getInstalledAppsUseCase()
@@ -81,8 +77,7 @@ class GetInstalledAppsUseCaseTest {
         
         val mockResolveInfoList = listOf(mockResolveInfo1, mockResolveInfo2, mockResolveInfo3)
         
-        whenever(mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()))
-            .thenReturn(mockResolveInfoList)
+        every { mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()) } returns mockResolveInfoList
 
         // When
         val result = getInstalledAppsUseCase()
@@ -96,20 +91,19 @@ class GetInstalledAppsUseCaseTest {
     @Test
     fun `invoke should query with correct intent and flags`() = runTest {
         // Given
-        whenever(mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()))
-            .thenReturn(emptyList())
+        every { mockPackageManager.queryIntentActivities(any<Intent>(), any<Int>()) } returns emptyList()
 
         // When
         getInstalledAppsUseCase()
 
         // Then
-        verify(mockPackageManager).queryIntentActivities(
-            argThat { intent ->
+        verify { mockPackageManager.queryIntentActivities(
+            match { intent ->
                 intent.action == Intent.ACTION_MAIN && 
                 intent.categories?.contains(Intent.CATEGORY_LAUNCHER) == true
             },
-            eq(PackageManager.MATCH_ALL)
-        )
+            PackageManager.MATCH_ALL
+        ) }
     }
 
     private fun createMockResolveInfo(packageName: String, appName: String): ResolveInfo {
@@ -121,7 +115,7 @@ class GetInstalledAppsUseCaseTest {
         mockActivityInfo.packageName = packageName
         mockActivityInfo.applicationInfo = mockApplicationInfo
         
-        whenever(mockPackageManager.getApplicationLabel(mockApplicationInfo)).thenReturn(appName)
+        every { mockPackageManager.getApplicationLabel(mockApplicationInfo) } returns appName
         
         return mockResolveInfo
     }
