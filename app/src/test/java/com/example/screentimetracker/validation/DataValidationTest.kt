@@ -320,7 +320,7 @@ class DataValidationTest {
         val emptyReport = WeeklyInsightsUseCase.WeeklyReport.empty()
         assertEquals("Empty report should have zero values", 0, emptyReport.totalScreenTimeMillis)
         assertTrue("Empty report should have empty collections", emptyReport.topApps.isEmpty())
-        assertTrue("Empty report should have empty insights", emptyReport.insights.isEmpty())
+        assertTrue("Empty report should have default insights message", emptyReport.insights.isNotEmpty())
     }
 
     @Test
