@@ -7,19 +7,15 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
 import io.mockk.*
-import io.mockk.impl.annotations.MockK
 import java.util.concurrent.TimeUnit
 
 class AddLimitedAppUseCaseTest {
 
-    @MockK
-    private lateinit var mockRepository: TrackerRepository
-
+    private val mockRepository = mockk<TrackerRepository>()
     private lateinit var addLimitedAppUseCase: AddLimitedAppUseCase
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
         addLimitedAppUseCase = AddLimitedAppUseCase(mockRepository)
     }
 
@@ -30,6 +26,7 @@ class AddLimitedAppUseCaseTest {
             packageName = "com.instagram.android",
             timeLimitMillis = TimeUnit.HOURS.toMillis(1) // 1 hour
         )
+        coEvery { mockRepository.insertLimitedApp(limitedApp) } just Runs
 
         // When
         addLimitedAppUseCase(limitedApp)
@@ -84,6 +81,9 @@ class AddLimitedAppUseCaseTest {
             LimitedApp("com.twitter.android", TimeUnit.MINUTES.toMillis(45)),
             LimitedApp("com.snapchat.android", TimeUnit.HOURS.toMillis(2))
         )
+        limitedApps.forEach { 
+            coEvery { mockRepository.insertLimitedApp(it) } just Runs
+        }
 
         // When
         limitedApps.forEach { addLimitedAppUseCase(it) }
@@ -101,6 +101,7 @@ class AddLimitedAppUseCaseTest {
             packageName = "com.app.test",
             timeLimitMillis = 1L // Minimum valid value
         )
+        coEvery { mockRepository.insertLimitedApp(limitedApp) } just Runs
 
         // When
         addLimitedAppUseCase(limitedApp)

@@ -14,26 +14,19 @@ import io.mockk.impl.annotations.MockK
 
 class InitializeAppUseCaseTest {
 
-    @MockK
-    private lateinit var mockApplication: Application
-
-    @MockK
-    private lateinit var mockWorkManager: WorkManager
-
-    @MockK
-    private lateinit var mockSharedPreferences: SharedPreferences
-
-    @MockK
-    private lateinit var mockSharedPreferencesEditor: SharedPreferences.Editor
+    private val mockApplication = mockk<Application>()
+    private val mockWorkManager = mockk<WorkManager>()
+    private val mockSharedPreferences = mockk<SharedPreferences>()
+    private val mockSharedPreferencesEditor = mockk<SharedPreferences.Editor>(relaxed = true)
 
     private lateinit var initializeAppUseCase: InitializeAppUseCase
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
         every { mockApplication.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) } returns mockSharedPreferences
         every { mockSharedPreferences.edit() } returns mockSharedPreferencesEditor
         every { mockSharedPreferencesEditor.putBoolean(any(), any()) } returns mockSharedPreferencesEditor
+        every { mockWorkManager.enqueue(any<OneTimeWorkRequest>()) } returns mockk()
         
         initializeAppUseCase = InitializeAppUseCase(mockApplication, mockWorkManager)
     }

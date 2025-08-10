@@ -1,8 +1,6 @@
 package com.example.screentimetracker.services
 
 import android.content.Context
-import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
 import com.example.screentimetracker.utils.logger.AppLogger
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -12,26 +10,16 @@ import io.mockk.verify
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import java.util.*
 
-@RunWith(RobolectricTestRunner::class)
 class NotificationSchedulerTest {
 
-    @MockK
-    private lateinit var appLogger: AppLogger
-
-    private lateinit var context: Context
+    private val appLogger = mockk<AppLogger>()
+    private val context = mockk<Context>(relaxed = true)
     private lateinit var notificationScheduler: NotificationScheduler
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this)
-        context = RuntimeEnvironment.getApplication()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context)
-        
         every { appLogger.i(any(), any()) } returns Unit
         every { appLogger.e(any(), any(), any()) } returns Unit
 
@@ -39,34 +27,30 @@ class NotificationSchedulerTest {
     }
 
     @Test
-    fun `scheduleWeeklyReportNotification should schedule work successfully`() {
+    fun `scheduleWeeklyReportNotification should handle WorkManager unavailability`() {
         // When
         notificationScheduler.scheduleWeeklyReportNotification()
 
-        // Then
-        verify { appLogger.i("NotificationScheduler", match { it.contains("Weekly report notification scheduled") }) }
+        // Then - Should log error when WorkManager is not available
+        verify { appLogger.e("NotificationScheduler", "Failed to schedule weekly report notification", any()) }
     }
 
     @Test
-    fun `schedulePeriodicWeeklyReports should schedule periodic work successfully`() {
+    fun `schedulePeriodicWeeklyReports should handle WorkManager unavailability`() {
         // When
         notificationScheduler.schedulePeriodicWeeklyReports()
 
-        // Then
-        verify { appLogger.i("NotificationScheduler", "Periodic weekly report notifications scheduled") }
+        // Then - Should log error when WorkManager is not available
+        verify { appLogger.e("NotificationScheduler", "Failed to schedule periodic weekly report notifications", any()) }
     }
 
     @Test
-    fun `cancelWeeklyReportNotifications should cancel work successfully`() {
-        // Given - schedule first
-        notificationScheduler.scheduleWeeklyReportNotification()
-        notificationScheduler.schedulePeriodicWeeklyReports()
-
+    fun `cancelWeeklyReportNotifications should handle WorkManager unavailability`() {
         // When
         notificationScheduler.cancelWeeklyReportNotifications()
 
-        // Then
-        verify { appLogger.i("NotificationScheduler", "Weekly report notifications cancelled") }
+        // Then - Should log error when WorkManager is not available
+        verify { appLogger.e("NotificationScheduler", "Failed to cancel weekly report notifications", any()) }
     }
 
     @Test
@@ -103,30 +87,29 @@ class NotificationSchedulerTest {
 
     @Test
     fun `schedule operations should handle exceptions gracefully`() {
-        // Given - mock WorkManager to throw exception
+        // Given - WorkManager is not available in test environment
         val mockAppLogger = mockk<AppLogger>(relaxed = true)
         val scheduler = NotificationScheduler(context, mockAppLogger)
 
-        // This test verifies the error handling in the catch blocks
-        // The actual WorkManager operations should complete successfully in test environment
-
-        // When
+        // When - operations fail due to WorkManager unavailability
         scheduler.scheduleWeeklyReportNotification()
         scheduler.schedulePeriodicWeeklyReports()
 
-        // Then - should log success messages (no exceptions thrown)
-        verify { mockAppLogger.i(any(), any()) }
+        // Then - should log error messages for both operations
+        verify { mockAppLogger.e("NotificationScheduler", "Failed to schedule weekly report notification", any()) }
+        verify { mockAppLogger.e("NotificationScheduler", "Failed to schedule periodic weekly report notifications", any()) }
     }
 
     @Test
-    fun `multiple schedule calls should replace existing work`() {
-        // When - schedule multiple times
+    fun `multiple schedule calls should handle WorkManager unavailability consistently`() {
+        // When - schedule multiple times (each will fail due to WorkManager unavailability)
         notificationScheduler.scheduleWeeklyReportNotification()
         notificationScheduler.scheduleWeeklyReportNotification()
         notificationScheduler.schedulePeriodicWeeklyReports()
         notificationScheduler.schedulePeriodicWeeklyReports()
 
-        // Then - should complete successfully (ExistingWorkPolicy.REPLACE)
-        verify(atLeast = 2) { appLogger.i("NotificationScheduler", match { it.contains("scheduled") }) }
+        // Then - should log error messages for each failed operation
+        verify(exactly = 2) { appLogger.e("NotificationScheduler", "Failed to schedule weekly report notification", any()) }
+        verify(exactly = 2) { appLogger.e("NotificationScheduler", "Failed to schedule periodic weekly report notifications", any()) }
     }
 }

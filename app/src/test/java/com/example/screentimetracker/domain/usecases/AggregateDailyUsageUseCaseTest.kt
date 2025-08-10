@@ -16,18 +16,12 @@ import java.util.Calendar
 
 class AggregateDailyUsageUseCaseTest {
 
-    @MockK
-    private lateinit var mockRepository: TrackerRepository
-
-    @MockK
-    private lateinit var mockAppLogger: AppLogger
-
+    private val mockRepository = mockk<TrackerRepository>()
+    private val mockAppLogger = mockk<AppLogger>()
     private lateinit var aggregateDailyUsageUseCase: AggregateDailyUsageUseCase
-
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
         aggregateDailyUsageUseCase = AggregateDailyUsageUseCase(mockRepository, mockAppLogger)
     }
 
@@ -61,6 +55,10 @@ class AggregateDailyUsageUseCaseTest {
                 startOfYesterdayMillis, endOfYesterdayMillis
             )
         } returns mockUnlockCount
+        
+        every { mockAppLogger.d(any(), any()) } just Runs
+        coEvery { mockRepository.insertDailyAppSummaries(any()) } just Runs
+        coEvery { mockRepository.insertDailyScreenUnlockSummary(any()) } just Runs
 
         // When
         aggregateDailyUsageUseCase()
@@ -100,6 +98,9 @@ class AggregateDailyUsageUseCaseTest {
                 startOfYesterdayMillis, endOfYesterdayMillis
             )
         } returns mockUnlockCount
+        
+        every { mockAppLogger.d(any(), any()) } just Runs
+        coEvery { mockRepository.insertDailyScreenUnlockSummary(any()) } just Runs
 
         // When
         aggregateDailyUsageUseCase()
