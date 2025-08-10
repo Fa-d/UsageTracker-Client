@@ -269,7 +269,7 @@ class LargeDatasetPerformanceTest {
             AppSessionDataAggregate(
                 packageName = packages[i % packages.size],
                 totalDuration = TimeUnit.MINUTES.toMillis((1..120).random().toLong()),
-                dayStartMillis = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong())
+                sessionCount = (1..20).random()
             )
         }
     }
@@ -277,10 +277,10 @@ class LargeDatasetPerformanceTest {
     private fun generateLargeDailyAppSummaries(count: Int): List<DailyAppSummary> {
         return (1..count).map { i ->
             DailyAppSummary(
+                dateMillis = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong()),
                 packageName = "com.test.app$i",
                 totalDurationMillis = TimeUnit.MINUTES.toMillis((1..300).random().toLong()),
-                openCount = (1..50).random(),
-                dayStartMillis = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong())
+                openCount = (1..50).random()
             )
         }
     }
@@ -288,10 +288,14 @@ class LargeDatasetPerformanceTest {
     private fun generateLargeWellnessScores(count: Int): List<WellnessScore> {
         return (1..count).map { i ->
             WellnessScore(
-                id = i.toLong(),
-                score = (0..100).random(),
-                calculatedAt = currentTime - TimeUnit.HOURS.toMillis((count - i).toLong()),
-                dayStartMillis = weekStart + TimeUnit.HOURS.toMillis((i % (7 * 24)).toLong())
+                date = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong()),
+                totalScore = (0..100).random(),
+                timeLimitScore = (0..25).random(),
+                focusSessionScore = (0..25).random(),
+                breaksScore = (0..25).random(),
+                sleepHygieneScore = (0..25).random(),
+                level = com.example.screentimetracker.domain.model.WellnessLevel.values().random(),
+                calculatedAt = currentTime - TimeUnit.HOURS.toMillis((count - i).toLong())
             )
         }
     }
@@ -335,10 +339,10 @@ class LargeDatasetPerformanceTest {
         
         return (1..count).map { i ->
             DailyAppSummary(
+                dateMillis = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong()),
                 packageName = if (i <= allApps.size) allApps[i - 1] else "com.test.app$i",
                 totalDurationMillis = TimeUnit.MINUTES.toMillis((1..240).random().toLong()),
-                openCount = (1..30).random(),
-                dayStartMillis = weekStart + TimeUnit.DAYS.toMillis((i % 7).toLong())
+                openCount = (1..30).random()
             )
         }
     }

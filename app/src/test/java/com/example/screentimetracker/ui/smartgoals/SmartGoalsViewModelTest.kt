@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi

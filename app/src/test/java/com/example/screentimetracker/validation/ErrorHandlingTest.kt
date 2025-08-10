@@ -14,6 +14,7 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -50,7 +51,7 @@ class ErrorHandlingTest {
         every { appLogger.w(any(), any(), any()) } just runs
         every { appLogger.d(any(), any()) } just runs
 
-        timeRestrictionUseCase = TimeRestrictionManagerUseCase(context, repository, appLogger)
+        timeRestrictionUseCase = TimeRestrictionManagerUseCase(repository, notificationManager, appLogger)
         weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger)
         notificationScheduler = NotificationScheduler(context, appLogger)
     }
@@ -73,22 +74,31 @@ class ErrorHandlingTest {
         // Given - Invalid time restriction (end time before start time)
         val invalidRestriction = TimeRestriction(
             id = 0,
-            packageName = "com.test.app",
-            startTimeMillis = TimeUnit.HOURS.toMillis(17), // 5 PM
-            endTimeMillis = TimeUnit.HOURS.toMillis(9),    // 9 AM (invalid - before start)
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "test",
+            name = "Invalid Test",
+            description = "Invalid time restriction for testing",
+            startTimeMinutes = 17 * 60, // 5 PM
+            endTimeMinutes = 9 * 60,    // 9 AM (invalid - before start)
+            appsBlocked = "com.test.app",
+            daysOfWeek = "1,2,3,4,5",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
 
         coEvery { repository.insertTimeRestriction(any()) } throws IllegalArgumentException("Invalid time restriction")
 
         // When
-        val result = timeRestrictionUseCase.createTimeRestriction(invalidRestriction)
+        val result = runCatching { timeRestrictionUseCase.createCustomRestriction(
+            name = "Invalid Test",
+            description = "Invalid time restriction for testing",
+            startTimeMinutes = 17 * 60,
+            endTimeMinutes = 9 * 60,
+            blockedApps = listOf("com.test.app"),
+            daysOfWeek = listOf(1, 2, 3, 4, 5)
+        ) }.isFailure
 
         // Then - Should handle gracefully
-        assertFalse("Should fail to create invalid restriction", result)
+        assertTrue("Should fail to create invalid restriction", result)
         verify { appLogger.e("TimeRestrictionManagerUseCase", "Failed to create time restriction", any()) }
     }
 
@@ -97,20 +107,29 @@ class ErrorHandlingTest {
         // Given - Time restriction with null/empty package name
         val nullPackageRestriction = TimeRestriction(
             id = 0,
-            packageName = "", // Empty package name
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "test",
+            name = "Empty Package Test",
+            description = "Test with empty apps blocked",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            appsBlocked = "", // Empty apps blocked
+            daysOfWeek = "1,2,3,4,5",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
 
         // When/Then - Should handle empty package name gracefully
-        val isRestricted = timeRestrictionUseCase.isAppCurrentlyRestricted("")
+        val isRestricted = runBlocking { timeRestrictionUseCase.isAppBlockedByTimeRestriction("") }
         assertFalse("Empty package name should not be restricted", isRestricted)
 
-        val result = timeRestrictionUseCase.createTimeRestriction(nullPackageRestriction)
+        val result = runCatching { timeRestrictionUseCase.createCustomRestriction(
+            name = "Empty Package Test",
+            description = "Test with empty apps blocked",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            blockedApps = emptyList(),
+            daysOfWeek = listOf(1, 2, 3, 4, 5)
+        ) }.isSuccess
         // Should either succeed with validation or fail gracefully
         assertNotNull("Should return a boolean result", result)
     }
@@ -281,20 +300,19 @@ class ErrorHandlingTest {
         )
 
         // When/Then - Should handle malicious input safely
-        val isBlocked = timeRestrictionUseCase.isAppBlockedByTimeRestriction(maliciousPackageName)
+        val isBlocked = runBlocking { timeRestrictionUseCase.isAppBlockedByTimeRestriction(maliciousPackageName) }
         assertNotNull("Should handle malicious input safely", isBlocked)
 
         // The actual insertion would be handled by the repository layer with parameterized queries
         // This test ensures the use case layer doesn't crash on malicious input
-        val result = timeRestrictionUseCase.createCustomRestriction(
+        val result = runBlocking { timeRestrictionUseCase.createCustomRestriction(
             name = maliciousRestriction.name,
             description = maliciousRestriction.description,
-            restrictionType = maliciousRestriction.restrictionType,
             startTimeMinutes = maliciousRestriction.startTimeMinutes,
             endTimeMinutes = maliciousRestriction.endTimeMinutes,
             blockedApps = listOf(maliciousPackageName),
             daysOfWeek = listOf(1,2,3,4,5)
-        )
+        ) }
         assertNotNull("Should return a result even with malicious input", result)
     }
 
@@ -311,7 +329,7 @@ class ErrorHandlingTest {
 
         // When/Then - Should handle all boundary values gracefully
         boundaryValues.forEach { value ->
-            val isRestricted = timeRestrictionUseCase.isAppCurrentlyRestricted("test.package")
+            val isRestricted = runBlocking { timeRestrictionUseCase.isAppBlockedByTimeRestriction("test.package") }
             assertNotNull("Should handle boundary timestamp: $value", isRestricted)
         }
     }

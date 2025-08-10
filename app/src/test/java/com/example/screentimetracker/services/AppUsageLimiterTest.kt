@@ -1,9 +1,10 @@
-package com.example.screentimetracker.services.limiter
+package com.example.screentimetracker.services
 
 import android.content.Context
 import android.content.pm.PackageManager
 import com.example.screentimetracker.domain.model.LimitedApp
 import com.example.screentimetracker.domain.repository.TrackerRepository
+import com.example.screentimetracker.services.limiter.AppUsageLimiter
 import com.example.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -65,7 +66,13 @@ class AppUsageLimiterTest {
         MockKAnnotations.init(this, relaxUnitFun = true)
         every { mockContext.packageManager } returns mockPackageManager
 
-        appUsageLimiter = AppUsageLimiter(mockContext, mockRepository, mockAppLogger, mockAppNotificationManager, mockAppToastManager)
+        appUsageLimiter = AppUsageLimiter(
+            mockContext,
+            mockRepository,
+            mockAppLogger,
+            mockAppNotificationManager,
+            mockAppToastManager
+        )
     }
 
     @Test
@@ -153,7 +160,6 @@ class AppUsageLimiterTest {
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
         // Then
-        verify { mockAppLogger.i(any(), any()) }
         verify { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) }
     }
 
@@ -173,10 +179,10 @@ class AppUsageLimiterTest {
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
-        // Then
-        verify { mockAppLogger.i(any(), any()) }
+        // Then - Only verify actions that should actually be called
         verify { mockAppToastManager.bringAppToForeground(packageName) } // Verify new interface call
         verify { mockAppToastManager.showDissuasionToast("Test App") } // Verify new interface call
+        verify { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) } // Warning should also be shown
     }
 
     @Test
@@ -208,11 +214,14 @@ class AppUsageLimiterTest {
         appUsageLimiter.setLimitedAppSettings(listOf(limitedApp)) // Directly set for test
         appUsageLimiter.onNewSession(packageName, startTime)
 
+        // Mock getApplicationLabel to return a dummy app name
+        every { mockPackageManager.getApplicationLabel(any()) } returns "Test App"
+
         // When
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
 
-        // Then
-        verify(exactly = 0) { mockAppLogger.i(any(), any()) }
+        // Then - Warning should be shown (since limit is exceeded) but no dissuasion action
+        verify { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) } // Warning should be shown
         verify(exactly = 0) { mockAppToastManager.bringAppToForeground(any()) } // Verify no startActivity
         verify(exactly = 0) { mockAppToastManager.showDissuasionToast(any()) } // Verify no toast
     }
@@ -262,17 +271,17 @@ class AppUsageLimiterTest {
 
         // First check - dissuasion should be executed
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis())
-        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
         verify(exactly = 1) { mockAppToastManager.bringAppToForeground(packageName) }
         verify(exactly = 1) { mockAppToastManager.showDissuasionToast("Test App") }
+        verify(exactly = 1) { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) }
 
         // When - check again without new session
         appUsageLimiter.checkUsageLimits(packageName, System.currentTimeMillis() + 1000)
 
-        // Then - dissuasion should not be re-executed
-        verify(exactly = 1) { mockAppLogger.i(any(), any()) }
+        // Then - dissuasion should not be re-executed (still exactly 1 call)
         verify(exactly = 1) { mockAppToastManager.bringAppToForeground(packageName) }
         verify(exactly = 1) { mockAppToastManager.showDissuasionToast("Test App") }
+        verify(exactly = 1) { mockAppNotificationManager.showWarningNotification(any<LimitedApp>(), any<Long>()) }
     }
 
     

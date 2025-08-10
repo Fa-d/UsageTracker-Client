@@ -14,67 +14,76 @@ class DataValidationTest {
         // Valid time restriction
         val validRestriction = TimeRestriction(
             id = 1,
-            packageName = "com.instagram.android",
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "work_hours_focus",
+            name = "Work Focus",
+            description = "Block social media during work",
+            startTimeMinutes = 9 * 60, // 9 AM
+            endTimeMinutes = 17 * 60, // 5 PM
+            appsBlocked = "com.instagram.android",
+            daysOfWeek = "1,2,3,4,5",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
         
         // Validate basic properties
-        assertTrue("Package name should not be empty", validRestriction.packageName.isNotEmpty())
-        assertTrue("Start time should be before end time", validRestriction.startTimeMillis < validRestriction.endTimeMillis)
+        assertTrue("Apps blocked should not be empty", validRestriction.appsBlocked.isNotEmpty())
+        assertTrue("Start time should be before end time", validRestriction.startTimeMinutes < validRestriction.endTimeMinutes)
         assertTrue("Days of week should not be empty", validRestriction.daysOfWeek.isNotEmpty())
-        assertTrue("Days of week should be valid (1-7)", validRestriction.daysOfWeek.all { it in 1..7 })
-        assertTrue("Violation count should be non-negative", validRestriction.violationCount >= 0)
+        val daysArray = validRestriction.daysOfWeek.split(",").map { it.toInt() }
+        assertTrue("Days of week should be valid (1-7)", daysArray.all { it in 1..7 })
         assertTrue("Created time should be positive", validRestriction.createdAt > 0)
     }
 
     @Test
     fun `TimeRestriction edge cases should be handled`() {
         // Invalid cases that should be detected
-        val invalidPackageName = TimeRestriction(
+        val invalidAppsBlocked = TimeRestriction(
             id = 1,
-            packageName = "", // Empty package name
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "test",
+            name = "Test",
+            description = "Test",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            appsBlocked = "", // Empty apps blocked
+            daysOfWeek = "1",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
         
-        assertTrue("Empty package name should be invalid", invalidPackageName.packageName.isEmpty())
+        assertTrue("Empty apps blocked should be invalid", invalidAppsBlocked.appsBlocked.isEmpty())
         
         // Overlapping times (end before start)
         val invalidTimes = TimeRestriction(
             id = 2,
-            packageName = "com.test.app",
-            startTimeMillis = TimeUnit.HOURS.toMillis(17),
-            endTimeMillis = TimeUnit.HOURS.toMillis(9), // End before start
-            daysOfWeek = setOf(1),
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "test",
+            name = "Test",
+            description = "Test",
+            startTimeMinutes = 17 * 60, // 5 PM
+            endTimeMinutes = 9 * 60, // 9 AM - End before start
+            appsBlocked = "com.test.app",
+            daysOfWeek = "1",
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
         
-        assertTrue("End time should not be before start time", invalidTimes.startTimeMillis > invalidTimes.endTimeMillis)
+        assertTrue("End time should not be before start time", invalidTimes.startTimeMinutes > invalidTimes.endTimeMinutes)
         
         // Invalid days of week
         val invalidDays = TimeRestriction(
             id = 3,
-            packageName = "com.test.app",
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(0, 8, 9), // Invalid days
-            isActive = true,
-            createdAt = System.currentTimeMillis(),
-            violationCount = 0
+            restrictionType = "test",
+            name = "Test",
+            description = "Test",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            appsBlocked = "com.test.app",
+            daysOfWeek = "0,8,9", // Invalid days
+            isEnabled = true,
+            createdAt = System.currentTimeMillis()
         )
         
-        assertTrue("Should have invalid days of week", invalidDays.daysOfWeek.any { it !in 1..7 })
+        val invalidDaysArray = invalidDays.daysOfWeek.split(",").map { it.toInt() }
+        assertTrue("Should have invalid days of week", invalidDaysArray.any { it !in 1..7 })
     }
 
     @Test
@@ -126,70 +135,96 @@ class DataValidationTest {
     @Test
     fun `WellnessScore validation should work correctly`() {
         val validScore = WellnessScore(
-            id = 1,
-            score = 75,
-            calculatedAt = System.currentTimeMillis(),
-            dayStartMillis = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(12)
+            date = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(12),
+            totalScore = 75,
+            timeLimitScore = 20,
+            focusSessionScore = 20,
+            breaksScore = 20,
+            sleepHygieneScore = 15,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            calculatedAt = System.currentTimeMillis()
         )
         
         // Validate wellness score properties
-        assertTrue("Score should be between 0 and 100", validScore.score in 0..100)
+        assertTrue("Total score should be between 0 and 100", validScore.totalScore in 0..100)
         assertTrue("Calculated time should be positive", validScore.calculatedAt > 0)
-        assertTrue("Day start should be positive", validScore.dayStartMillis > 0)
-        assertTrue("Day start should be before calculated time", validScore.dayStartMillis <= validScore.calculatedAt)
+        assertTrue("Date should be positive", validScore.date > 0)
+        assertTrue("Date should be before or equal to calculated time", validScore.date <= validScore.calculatedAt)
     }
 
     @Test
     fun `WellnessScore edge cases should be handled`() {
         // Invalid scores
-        val negativeScore = WellnessScore(1, -10, System.currentTimeMillis(), System.currentTimeMillis())
-        val tooHighScore = WellnessScore(2, 150, System.currentTimeMillis(), System.currentTimeMillis())
+        val negativeScore = WellnessScore(
+            date = System.currentTimeMillis(),
+            totalScore = -10,
+            timeLimitScore = 0,
+            focusSessionScore = 0,
+            breaksScore = 0,
+            sleepHygieneScore = 0,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            calculatedAt = System.currentTimeMillis()
+        )
+        val tooHighScore = WellnessScore(
+            date = System.currentTimeMillis(),
+            totalScore = 150,
+            timeLimitScore = 50,
+            focusSessionScore = 50,
+            breaksScore = 25,
+            sleepHygieneScore = 25,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.WELLNESS_MASTER,
+            calculatedAt = System.currentTimeMillis()
+        )
         
-        assertTrue("Score should not be negative", negativeScore.score < 0)
-        assertTrue("Score should not exceed 100", tooHighScore.score > 100)
+        assertTrue("Total score should not be negative", negativeScore.totalScore < 0)
+        assertTrue("Total score should not exceed 100", tooHighScore.totalScore > 100)
         
         // Invalid timestamps
         val invalidTimes = WellnessScore(
-            id = 3,
-            score = 75,
-            calculatedAt = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1),
-            dayStartMillis = System.currentTimeMillis() // Day start after calculated time
+            date = System.currentTimeMillis(), // Date after calculated time
+            totalScore = 75,
+            timeLimitScore = 25,
+            focusSessionScore = 25,
+            breaksScore = 12,
+            sleepHygieneScore = 13,
+            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            calculatedAt = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)
         )
         
-        assertTrue("Day start should not be after calculated time", invalidTimes.dayStartMillis > invalidTimes.calculatedAt)
+        assertTrue("Date should not be after calculated time", invalidTimes.date > invalidTimes.calculatedAt)
     }
 
     @Test
     fun `DailyAppSummary validation should work correctly`() {
         val validSummary = DailyAppSummary(
+            dateMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1),
             packageName = "com.instagram.android",
             totalDurationMillis = TimeUnit.HOURS.toMillis(2),
-            openCount = 15,
-            dayStartMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)
+            openCount = 15
         )
         
         // Validate summary properties
         assertTrue("Package name should not be empty", validSummary.packageName.isNotEmpty())
         assertTrue("Duration should be non-negative", validSummary.totalDurationMillis >= 0)
         assertTrue("Open count should be non-negative", validSummary.openCount >= 0)
-        assertTrue("Day start should be positive", validSummary.dayStartMillis > 0)
+        assertTrue("Date should be positive", validSummary.dateMillis > 0)
     }
 
     @Test
     fun `Goal validation should work correctly`() {
         val validGoal = UserGoal(
             id = 1,
-            goalType = "social_media_limit",
-            targetValue = 60,
-            currentProgress = 45,
+            goalType = "daily_screen_time",
+            targetValue = 60L,
+            currentProgress = 45L,
             createdAt = System.currentTimeMillis(),
             isActive = true
         )
         
         // Validate goal properties
-        assertTrue("Goal name should not be empty", validGoal.name.isNotEmpty())
+        assertTrue("Goal type should not be empty", validGoal.goalType.isNotEmpty())
         assertTrue("Target value should be positive", validGoal.targetValue > 0)
-        assertTrue("Current value should be non-negative", validGoal.currentValue >= 0)
+        assertTrue("Current progress should be non-negative", validGoal.currentProgress >= 0)
         assertTrue("Created time should be positive", validGoal.createdAt > 0)
     }
 

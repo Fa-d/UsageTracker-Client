@@ -1,23 +1,38 @@
-package com.example.screentimetracker.e2e
+package com.example.screentimetracker
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
-import com.example.screentimetracker.data.local.*
+import com.example.screentimetracker.data.local.AppSessionDataAggregate
+import com.example.screentimetracker.data.local.DailyAppSummary
+import com.example.screentimetracker.data.local.TimeRestriction
+import com.example.screentimetracker.domain.model.WellnessLevel
 import com.example.screentimetracker.domain.model.WellnessScore
 import com.example.screentimetracker.domain.repository.TrackerRepository
-import com.example.screentimetracker.domain.usecases.*
+import com.example.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
+import com.example.screentimetracker.domain.usecases.WeeklyInsightsUseCase
 import com.example.screentimetracker.services.NotificationScheduler
 import com.example.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
 import com.example.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
 import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
+import com.example.screentimetracker.ui.timerestrictions.viewmodels.RestrictionStatusPreview
 import com.example.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
 import com.example.screentimetracker.utils.logger.AppLogger
 import com.example.screentimetracker.utils.ui.AppNotificationManager
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +52,7 @@ class EndToEndUserFlowTest {
     @MockK
     private lateinit var notificationManager: AppNotificationManager
 
-    @MockK 
+    @MockK
     private lateinit var appLogger: AppLogger
 
     private lateinit var timeRestrictionUseCase: TimeRestrictionManagerUseCase
@@ -48,34 +63,34 @@ class EndToEndUserFlowTest {
     // Test data
     private val currentTime = System.currentTimeMillis()
     private val weekStart = currentTime - TimeUnit.DAYS.toMillis(7)
-    
+
     private val restrictionsFlow = MutableStateFlow(emptyList<TimeRestriction>())
-    
+
     private val sampleSessionData = listOf(
         AppSessionDataAggregate(
             packageName = "com.instagram.android",
             totalDuration = TimeUnit.HOURS.toMillis(3),
-            dayStartMillis = weekStart
+            sessionCount = 25
         ),
         AppSessionDataAggregate(
             packageName = "com.netflix.mediaclient",
             totalDuration = TimeUnit.HOURS.toMillis(4),
-            dayStartMillis = weekStart + TimeUnit.DAYS.toMillis(1)
+            sessionCount = 12
         )
     )
 
     private val sampleDailyAppSummaries = listOf(
         DailyAppSummary(
+            dateMillis = weekStart,
             packageName = "com.instagram.android",
             totalDurationMillis = TimeUnit.HOURS.toMillis(3),
-            openCount = 35,
-            dayStartMillis = weekStart
+            openCount = 35
         ),
         DailyAppSummary(
+            dateMillis = weekStart + TimeUnit.DAYS.toMillis(1),
             packageName = "com.netflix.mediaclient",
             totalDurationMillis = TimeUnit.HOURS.toMillis(4),
-            openCount = 12,
-            dayStartMillis = weekStart
+            openCount = 12
         )
     )
 
@@ -87,7 +102,7 @@ class EndToEndUserFlowTest {
             focusSessionScore = 18,
             breaksScore = 18,
             sleepHygieneScore = 18,
-            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            level = WellnessLevel.BALANCED_USER,
             calculatedAt = currentTime
         ),
         WellnessScore(
@@ -97,7 +112,7 @@ class EndToEndUserFlowTest {
             focusSessionScore = 17,
             breaksScore = 17,
             sleepHygieneScore = 17,
-            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            level = WellnessLevel.BALANCED_USER,
             calculatedAt = currentTime
         )
     )
@@ -105,7 +120,7 @@ class EndToEndUserFlowTest {
     @Before
     fun setup() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        
+
         every { appLogger.i(any(), any()) } just runs
         every { appLogger.e(any(), any(), any()) } just runs
         every { appLogger.d(any(), any()) } just runs
@@ -115,21 +130,22 @@ class EndToEndUserFlowTest {
         coEvery { repository.insertTimeRestriction(any()) } coAnswers {
             val newRestriction = firstArg<TimeRestriction>().copy(id = (restrictionsFlow.value.size + 1).toLong())
             restrictionsFlow.value = restrictionsFlow.value + newRestriction
-            Unit
+            newRestriction.id
         }
-        coEvery { repository.updateTimeRestriction(any()) } coAnswers {
-            val updated = firstArg<TimeRestriction>()
-            restrictionsFlow.value = restrictionsFlow.value.map { if (it.id == updated.id) updated else it }
-            Unit
-        }
-        coEvery { repository.deleteTimeRestriction(any()) } coAnswers {
+        coEvery { repository.updateRestrictionEnabled(any(), any(), any()) } coAnswers {
             val id = firstArg<Long>()
-            restrictionsFlow.value = restrictionsFlow.value.filter { it.id != id }
-            Unit
+            val enabled = secondArg<Boolean>()
+            restrictionsFlow.value = restrictionsFlow.value.map {
+                if (it.id == id) it.copy(isEnabled = enabled, updatedAt = System.currentTimeMillis()) else it
+            }
         }
 
-        coEvery { repository.getAggregatedSessionDataForDayFlow(any(), any()) } returns flowOf(sampleSessionData)
-        coEvery { repository.getDailyAppSummaries(any(), any()) } returns flowOf(sampleDailyAppSummaries)
+        coEvery { repository.getAggregatedSessionDataForDayFlow(any(), any()) } returns flowOf(
+            sampleSessionData
+        )
+        coEvery { repository.getDailyAppSummaries(any(), any()) } returns flowOf(
+            sampleDailyAppSummaries
+        )
         coEvery { repository.getUnlockCountForDayFlow(any(), any()) } returns flowOf(80)
         coEvery { repository.getAllWellnessScores() } returns flowOf(sampleWellnessScores)
         coEvery { repository.getAllSessionsInRange(any(), any()) } returns flowOf(emptyList())
@@ -137,13 +153,14 @@ class EndToEndUserFlowTest {
 
         // Create use cases
         timeRestrictionUseCase = TimeRestrictionManagerUseCase(
-            ApplicationProvider.getApplicationContext(),
             repository,
+            notificationManager,
             appLogger
         )
         weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger)
-        notificationScheduler = NotificationScheduler(ApplicationProvider.getApplicationContext(), appLogger)
-        
+        notificationScheduler =
+            NotificationScheduler(ApplicationProvider.getApplicationContext(), appLogger)
+
         viewModel = TimeRestrictionsViewModel(timeRestrictionUseCase)
     }
 
@@ -158,12 +175,11 @@ class EndToEndUserFlowTest {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("📊 Weekly Insights").assertIsDisplayed()
         composeTestRule.onNodeWithText("7h").assertIsDisplayed() // Total screen time
-        
+
         // Step 2: User navigates to time restrictions screen
         composeTestRule.setContent {
             TimeRestrictionsScreen(
-                viewModel = viewModel,
-                onNavigateBack = {}
+                viewModel = viewModel
             )
         }
 
@@ -178,15 +194,15 @@ class EndToEndUserFlowTest {
 
         // Fill out the create restriction dialog
         composeTestRule.onNodeWithText("Create Time Restriction").assertIsDisplayed()
-        
+
         // Select Instagram (mock user selecting an app)
         composeTestRule.onNodeWithText("Select Apps").performClick()
         // Note: In real test, we would interact with app selection, but for this test we'll simulate
-        
+
         // Set time range (9 AM to 5 PM)
         composeTestRule.onNodeWithText("Start Time").performClick()
         // Note: Time picker interaction would be tested here
-        
+
         // Select weekdays
         composeTestRule.onNodeWithText("Mon").performClick()
         composeTestRule.onNodeWithText("Tue").performClick()
@@ -204,7 +220,22 @@ class EndToEndUserFlowTest {
 
         // Step 5: Go back to dashboard and verify time restriction card appears
         composeTestRule.setContent {
-            TimeRestrictionCard(timeRestrictionManager = timeRestrictionUseCase)
+            TimeRestrictionCard(
+                activeRestrictions = emptyList(),
+                allRestrictions = emptyList(),
+                onToggleRestriction = {},
+                onNavigateToSettings = {},
+                formatTime = { "${it / 60}:${String.format("%02d", it % 60)}" },
+                formatTimeUntil = { "${it / 60}h" },
+                getRestrictionStatusPreview = { restriction ->
+                    RestrictionStatusPreview(
+                        restriction = restriction,
+                        isCurrentlyActive = false,
+                        nextChangeTimeMinutes = null,
+                        timeUntilChange = null
+                    )
+                }
+            )
         }
 
         composeTestRule.waitForIdle()
@@ -230,21 +261,22 @@ class EndToEndUserFlowTest {
         // Given - Start with an existing restriction
         val existingRestriction = TimeRestriction(
             id = 1,
-            packageName = "com.instagram.android",
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = currentTime,
-            violationCount = 0
+            restrictionType = "work_hours_focus",
+            name = "Work Hours Focus",
+            description = "Block social media during work",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            appsBlocked = "com.instagram.android",
+            daysOfWeek = "1,2,3,4,5",
+            isEnabled = true,
+            createdAt = currentTime
         )
         restrictionsFlow.value = listOf(existingRestriction)
 
         // Step 1: View existing restriction
         composeTestRule.setContent {
             TimeRestrictionsScreen(
-                viewModel = viewModel,
-                onNavigateBack = {}
+                viewModel = viewModel
             )
         }
 
@@ -258,7 +290,22 @@ class EndToEndUserFlowTest {
 
         // Step 3: Verify restriction is disabled in dashboard
         composeTestRule.setContent {
-            TimeRestrictionCard(timeRestrictionManager = timeRestrictionUseCase)
+            TimeRestrictionCard(
+                activeRestrictions = emptyList(),
+                allRestrictions = emptyList(),
+                onToggleRestriction = {},
+                onNavigateToSettings = {},
+                formatTime = { "${it / 60}:${String.format("%02d", it % 60)}" },
+                formatTimeUntil = { "${it / 60}h" },
+                getRestrictionStatusPreview = { restriction ->
+                    RestrictionStatusPreview(
+                        restriction = restriction,
+                        isCurrentlyActive = false,
+                        nextChangeTimeMinutes = null,
+                        timeUntilChange = null
+                    )
+                }
+            )
         }
 
         composeTestRule.waitForIdle()
@@ -267,8 +314,7 @@ class EndToEndUserFlowTest {
         // Step 4: Toggle back on and verify weekly insights update
         composeTestRule.setContent {
             TimeRestrictionsScreen(
-                viewModel = viewModel,
-                onNavigateBack = {}
+                viewModel = viewModel
             )
         }
 
@@ -304,8 +350,8 @@ class EndToEndUserFlowTest {
 
         // Step 3: Verify notification would be sent
         every { notificationManager.showWeeklyReport(any(), any(), any()) } just runs
-        weeklyInsightsUseCase.sendWeeklyReportNotification()
-        
+        runBlocking { weeklyInsightsUseCase.sendWeeklyReportNotification() }
+
         verify { notificationManager.showWeeklyReport(any(), any(), any()) }
     }
 
@@ -331,7 +377,7 @@ class EndToEndUserFlowTest {
 
         // Step 4: Switch to categories view
         composeTestRule.onNodeWithText("Categories").performClick()
-        
+
         // Step 5: Verify category breakdown
         composeTestRule.onNodeWithText("📊 App Category Breakdown").assertIsDisplayed()
         composeTestRule.onNodeWithText("Social").assertIsDisplayed()
@@ -350,8 +396,7 @@ class EndToEndUserFlowTest {
         // Step 1: User attempts to create restriction
         composeTestRule.setContent {
             TimeRestrictionsScreen(
-                viewModel = viewModel,
-                onNavigateBack = {}
+                viewModel = viewModel
             )
         }
 
@@ -365,7 +410,13 @@ class EndToEndUserFlowTest {
         // Step 3: Verify error handling
         composeTestRule.waitForIdle()
         // Error should be handled gracefully (logged but not crash)
-        verify { appLogger.e("TimeRestrictionManagerUseCase", "Failed to create time restriction", any()) }
+        verify {
+            appLogger.e(
+                "TimeRestrictionManagerUseCase",
+                "Failed to create time restriction",
+                any()
+            )
+        }
 
         // Step 4: UI should remain functional
         composeTestRule.onNodeWithText("⏰ Time Restrictions").assertIsDisplayed()
@@ -376,23 +427,41 @@ class EndToEndUserFlowTest {
         // Given - Active restriction during blocking hours
         val activeRestriction = TimeRestriction(
             id = 1,
-            packageName = "com.instagram.android",
-            startTimeMillis = 0, // Current time falls within restriction
-            endTimeMillis = TimeUnit.HOURS.toMillis(23),
-            daysOfWeek = setOf(1, 2, 3, 4, 5, 6, 7), // All days
-            isActive = true,
-            createdAt = currentTime,
-            violationCount = 0
+            restrictionType = "bedtime_mode",
+            name = "Bedtime Mode",
+            description = "Block all apps during bedtime",
+            startTimeMinutes = 0, // 12:00 AM
+            endTimeMinutes = 23 * 60 + 59, // 11:59 PM
+            appsBlocked = "com.instagram.android",
+            daysOfWeek = "0,1,2,3,4,5,6", // All days
+            isEnabled = true,
+            createdAt = currentTime
         )
         restrictionsFlow.value = listOf(activeRestriction)
 
         // Step 1: Check if app is currently restricted
-        val isRestricted = timeRestrictionUseCase.isAppCurrentlyRestricted("com.instagram.android")
-        assertTrue("Instagram should be currently restricted", isRestricted)
+        val isRestricted =
+            runBlocking { timeRestrictionUseCase.isAppBlockedByTimeRestriction("com.instagram.android") }
+        Assert.assertTrue("Instagram should be currently restricted", isRestricted)
 
         // Step 2: Verify restriction shows in dashboard
         composeTestRule.setContent {
-            TimeRestrictionCard(timeRestrictionManager = timeRestrictionUseCase)
+            TimeRestrictionCard(
+                activeRestrictions = listOf(activeRestriction),
+                allRestrictions = listOf(activeRestriction),
+                onToggleRestriction = {},
+                onNavigateToSettings = {},
+                formatTime = { "${it / 60}:${String.format("%02d", it % 60)}" },
+                formatTimeUntil = { "${it / 60}h" },
+                getRestrictionStatusPreview = { restriction ->
+                    RestrictionStatusPreview(
+                        restriction = restriction,
+                        isCurrentlyActive = true,
+                        nextChangeTimeMinutes = null,
+                        timeUntilChange = null
+                    )
+                }
+            )
         }
 
         composeTestRule.waitForIdle()
@@ -424,7 +493,7 @@ class EndToEndUserFlowTest {
 
         // Step 4: Test notification generation
         every { notificationManager.showWeeklyReport(any(), any(), any()) } just runs
-        weeklyInsightsUseCase.sendWeeklyReportNotification()
+        runBlocking { weeklyInsightsUseCase.sendWeeklyReportNotification() }
 
         // Verify notification was sent
         verify { notificationManager.showWeeklyReport(any(), any(), any()) }
@@ -436,31 +505,50 @@ class EndToEndUserFlowTest {
         // Step 1: Create multiple restrictions
         val restriction1 = TimeRestriction(
             id = 1,
-            packageName = "com.instagram.android",
-            startTimeMillis = TimeUnit.HOURS.toMillis(9),
-            endTimeMillis = TimeUnit.HOURS.toMillis(17),
-            daysOfWeek = setOf(1, 2, 3, 4, 5),
-            isActive = true,
-            createdAt = currentTime,
-            violationCount = 0
+            restrictionType = "work_hours_focus",
+            name = "Work Focus",
+            description = "Block social media during work",
+            startTimeMinutes = 9 * 60,
+            endTimeMinutes = 17 * 60,
+            appsBlocked = "com.instagram.android",
+            daysOfWeek = "1,2,3,4,5",
+            isEnabled = true,
+            createdAt = currentTime
         )
-        
+
         val restriction2 = TimeRestriction(
             id = 2,
-            packageName = "com.netflix.mediaclient", 
-            startTimeMillis = TimeUnit.HOURS.toMillis(22),
-            endTimeMillis = TimeUnit.HOURS.toMillis(7),
-            daysOfWeek = setOf(6, 7),
-            isActive = true,
-            createdAt = currentTime,
-            violationCount = 0
+            restrictionType = "bedtime_mode",
+            name = "Bedtime Mode",
+            description = "Block entertainment apps at night",
+            startTimeMinutes = 22 * 60,
+            endTimeMinutes = 7 * 60,
+            appsBlocked = "com.netflix.mediaclient",
+            daysOfWeek = "6,7",
+            isEnabled = true,
+            createdAt = currentTime
         )
 
         restrictionsFlow.value = listOf(restriction1, restriction2)
 
         // Step 2: Verify restrictions appear in dashboard
         composeTestRule.setContent {
-            TimeRestrictionCard(timeRestrictionManager = timeRestrictionUseCase)
+            TimeRestrictionCard(
+                activeRestrictions = listOf(restriction1, restriction2),
+                allRestrictions = listOf(restriction1, restriction2),
+                onToggleRestriction = {},
+                onNavigateToSettings = {},
+                formatTime = { "${it / 60}:${String.format("%02d", it % 60)}" },
+                formatTimeUntil = { "${it / 60}h" },
+                getRestrictionStatusPreview = { restriction ->
+                    RestrictionStatusPreview(
+                        restriction = restriction,
+                        isCurrentlyActive = false,
+                        nextChangeTimeMinutes = null,
+                        timeUntilChange = null
+                    )
+                }
+            )
         }
 
         composeTestRule.waitForIdle()
@@ -473,7 +561,7 @@ class EndToEndUserFlowTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("View Full Report").performClick()
-        
+
         // Both apps should appear in the usage data
         composeTestRule.onNodeWithText("📱 Most Used Apps").assertIsDisplayed()
 
