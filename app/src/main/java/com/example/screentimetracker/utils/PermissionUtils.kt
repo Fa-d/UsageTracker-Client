@@ -51,4 +51,16 @@ object PermissionUtils {
             }
         }
     }
+
+    fun hasAccessibilityPermission(context: Context): Boolean {
+        val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? android.view.accessibility.AccessibilityManager
+        return accessibilityManager?.isEnabled == true
+    }
+
+    fun requestAccessibilityPermission(context: Context) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        }
+    }
 }

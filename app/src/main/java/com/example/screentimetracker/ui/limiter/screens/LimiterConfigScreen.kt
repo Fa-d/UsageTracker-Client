@@ -94,9 +94,10 @@ fun LimiterConfigScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
+                .fillMaxSize()  // Add fillMaxSize to provide bounds
         ) {
-            if (state.isLoading && state.limitedApps.isEmpty() && state.installedAppsForSelection.isEmpty()) { // More specific loading condition
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { // Centered loading
+            if (state.isLoading && state.limitedApps.isEmpty() && state.installedAppsForSelection.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
@@ -111,7 +112,10 @@ fun LimiterConfigScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f), // Use weight to constrain height properly
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     items(state.limitedApps) { app ->
                         LimitedAppRow(
                             app = app,
@@ -259,7 +263,7 @@ fun AppLimitSettingDialog(
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = onConfirm,
-                        enabled = selectedApp != null && newLimitTimeMinutes.toLongOrNull() ?: 0 > 0
+                        enabled = selectedApp != null && (newLimitTimeMinutes.toLongOrNull() ?: 0) > 0
                     ) {
                         Text(if (isEditing) "Update" else "Confirm")
                     }

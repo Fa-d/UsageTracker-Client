@@ -133,6 +133,7 @@ fun HabitsScreen(
 
             // Habits List
             LazyColumn(
+                modifier = Modifier.weight(1f), // Add weight constraint
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
