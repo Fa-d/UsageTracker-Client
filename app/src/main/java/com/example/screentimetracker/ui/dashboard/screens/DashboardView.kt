@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,13 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -37,276 +32,31 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import com.example.screentimetracker.ui.components.PlayfulCard
-import com.example.screentimetracker.ui.components.PlayfulMetricCard
-import com.example.screentimetracker.ui.dashboard.cards.OverviewCard
-import com.example.screentimetracker.ui.dashboard.cards.AchievementsCard
-import com.example.screentimetracker.ui.dashboard.cards.ChallengeCard
-import com.example.screentimetracker.ui.dashboard.cards.FocusSessionCard
-import com.example.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
-import com.example.screentimetracker.ui.dashboard.cards.WellnessCard
-import com.example.screentimetracker.ui.dashboard.cards.HabitCard
-import com.example.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
+import com.example.screentimetracker.ui.dashboard.state.CategoryData
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.dashboard.utils.getCategoryDataFromAppUsages
-import com.example.screentimetracker.ui.dashboard.utils.LocalDashboardViewModel
-import com.example.screentimetracker.ui.dashboard.state.CategoryData
-import com.example.screentimetracker.ui.theme.*
 import com.example.screentimetracker.utils.millisToReadableTime
-import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.min
 
-@Composable
-fun DashboardView(
-    expandedCategory: Int?, 
-    onCategoryExpand: (Int?) -> Unit, 
-    state: DashboardState,
-    achievements: StateFlow<List<com.example.screentimetracker.domain.model.Achievement>>,
-    wellnessScore: StateFlow<com.example.screentimetracker.domain.model.WellnessScore?>,
-    onNavigateToHabits: (() -> Unit)? = null,
-    onNavigateToTimeRestrictions: (() -> Unit)? = null
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        PlayfulPrimary.copy(alpha = 0.05f),
-                        VibrantOrange.copy(alpha = 0.02f),
-                        LimeGreen.copy(alpha = 0.03f)
-                    )
-                )
-            )
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Fun Header
-        PlayfulCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-            gradientBackground = true
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column {
-                    Text(
-                        text = "🎯 Screen Time Dashboard",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Today's digital wellness journey ✨",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Text(
-                    text = "📱",
-                    fontSize = 40.sp,
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            RoundedCornerShape(16.dp)
-                        )
-                        .padding(12.dp)
-                )
-            }
-        }
-
-        // Overview Cards with emojis and colors
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "Screen Time",
-                value = millisToReadableTime(state.totalScreenTimeTodayMillis),
-                emoji = "⏰",
-                color = MaterialTheme.colorScheme.primary,
-                subtitle = "Total today"
-            )
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "Unlocks",
-                value = "${state.totalScreenUnlocksToday}",
-                emoji = "🔓",
-                color = MaterialTheme.colorScheme.secondary,
-                subtitle = "Screen activations"
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "App Opens",
-                value = "${state.appUsagesToday.sumOf { it.openCount }}",
-                emoji = "📱",
-                color = MaterialTheme.colorScheme.tertiary,
-                subtitle = "App launches"
-            )
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "Focus Score",
-                value = calculateFocusScore(state),
-                emoji = "🎯",
-                color = MaterialTheme.colorScheme.secondary,
-                subtitle = "Productivity level"
-            )
-        }
-
-        QuickViewComponent(state)
-
-        // Wellness Score Card
-        WellnessCard(
-            wellnessScore = wellnessScore.value,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        // Habits Card
-        onNavigateToHabits?.let { navigateToHabits ->
-            HabitCard(
-                onNavigateToHabits = navigateToHabits,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
-
-        // Time Restrictions Card
-        onNavigateToTimeRestrictions?.let { navigateToTimeRestrictions ->
-            TimeRestrictionCard(
-                activeRestrictions = emptyList(), // TODO: Get from ViewModel
-                allRestrictions = emptyList(), // TODO: Get from ViewModel
-                onToggleRestriction = { /* TODO: Handle toggle */ },
-                onNavigateToSettings = navigateToTimeRestrictions,
-                formatTime = { minutes ->
-                    val hours = minutes / 60
-                    val mins = minutes % 60
-                    String.format("%02d:%02d", hours, mins)
-                },
-                formatTimeUntil = { minutes ->
-                    val hours = minutes / 60
-                    val mins = minutes % 60
-                    when {
-                        hours > 0 -> "${hours}h ${mins}m"
-                        else -> "${mins}m"
-                    }
-                },
-                getRestrictionStatusPreview = { restriction ->
-                    // TODO: Implement proper status preview
-                    com.example.screentimetracker.ui.timerestrictions.viewmodels.RestrictionStatusPreview(
-                        restriction = restriction,
-                        isCurrentlyActive = false,
-                        nextChangeTimeMinutes = null,
-                        timeUntilChange = null
-                    )
-                }
-            )
-        }
-
-        // Achievements Card
-        AchievementsCard(
-            achievements = achievements.value,
-            onAchievementClick = { achievement ->
-                // Handle achievement click - could show detail dialog
-            },
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        // Challenge Card
-        ChallengeCard(
-            challengeManager = LocalDashboardViewModel.current.challengeManagerUseCase,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        // Focus Session Card
-        FocusSessionCard(
-            focusSessionManager = LocalDashboardViewModel.current.focusSessionManagerUseCase,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        // Weekly Insights Card
-        WeeklyInsightsCard(
-            weeklyInsights = LocalDashboardViewModel.current.weeklyInsightsUseCase,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        // Weekly Trend Chart with playful styling
-        PlayfulCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-            gradientBackground = true
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "📈",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                            RoundedCornerShape(8.dp)
-                        )
-                        .padding(8.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    "Weekly Trend Analysis",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-            WeeklyTrendChart(state.historicalAppSummaries)
-        }
-
-        CategoryBreakDown(expandedCategory, onCategoryExpand, state)
-        
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
 
 // Helper function to calculate focus score
 fun calculateFocusScore(state: DashboardState): String {
     val totalTime = state.totalScreenTimeTodayMillis
     val unlocks = state.totalScreenUnlocksToday
     val opens = state.appUsagesToday.sumOf { it.openCount }
-    
+
     val score = when {
-        totalTime < 3600000 && unlocks < 20 -> 95 // Less than 1 hour, few unlocks
-        totalTime < 7200000 && unlocks < 50 -> 80 // Less than 2 hours, moderate unlocks
-        totalTime < 14400000 && unlocks < 100 -> 65 // Less than 4 hours
+        totalTime < 3600000 && unlocks < 20 && opens < 30 -> 95 // Less than 1 hour, few unlocks and opens
+        totalTime < 7200000 && unlocks < 50 && opens < 60 -> 80 // Less than 2 hours, moderate unlocks and opens
+        totalTime < 14400000 && unlocks < 100 && opens < 120 -> 65 // Less than 4 hours, higher unlocks/opens
         else -> 45 // Heavy usage
     }
     
@@ -522,7 +272,9 @@ private fun QuickViewComponent(state: DashboardState) {
                 Box(
                     Modifier
                         .size(32.dp)
-                        .background(MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small)
+                        .background(
+                            MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small
+                        )
                 ) {}
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -545,7 +297,9 @@ private fun QuickViewComponent(state: DashboardState) {
                 Box(
                     Modifier
                         .size(32.dp)
-                        .background(MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small)
+                        .background(
+                            MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small
+                        )
                 ) {}
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -574,7 +328,9 @@ fun WeeklyTrendChart(historicalAppSummaries: List<com.example.screentimetracker.
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.medium)
+            .background(
+                MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.medium
+            )
             .padding(horizontal = 8.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.Bottom
@@ -599,7 +355,10 @@ fun WeeklyTrendChart(historicalAppSummaries: List<com.example.screentimetracker.
                         modifier = Modifier
                             .width(20.dp)
                             .height(barHeight)
-                            .background(MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small)
+                            .background(
+                                MaterialTheme.colorScheme.secondary,
+                                shape = MaterialTheme.shapes.small
+                            )
                     )
                     Text(
                         dayOfWeek,

@@ -1,15 +1,30 @@
 package com.example.screentimetracker.ui.dashboard.cards
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -20,19 +35,22 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.screentimetracker.domain.model.WellnessScore
 import com.example.screentimetracker.domain.model.WellnessLevel
+import com.example.screentimetracker.domain.model.WellnessScore
 import com.example.screentimetracker.ui.components.PlayfulCard
-import com.example.screentimetracker.ui.theme.*
+import com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
+import com.example.screentimetracker.ui.theme.PlayfulAccent
 import kotlin.math.cos
 import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WellnessCard(
-    wellnessScore: WellnessScore?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, viewModel: DashboardViewModel
 ) {
+
+    val wellnessScore by viewModel.wellnessScore.collectAsState()
+
     val score = wellnessScore?.totalScore ?: 0
     val level = wellnessScore?.level ?: WellnessLevel.DIGITAL_SPROUT
     

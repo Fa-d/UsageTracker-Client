@@ -23,24 +23,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.screentimetracker.ui.advanced.AdvancedSettingsScreen
+import com.example.screentimetracker.ui.analytics.AnalyticsScreen
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
 import com.example.screentimetracker.ui.components.PlayfulBottomNav
-import com.example.screentimetracker.ui.dashboard.screens.DashboardView
-import com.example.screentimetracker.ui.dashboard.screens.TimelineScreen
 import com.example.screentimetracker.ui.dashboard.screens.GoalsView
-import com.example.screentimetracker.ui.dashboard.screens.SettingsView
+import com.example.screentimetracker.ui.dashboard.screens.SimpleDashboardView
+import com.example.screentimetracker.ui.dashboard.screens.SimpleSettingsView
+import com.example.screentimetracker.ui.dashboard.screens.TimelineScreen
 import com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
-import com.example.screentimetracker.ui.personalization.PersonalizationViewModel
-import com.example.screentimetracker.ui.progressivelimits.screens.ProgressiveLimitsScreen
-import com.example.screentimetracker.ui.limiter.screens.LimiterConfigScreen
-import com.example.screentimetracker.ui.privacy.screens.PrivacySettingsScreen
-import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScreen
-import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import com.example.screentimetracker.ui.habits.screens.HabitsScreen
+import com.example.screentimetracker.ui.limiter.screens.LimiterConfigScreen
+import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScreen
+import com.example.screentimetracker.ui.personalization.PersonalizationScreen
+import com.example.screentimetracker.ui.personalization.PersonalizationViewModel
+import com.example.screentimetracker.ui.privacy.screens.PrivacySettingsScreen
+import com.example.screentimetracker.ui.progressivelimits.screens.ProgressiveLimitsScreen
+import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import com.example.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
-import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
 import com.example.screentimetracker.ui.theme.PlayfulPrimary
 import com.example.screentimetracker.ui.theme.VibrantOrange
+import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
+import com.example.screentimetracker.ui.wellness.WellnessScreen
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
@@ -132,12 +136,10 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                 ) {
                     NavHost(navController = navController, startDestination = "dashboard_route") {
                         composable("dashboard_route") {
-                            DashboardView(
-                                expandedCategory = expandedCategory,
-                                onCategoryExpand = { expandedCategory = it },
+                            SimpleDashboardView(
                                 state = state,
-                                achievements = viewModel.achievements,
-                                wellnessScore = viewModel.wellnessScore,
+                                onNavigateToAnalytics = { navController.navigate("analytics_route") },
+                                onNavigateToWellness = { navController.navigate("wellness_route") },
                                 onNavigateToHabits = { navController.navigate("habits_route") },
                                 onNavigateToTimeRestrictions = { navController.navigate("time_restrictions_route") }
                             )
@@ -154,37 +156,11 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                             )
                         }
                         composable("settings_route") {
-                            SettingsView(
-                                darkMode,
-                                { darkMode = it },
-                                privacyMode,
-                                { privacyMode = it },
-                                syncEnabled,
-                                { syncEnabled = it },
-                                preferences = personalizationState.preferences,
-                                onThemeModeChanged = personalizationViewModel::updateThemeMode,
-                                onColorSchemeChanged = personalizationViewModel::updateColorScheme,
-                                onPersonalityModeChanged = personalizationViewModel::updatePersonalityMode,
-                                onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,
-                                onAchievementCelebrationsChanged = personalizationViewModel::updateAchievementCelebrations,
-                                onBreakRemindersChanged = personalizationViewModel::updateBreakReminders,
-                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching,
-                                onDashboardLayoutChanged = personalizationViewModel::updateDashboardLayout,
-                                onNavigateToProgressiveLimits = {
-                                    navController.navigate("progressive_limits_route")
-                                },
-                                onNavigateToLimiterConfig = {
-                                    navController.navigate("limiter_config_route")
-                                },
-                                onNavigateToPrivacySettings = {
-                                    navController.navigate("privacy_settings_route")
-                                },
-                                onNavigateToMindfulness = {
-                                    navController.navigate("mindfulness_route")
-                                },
-                                onNavigateToReplacementActivities = {
-                                    navController.navigate("replacement_activities_route")
-                                }
+                            SimpleSettingsView(
+                                darkMode = darkMode,
+                                onDarkModeChange = { darkMode = it },
+                                onNavigateToPersonalization = { navController.navigate("personalization_route") },
+                                onNavigateToAdvancedSettings = { navController.navigate("advanced_settings_route") }
                             )
                         }
                         composable("app_search_route") {
@@ -224,6 +200,54 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("time_restrictions_route") {
                             TimeRestrictionsScreen()
+                        }
+                        composable("analytics_route") {
+                            AnalyticsScreen(
+                                state = state,
+                                expandedCategory = expandedCategory,
+                                onCategoryExpand = { expandedCategory = it })
+                        }
+                        composable("wellness_route") {
+                            WellnessScreen(
+                                onNavigateToHabits = { navController.navigate("habits_route") },
+                                onNavigateToMindfulness = { navController.navigate("mindfulness_route") },
+                                viewModel = viewModel
+                            )
+                        }
+                        composable("personalization_route") {
+                            PersonalizationScreen(
+                                preferences = personalizationState.preferences,
+                                onThemeModeChanged = personalizationViewModel::updateThemeMode,
+                                onColorSchemeChanged = personalizationViewModel::updateColorScheme,
+                                onPersonalityModeChanged = personalizationViewModel::updatePersonalityMode,
+                                onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,
+                                onAchievementCelebrationsChanged = personalizationViewModel::updateAchievementCelebrations,
+                                onBreakRemindersChanged = personalizationViewModel::updateBreakReminders,
+                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching,
+                                onDashboardLayoutChanged = personalizationViewModel::updateDashboardLayout
+                            )
+                        }
+                        composable("advanced_settings_route") {
+                            AdvancedSettingsScreen(
+                                privacyMode = privacyMode,
+                                onPrivacyModeChange = { privacyMode = it },
+                                syncEnabled = syncEnabled,
+                                onSyncEnabledChange = { syncEnabled = it },
+                                onNavigateToProgressiveLimits = {
+                                    navController.navigate("progressive_limits_route")
+                                },
+                                onNavigateToLimiterConfig = {
+                                    navController.navigate("limiter_config_route")
+                                },
+                                onNavigateToPrivacySettings = {
+                                    navController.navigate("privacy_settings_route")
+                                },
+                                onNavigateToMindfulness = {
+                                    navController.navigate("mindfulness_route")
+                                },
+                                onNavigateToReplacementActivities = {
+                                    navController.navigate("replacement_activities_route")
+                                })
                         }
                     }
                 }

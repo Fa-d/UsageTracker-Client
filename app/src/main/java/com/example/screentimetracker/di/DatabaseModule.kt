@@ -42,8 +42,8 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-        // .addMigrations(AppDatabase.MIGRATION_1_2) // Add migrations here if implemented
-            .fallbackToDestructiveMigrationOnDowngrade() // For development, if migrations are not yet handled
+            .addMigrations(AppDatabase.MIGRATION_9_10) // Add the proper migration
+          //  .fallbackToDestructiveMigrationOnDowngrade() // Only for downgrades
         .build()
     }
 

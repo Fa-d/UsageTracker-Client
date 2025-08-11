@@ -23,7 +23,8 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ScreenTimeTracker">
+            android:screenOrientation="portrait"
+        android:theme="@style/Theme.ScreenTimeTracker">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

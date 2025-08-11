@@ -28,19 +28,6 @@ val LimeGreen = Color(0xFF8BC34A) // Material Light Green
 val PlayfulAccent = Color(0xFFFF6B35) // Accent Orange
 val ErrorColor = Color(0xFFB00020) // Material Error Red
 
-// App category colors for colorful UI
-val CategoryColors = listOf(
-    Color(0xFF4285F4), // Blue
-    Color(0xFF34A853), // Green
-    Color(0xFFEA4335), // Red
-    Color(0xFFFBBC04), // Yellow
-    Color(0xFF9C27B0), // Purple
-    Color(0xFFFF6B35), // Orange
-    Color(0xFFE91E63), // Pink
-    Color(0xFF795548), // Brown
-    Color(0xFF607D8B), // Blue Grey
-    Color(0xFF009688)  // Teal
-)
 
 // Colorful Theme Colors - Bright and vibrant with improved contrast
 val ColorfulPrimary = Color(0xFFFF6B35) // Vibrant Orange

@@ -36,10 +36,10 @@ fun PlayfulBottomNav(
 ) {
     val navItems = listOf(
         NavItem("dashboard_route", "Dashboard", Icons.Filled.Dashboard, MaterialTheme.colorScheme.primary),
-        NavItem("timeline_route", "Timeline", Icons.Filled.Timeline, MaterialTheme.colorScheme.secondary),
+        NavItem("analytics_route", "Analytics", Icons.Filled.Analytics, MaterialTheme.colorScheme.secondary),
+        NavItem("wellness_route", "Wellness", Icons.Filled.Healing, MaterialTheme.colorScheme.tertiary),
         NavItem("goals_route", "Goals", Icons.Filled.EmojiEvents, MaterialTheme.colorScheme.tertiary),
-        NavItem("habits_route", "Habits", Icons.Filled.FitnessCenter, MaterialTheme.colorScheme.tertiary),
-        NavItem("time_restrictions_route", "Restrictions", Icons.Filled.Block, MaterialTheme.colorScheme.error),
+        NavItem("personalization_route", "Style", Icons.Filled.Palette, MaterialTheme.colorScheme.secondary),
         NavItem("settings_route", "Settings", Icons.Filled.Settings, MaterialTheme.colorScheme.secondary)
     )
 
