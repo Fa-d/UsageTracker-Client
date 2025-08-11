@@ -26,13 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
 import com.example.screentimetracker.data.local.DashboardLayout
 import com.example.screentimetracker.data.local.PersonalityMode
 import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.data.local.UserPreferences
 import com.example.screentimetracker.ui.components.PlayfulCard
+import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
 
 @Composable
 fun PersonalizationScreen(
@@ -49,7 +48,7 @@ fun PersonalizationScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         item {
             PlayfulCard(

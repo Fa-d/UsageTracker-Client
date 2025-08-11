@@ -46,12 +46,7 @@ fun PlayfulCard(
     val cardModifier = if (gradientBackground) {
         modifier
             .scale(animatedScale)
-            .shadow(
-                elevation = animatedElevation.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.15f),
-                spotColor = MaterialTheme.colorScheme.shadow.copy(alpha = 0.25f)
-            )
+
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(

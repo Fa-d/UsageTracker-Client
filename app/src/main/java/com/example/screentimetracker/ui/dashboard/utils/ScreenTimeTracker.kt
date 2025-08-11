@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -61,7 +62,6 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        var darkMode by remember { mutableStateOf(false) }
         var focusMode by remember { mutableStateOf(false) }
         var privacyMode by remember { mutableStateOf(false) }
         var syncEnabled by remember { mutableStateOf(true) }
@@ -70,7 +70,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
 
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = if (darkMode) Color(0xFF18181B) else PlayfulPrimary.copy(alpha = 0.02f)
+            color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 /*             // Playful Header
@@ -157,8 +157,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("settings_route") {
                             SimpleSettingsView(
-                                darkMode = darkMode,
-                                onDarkModeChange = { darkMode = it },
+                                currentThemeMode = com.example.screentimetracker.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
+                                onThemeModeChange = personalizationViewModel::updateThemeMode,
                                 onNavigateToPersonalization = { navController.navigate("personalization_route") },
                                 onNavigateToAdvancedSettings = { navController.navigate("advanced_settings_route") }
                             )
@@ -256,19 +256,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                 PlayfulBottomNav(
                     navController = navController,
                     currentRoute = currentRoute,
-                    modifier = if (darkMode) {
-                        Modifier.background(Color(0xFF27272A))
-                    } else {
-                        Modifier.background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.White.copy(alpha = 0.95f),
-                                    PlayfulPrimary.copy(alpha = 0.05f),
-                                    VibrantOrange.copy(alpha = 0.05f)
-                                )
-                            )
-                        )
-                    }
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                 )
             }
         }

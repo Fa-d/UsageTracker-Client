@@ -48,7 +48,7 @@ fun WellnessScreen(
                 )
             ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         item {
             PlayfulCard(

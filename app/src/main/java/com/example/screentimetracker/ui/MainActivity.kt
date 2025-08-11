@@ -15,10 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.domain.permissions.PermissionManager
 import com.example.screentimetracker.domain.service.ServiceManager
-import com.example.screentimetracker.ui.common.error.ErrorHandler
 import com.example.screentimetracker.ui.permissions.PermissionScreen
+import com.example.screentimetracker.ui.personalization.PersonalizationViewModel
 import com.example.screentimetracker.ui.theme.ScreenTimeTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,7 +39,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            ScreenTimeTrackerTheme {
+            val personalizationViewModel: PersonalizationViewModel = hiltViewModel()
+            val personalizationState by personalizationViewModel.uiState.collectAsStateWithLifecycle()
+            
+            ScreenTimeTrackerTheme(
+                themeMode = ThemeMode.valueOf(personalizationState.preferences.themeMode),
+                colorScheme = com.example.screentimetracker.data.local.ColorScheme.valueOf(personalizationState.preferences.colorScheme)
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -59,9 +67,6 @@ private fun AppContent(
 ) {
     val permissionState by permissionManager.permissionState.collectAsState(
         initial = com.example.screentimetracker.domain.permissions.PermissionState()
-    )
-    val serviceState by serviceManager.serviceState.collectAsState(
-        initial = com.example.screentimetracker.domain.service.ServiceState.Stopped
     )
     val dashboardViewModel: com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel = hiltViewModel()
 

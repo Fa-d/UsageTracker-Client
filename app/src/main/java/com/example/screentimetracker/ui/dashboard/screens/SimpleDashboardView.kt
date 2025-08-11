@@ -54,8 +54,7 @@ fun SimpleDashboardView(
         // Header
         PlayfulCard(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .fillMaxWidth(),
             backgroundColor = MaterialTheme.colorScheme.primaryContainer,
             gradientBackground = true
         ) {
@@ -123,7 +122,7 @@ fun SimpleDashboardView(
             )
         }
 
-        // Overview Card
+       /* // Overview Card
         OverviewCard(
             totalScreenTimeTodayMillis = state.totalScreenTimeTodayMillis,
             totalScreenUnlocksToday = state.totalScreenUnlocksToday,
@@ -143,9 +142,9 @@ fun SimpleDashboardView(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Primary Actions Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -157,7 +156,7 @@ fun SimpleDashboardView(
                     ) {
                         Text("📊 Analytics", fontSize = 14.sp)
                     }
-                    
+
                     androidx.compose.material3.Button(
                         onClick = onNavigateToWellness,
                         modifier = Modifier.weight(1f)
@@ -165,10 +164,10 @@ fun SimpleDashboardView(
                         Text("🌱 Wellness", fontSize = 14.sp)
                     }
                 }
-                
+
                 if (onNavigateToHabits != null || onNavigateToTimeRestrictions != null) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     // Secondary Actions Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -182,7 +181,7 @@ fun SimpleDashboardView(
                                 Text("💪 Habits", fontSize = 14.sp)
                             }
                         }
-                        
+
                         onNavigateToTimeRestrictions?.let { navigateToTimeRestrictions ->
                             androidx.compose.material3.OutlinedButton(
                                 onClick = navigateToTimeRestrictions,
@@ -195,7 +194,7 @@ fun SimpleDashboardView(
                 }
             }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))*/
     }
 }

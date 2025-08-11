@@ -1,6 +1,7 @@
 package com.example.screentimetracker.ui.dashboard.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,42 +11,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.ui.components.PlayfulCard
 
 @Composable
 fun SimpleSettingsView(
-    darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
+    currentThemeMode: ThemeMode = ThemeMode.SYSTEM, onThemeModeChange: (ThemeMode) -> Unit,
     onNavigateToPersonalization: () -> Unit,
     onNavigateToAdvancedSettings: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         item {
             PlayfulCard(
@@ -68,8 +68,8 @@ fun SimpleSettingsView(
                 }
             }
         }
-        
-        // Quick Settings
+
+        // Quick Settings - Theme Mode
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -78,7 +78,7 @@ fun SimpleSettingsView(
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
-                        "Quick Settings", 
+                        "Appearance", 
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -89,28 +89,58 @@ fun SimpleSettingsView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Dark Mode", 
+                                "Theme Mode", 
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                            val themeDescription = when (currentThemeMode) {
+                                ThemeMode.LIGHT -> "Light theme"
+                                ThemeMode.DARK -> "Dark theme"
+                                ThemeMode.SYSTEM -> "Follow system theme (${if (isSystemInDarkTheme()) "Dark" else "Light"})"
+                            }
                             Text(
-                                "Switch between light and dark themes", 
+                                themeDescription, 
                                 fontSize = 13.sp, 
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Switch(
-                            checked = darkMode,
-                            onCheckedChange = onDarkModeChange,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
+
+                        // Theme mode toggle buttons
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            IconButton(
+                                onClick = { onThemeModeChange(ThemeMode.LIGHT) }) {
+                                Icon(
+                                    Icons.Default.LightMode,
+                                    contentDescription = "Light Mode",
+                                    tint = if (currentThemeMode == ThemeMode.LIGHT) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { onThemeModeChange(ThemeMode.DARK) }) {
+                                Icon(
+                                    Icons.Default.DarkMode,
+                                    contentDescription = "Dark Mode",
+                                    tint = if (currentThemeMode == ThemeMode.DARK) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { onThemeModeChange(ThemeMode.SYSTEM) }) {
+                                Icon(
+                                    Icons.Default.SettingsBrightness,
+                                    contentDescription = "System Theme",
+                                    tint = if (currentThemeMode == ThemeMode.SYSTEM) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -216,8 +246,7 @@ fun SimpleSettingsView(
 @Composable
 fun SimpleSettingsViewPreview() {
     SimpleSettingsView(
-        darkMode = false,
-        onDarkModeChange = {},
+        currentThemeMode = ThemeMode.SYSTEM, onThemeModeChange = {},
         onNavigateToPersonalization = {},
         onNavigateToAdvancedSettings = {}
     )

@@ -34,8 +34,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -71,7 +69,7 @@ fun AnalyticsScreen(
                 )
             ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(top = 16.dp)
     ) {
         item {
             PlayfulCard(
@@ -263,7 +261,9 @@ private fun CategoryBreakdownCard(
                 categories.forEachIndexed { index, category ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        )
                     ) {
                         Column {
                             Row(
@@ -386,109 +386,78 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             var startAngle = -90f
-            val diameter = min(size.width, size.height) * 0.9f
+            val diameter = min(size.width, size.height) * 0.85f
             val radius = diameter / 2f
             val center = Offset(size.width / 2, size.height / 2)
-            val strokeWidth = 8.dp.toPx()
-            
-            drawIntoCanvas { canvas ->
-                sweepAngles.forEachIndexed { i, sweep ->
-                    val shadowOffset = 4.dp.toPx()
-                    val shadowPaint = Paint().apply {
-                        color = Color.Black.copy(alpha = 0.1f)
-                        isAntiAlias = true
-                    }
-                    
-                    canvas.drawArc(
-                        left = center.x - radius + shadowOffset,
-                        top = center.y - radius + shadowOffset,
-                        right = center.x + radius + shadowOffset,
-                        bottom = center.y + radius + shadowOffset,
-                        startAngle = startAngle,
-                        sweepAngle = sweep,
-                        useCenter = true,
-                        paint = shadowPaint
-                    )
-                }
-            }
+            val strokeWidth = 3.dp.toPx()
+            val segmentGap = 4f
             
             sweepAngles.forEachIndexed { i, sweep ->
-                val baseColor = colors[i]
-                val gradientBrush = Brush.radialGradient(
-                    colors = listOf(
-                        baseColor.copy(alpha = 0.8f),
-                        baseColor,
-                        baseColor.copy(alpha = 1.2f)
-                    ),
-                    center = center,
-                    radius = radius
-                )
-                
-                drawArc(
-                    brush = gradientBrush,
-                    startAngle = startAngle,
-                    sweepAngle = sweep,
-                    useCenter = true,
-                    topLeft = Offset(center.x - radius, center.y - radius),
-                    size = Size(diameter, diameter)
-                )
-                
-                drawArc(
-                    color = Color.White,
-                    startAngle = startAngle,
-                    sweepAngle = sweep,
-                    useCenter = true,
-                    topLeft = Offset(center.x - radius, center.y - radius),
-                    size = Size(diameter, diameter),
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
-                )
-                
-                if (sweep > 20f) {
-                    val angleInRadians = Math.toRadians((startAngle + sweep / 2).toDouble()).toFloat()
-                    val textRadius = radius * 0.7f
-                    val textX = center.x + textRadius * kotlin.math.cos(angleInRadians)
-                    val textY = center.y + textRadius * kotlin.math.sin(angleInRadians)
+                if (sweep > 1f) {
+                    val baseColor = colors[i]
+                    val adjustedSweep = sweep - segmentGap
                     
-                    val percentage = (categories[i].value.toFloat() / total * 100).toInt()
-                    
-                    drawContext.canvas.nativeCanvas.drawText(
-                        "$percentage%", 
-                        textX + 2f, 
-                        textY + 2f, 
-                        android.graphics.Paint().apply {
-                            color = android.graphics.Color.BLACK
-                            alpha = 50
-                            textSize = 32f
-                            textAlign = android.graphics.Paint.Align.CENTER
-                            typeface = android.graphics.Typeface.DEFAULT_BOLD
-                            isAntiAlias = true
-                        }
+                    val gradient = Brush.sweepGradient(
+                        colorStops = arrayOf(
+                            0f to baseColor.copy(alpha = 0.7f),
+                            0.5f to baseColor,
+                            1f to baseColor.copy(alpha = 0.9f)
+                        ),
+                        center = center
                     )
                     
-                    drawContext.canvas.nativeCanvas.drawText(
-                        "$percentage%", 
-                        textX, 
-                        textY, 
-                        android.graphics.Paint().apply {
-                            color = android.graphics.Color.WHITE
-                            textSize = 32f
-                            textAlign = android.graphics.Paint.Align.CENTER
-                            typeface = android.graphics.Typeface.DEFAULT_BOLD
-                            isAntiAlias = true
-                            setShadowLayer(4f, 2f, 2f, android.graphics.Color.BLACK)
-                        }
+                    drawArc(
+                        brush = gradient,
+                        startAngle = startAngle + segmentGap/2,
+                        sweepAngle = adjustedSweep,
+                        useCenter = true,
+                        topLeft = Offset(center.x - radius, center.y - radius),
+                        size = Size(diameter, diameter)
                     )
+                    
+                    drawArc(
+                        color = Color.White.copy(alpha = 0.9f),
+                        startAngle = startAngle + segmentGap/2,
+                        sweepAngle = adjustedSweep,
+                        useCenter = true,
+                        topLeft = Offset(center.x - radius, center.y - radius),
+                        size = Size(diameter, diameter),
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
+                    )
+                    
+                    if (sweep > 15f) {
+                        val angleInRadians = Math.toRadians((startAngle + sweep / 2).toDouble()).toFloat()
+                        val textRadius = radius * 0.75f
+                        val textX = center.x + textRadius * kotlin.math.cos(angleInRadians)
+                        val textY = center.y + textRadius * kotlin.math.sin(angleInRadians)
+                        
+                        val percentage = (categories[i].value.toFloat() / total * 100).toInt()
+                        if (percentage > 5) {
+                            drawContext.canvas.nativeCanvas.drawText(
+                                "$percentage%", 
+                                textX, 
+                                textY, 
+                                android.graphics.Paint().apply {
+                                    color = android.graphics.Color.WHITE
+                                    textSize = 28f
+                                    textAlign = android.graphics.Paint.Align.CENTER
+                                    typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD)
+                                    isAntiAlias = true
+                                    setShadowLayer(3f, 1f, 1f, android.graphics.Color.parseColor("#40000000"))
+                                }
+                            )
+                        }
+                    }
                 }
-                
                 startAngle += sweep
             }
             
-            val centerCircleRadius = radius * 0.3f
+            val centerCircleRadius = radius * 0.35f
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.9f),
-                        Color.Gray.copy(alpha = 0.1f)
+                        Color.White,
+                        Color(0xFFF8F9FA)
                     ),
                     center = center,
                     radius = centerCircleRadius
@@ -498,10 +467,28 @@ fun PieChartCategoryBreakdown(categories: List<CategoryData>, modifier: Modifier
             )
             
             drawCircle(
-                color = Color.Gray.copy(alpha = 0.3f),
+                color = Color(0xFFE9ECEF),
                 radius = centerCircleRadius,
                 center = center,
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx())
+            )
+        }
+        
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Total",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = millisToReadableTime(total),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold
             )
         }
     }

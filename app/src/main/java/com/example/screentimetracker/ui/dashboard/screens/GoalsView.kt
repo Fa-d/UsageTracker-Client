@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
@@ -39,11 +38,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
-import com.example.screentimetracker.ui.limiter.viewmodels.LimiterConfigViewModel
 import com.example.screentimetracker.ui.limiter.screens.AppLimitSettingDialog
-import com.example.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
+import com.example.screentimetracker.ui.limiter.viewmodels.LimiterConfigViewModel
 import com.example.screentimetracker.ui.smartgoals.components.GoalRecommendationCard
-import com.example.screentimetracker.ui.theme.*
+import com.example.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
+import com.example.screentimetracker.ui.theme.LavenderPurple
+import com.example.screentimetracker.ui.theme.LimeGreen
+import com.example.screentimetracker.ui.theme.PlayfulSecondary
+import com.example.screentimetracker.ui.theme.SkyBlue
+import com.example.screentimetracker.ui.theme.VibrantOrange
 
 @Composable
 fun GoalsView(
@@ -67,7 +70,7 @@ fun GoalsView(
                 )
             )
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // Playful Header
@@ -98,8 +101,7 @@ fun GoalsView(
                     fontSize = 40.sp,
                     modifier = Modifier
                         .background(
-                            LavenderPurple.copy(alpha = 0.1f),
-                            RoundedCornerShape(16.dp)
+                            LavenderPurple.copy(alpha = 0.1f), RoundedCornerShape(16.dp)
                         )
                         .padding(12.dp)
                 )
@@ -174,8 +176,9 @@ fun GoalsView(
         }
         // Daily Goals
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            )
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("Daily Goals", fontWeight = FontWeight.Medium)
@@ -253,12 +256,12 @@ fun GoalsView(
                         Text(
                             "🤖 Smart Recommendations",
                             fontWeight = FontWeight.Bold,
-                            color = SkyBlue
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             "AI-powered goal suggestions",
                             fontSize = 13.sp,
-                            color = SkyBlue.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                     androidx.compose.material3.TextButton(
@@ -266,7 +269,7 @@ fun GoalsView(
                             onNavigateToSmartGoals?.invoke() ?: smartGoalsViewModel.generateAIRecommendations() 
                         }
                     ) {
-                        Text("View All", color = SkyBlue)
+                        Text("View All", color = MaterialTheme.colorScheme.primary)
                     }
                 }
                 
@@ -283,7 +286,7 @@ fun GoalsView(
                         Text(
                             "...and ${smartGoalsState.recommendations.size - 1} more recommendations available",
                             fontSize = 12.sp,
-                            color = SkyBlue.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
@@ -295,19 +298,19 @@ fun GoalsView(
                         androidx.compose.material3.CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = SkyBlue
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             "Analyzing your usage patterns...",
                             style = MaterialTheme.typography.bodySmall,
-                            color = SkyBlue.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                 } else {
                     Text(
                         "Tap 'View All' to get personalized goal recommendations based on your usage patterns.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = SkyBlue.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
@@ -329,12 +332,12 @@ fun GoalsView(
                         Text(
                             "📱 App Usage Limits",
                             fontWeight = FontWeight.Bold,
-                            color = VibrantOrange
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             "Control your app usage",
                             fontSize = 13.sp,
-                            color = VibrantOrange.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                     androidx.compose.material3.TextButton(
@@ -343,10 +346,10 @@ fun GoalsView(
                         androidx.compose.material3.Icon(
                             androidx.compose.material.icons.Icons.Filled.Add,
                             contentDescription = "Add limit",
-                            tint = VibrantOrange
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text("Add", color = VibrantOrange)
+                        Text("Add", color = MaterialTheme.colorScheme.primary)
                     }
                 }
                 
@@ -354,7 +357,7 @@ fun GoalsView(
                     Text(
                         "No apps are currently limited. Tap 'Add' to set usage limits for specific apps.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = VibrantOrange.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 } else {
@@ -415,7 +418,7 @@ fun GoalsView(
                         Text(
                             "...and ${limiterState.limitedApps.size - 3} more apps",
                             fontSize = 12.sp,
-                            color = VibrantOrange.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }

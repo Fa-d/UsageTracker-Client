@@ -89,12 +89,12 @@ fun WellnessCard(
                             text = "Wellness Score",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = level.getDefaultBackgroundColor()
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         Text(
                             text = level.displayName,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = level.getDefaultBackgroundColor().copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
