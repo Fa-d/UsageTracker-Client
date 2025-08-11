@@ -23,7 +23,9 @@ object PermissionUtils {
     }
 
     fun requestUsageStatsPermission(context: Context) {
-        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         // Optional: Add package name to intent to directly open settings for this app,
         // but ACTION_USAGE_ACCESS_SETTINGS usually takes user to the list.
         // intent.data = Uri.parse("package:${context.packageName}")
@@ -42,12 +44,24 @@ object PermissionUtils {
 
     fun requestNotificationPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (context is androidx.activity.ComponentActivity) {
-                ActivityCompat.requestPermissions(
-                    context,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    0 // Request code, not used here but required
-                )
+            // For Android 13+, open app notification settings
+            val intent = Intent().apply {
+                action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            }
+        } else {
+            // For older versions, open general notification settings
+            val intent = Intent().apply {
+                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = android.net.Uri.parse("package:${context.packageName}")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
             }
         }
     }
@@ -58,7 +72,9 @@ object PermissionUtils {
     }
 
     fun requestAccessibilityPermission(context: Context) {
-        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         }

@@ -2,6 +2,7 @@ package com.example.screentimetracker.domain.usecases
 
 import com.example.screentimetracker.data.local.AppSessionDataAggregate
 import com.example.screentimetracker.data.local.DailyAppSummary
+import com.example.screentimetracker.domain.categorization.AppCategorizer
 import com.example.screentimetracker.domain.model.WellnessScore
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import com.example.screentimetracker.utils.logger.AppLogger
@@ -16,7 +17,8 @@ import javax.inject.Singleton
 class WeeklyInsightsUseCase @Inject constructor(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
-    private val appLogger: AppLogger
+    private val appLogger: AppLogger,
+    private val appCategorizer: AppCategorizer
 ) {
     companion object {
         private const val TAG = "WeeklyInsightsUseCase"
@@ -136,24 +138,24 @@ class WeeklyInsightsUseCase @Inject constructor(
             val weekEnd = weekStart + TimeUnit.DAYS.toMillis(7)
             val appSummaries = repository.getDailyAppSummaries(weekStart, weekEnd).first()
             
-            val categoryMap = mapOf(
-                "Social" to listOf("com.instagram.android", "com.facebook.katana", "com.twitter.android", "com.snapchat.android"),
-                "Entertainment" to listOf("com.netflix.mediaclient", "com.youtube.android", "com.spotify.music"),
-                "Productivity" to listOf("com.microsoft.office.word", "com.google.android.apps.docs.editors.docs", "com.slack"),
-                "Communication" to listOf("com.whatsapp", "com.android.mms", "com.google.android.apps.messaging"),
-                "Games" to listOf("com.android.games", "com.supercell.clashofclans")
-            )
+            // Group apps by their dynamically determined categories
+            val categoryUsageMap = mutableMapOf<String, Long>()
             
-            categoryMap.map { (categoryName, packageNames) ->
-                val categoryUsage = appSummaries
-                    .filter { packageNames.contains(it.packageName) }
-                    .sumOf { it.totalDurationMillis }
-                
+            // Process each app and categorize it dynamically
+            for (appSummary in appSummaries) {
+                val category = appCategorizer.categorizeApp(appSummary.packageName)
+                categoryUsageMap[category] = categoryUsageMap.getOrDefault(category, 0L) + appSummary.totalDurationMillis
+            }
+            
+            val totalUsageMillis = appSummaries.sumOf { it.totalDurationMillis }.toFloat()
+            
+            // Convert to CategoryInsight objects
+            categoryUsageMap.map { (categoryName, totalTimeMillis) ->
                 CategoryInsight(
                     categoryName = categoryName,
-                    totalTimeMillis = categoryUsage,
-                    percentageOfTotal = if (appSummaries.isNotEmpty()) {
-                        (categoryUsage.toFloat() / appSummaries.sumOf { it.totalDurationMillis }.toFloat()) * 100
+                    totalTimeMillis = totalTimeMillis,
+                    percentageOfTotal = if (totalUsageMillis > 0) {
+                        (totalTimeMillis.toFloat() / totalUsageMillis) * 100
                     } else 0f
                 )
             }.sortedByDescending { it.totalTimeMillis }

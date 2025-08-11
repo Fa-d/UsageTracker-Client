@@ -13,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
@@ -125,10 +126,12 @@ class TimeRestrictionsWeeklyInsightsIntegrationTest {
             appLogger
         )
 
+        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
         weeklyInsightsUseCase = WeeklyInsightsUseCase(
             repository,
             notificationManager,
-            appLogger
+            appLogger,
+            mockAppCategorizer
         )
     }
 

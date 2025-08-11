@@ -9,9 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.launch
 import com.example.screentimetracker.domain.permissions.PermissionManager
 import com.example.screentimetracker.domain.permissions.PermissionState
@@ -27,6 +30,22 @@ fun PermissionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var currentError by remember { mutableStateOf<AppError?>(null) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Refresh permissions when user returns from settings
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                coroutineScope.launch {
+                    permissionManager.checkAllPermissions()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -183,43 +202,46 @@ private fun PermissionCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        modifier = Modifier.size(24.dp),
-                        tint = if (isGranted)
-                            MaterialTheme.colorScheme.tertiary
-                        else
-                            MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            if (isRequired) {
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "*",
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                            }
-                        }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    modifier = Modifier.size(24.dp),
+                    tint = if (isGranted)
+                        MaterialTheme.colorScheme.tertiary
+                    else
+                        MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                
+                Column(
+                    modifier = Modifier.weight(1f) // This constrains the text and prevents it from pushing the button
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
                         )
+                        if (isRequired) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "*",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
                     }
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2 // Limit description to 2 lines
+                    )
                 }
+
+                Spacer(modifier = Modifier.width(12.dp))
 
                 if (isGranted) {
                     Text(
@@ -230,7 +252,8 @@ private fun PermissionCard(
                 } else {
                     Button(
                         onClick = onRequestPermission,
-                        colors = if (isRequired) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors()
+                        colors = if (isRequired) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
+                        modifier = Modifier.wrapContentWidth() // Ensure button doesn't get compressed
                     ) {
                         Text("Grant")
                     }

@@ -52,7 +52,8 @@ class ErrorHandlingTest {
         every { appLogger.d(any(), any()) } just runs
 
         timeRestrictionUseCase = TimeRestrictionManagerUseCase(repository, notificationManager, appLogger)
-        weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger)
+        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
+        weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger, mockAppCategorizer)
         notificationScheduler = NotificationScheduler(context, appLogger)
     }
 

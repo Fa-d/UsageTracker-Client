@@ -45,7 +45,8 @@ class LargeDatasetPerformanceTest {
         every { appLogger.e(any(), any(), any()) } just runs
         every { appLogger.d(any(), any()) } just runs
 
-        weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger)
+        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
+        weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger, mockAppCategorizer)
     }
 
     @Test

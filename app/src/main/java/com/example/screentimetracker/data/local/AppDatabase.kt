@@ -26,9 +26,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         UserPreferences::class,
         PrivacySettings::class,
         MindfulnessSession::class,
-        ReplacementActivity::class
+        ReplacementActivity::class,
+        AppCategory::class
     ],
-    version = 10, // Incremented version for Privacy Settings entity
+    version = 11, // Incremented version for AppCategory entity
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -52,6 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun privacySettingsDao(): PrivacySettingsDao
     abstract fun mindfulnessSessionDao(): MindfulnessSessionDao
     abstract fun replacementActivityDao(): ReplacementActivityDao
+    abstract fun appCategoryDao(): AppCategoryDao
 
     companion object {
         const val DATABASE_NAME = "screen_time_tracker_db"
@@ -102,6 +104,23 @@ abstract class AppDatabase : RoomDatabase() {
                         `excludedAppsFromTracking`, `dataExportEnabled`, `lastDataExportTime`
                     ) VALUES (
                         1, 0, '', 0, 0, 0, '[]', '[]', 1, 0
+                    )
+                """)
+            }
+        }
+        
+        // Migration from version 10 to 11: Add AppCategory table
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create AppCategory table (no indices in migration)
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `app_categories` (
+                        `packageName` TEXT PRIMARY KEY NOT NULL,
+                        `category` TEXT NOT NULL,
+                        `confidence` REAL NOT NULL,
+                        `source` TEXT NOT NULL,
+                        `lastUpdated` INTEGER NOT NULL,
+                        `appName` TEXT NOT NULL
                     )
                 """)
             }

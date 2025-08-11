@@ -137,7 +137,8 @@ class EnhancedWeeklyInsightsUseCaseTest {
         coEvery { repository.getAllSessionsInRange(any(), any()) } returns flowOf(sampleSessions)
         coEvery { repository.getActiveGoals() } returns flowOf(sampleGoals)
 
-        useCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger)
+        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
+        useCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger, mockAppCategorizer)
     }
 
     @Test

@@ -22,8 +22,11 @@ import com.example.screentimetracker.data.local.UserPreferencesDao
 import com.example.screentimetracker.data.local.MindfulnessSessionDao
 import com.example.screentimetracker.data.local.PrivacySettingsDao
 import com.example.screentimetracker.data.local.ReplacementActivityDao
+import com.example.screentimetracker.data.local.AppCategoryDao
 import com.example.screentimetracker.data.repository.TrackerRepositoryImpl
+import com.example.screentimetracker.data.repository.AppCategoryRepositoryImpl
 import com.example.screentimetracker.domain.repository.TrackerRepository
+import com.example.screentimetracker.domain.repository.AppCategoryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,7 +45,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(AppDatabase.MIGRATION_9_10) // Add the proper migration
+            .addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11) // Add the proper migrations
           //  .fallbackToDestructiveMigrationOnDowngrade() // Only for downgrades
         .build()
     }
@@ -166,5 +169,20 @@ object DatabaseModule {
     @Singleton
     fun provideReplacementActivityDao(db: AppDatabase): ReplacementActivityDao {
         return db.replacementActivityDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideAppCategoryDao(db: AppDatabase): AppCategoryDao {
+        return db.appCategoryDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideAppCategoryRepository(
+        appCategoryDao: AppCategoryDao,
+        appLogger: com.example.screentimetracker.utils.logger.AppLogger
+    ): AppCategoryRepository {
+        return AppCategoryRepositoryImpl(appCategoryDao, appLogger)
     }
 }
