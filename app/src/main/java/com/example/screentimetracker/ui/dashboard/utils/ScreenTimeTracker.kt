@@ -56,6 +56,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         val achievements by viewModel.achievements.collectAsStateWithLifecycle()
         val wellnessScore by viewModel.wellnessScore.collectAsStateWithLifecycle()
+        val digitalPet by viewModel.digitalPet.collectAsStateWithLifecycle()
+        val petStats by viewModel.petStats.collectAsStateWithLifecycle()
         val personalizationState by personalizationViewModel.uiState.collectAsStateWithLifecycle()
         
         val navController = rememberNavController()
@@ -137,10 +139,22 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         composable("dashboard_route") {
                             SimpleDashboardView(
                                 state = state,
+                                digitalPet = digitalPet,
+                                petStats = petStats,
                                 onNavigateToAnalytics = { navController.navigate("analytics_route") },
                                 onNavigateToWellness = { navController.navigate("wellness_route") },
                                 onNavigateToHabits = { navController.navigate("habits_route") },
-                                onNavigateToTimeRestrictions = { navController.navigate("time_restrictions_route") }
+                                onNavigateToTimeRestrictions = { navController.navigate("time_restrictions_route") },
+                                onPetClick = { 
+                                    // Refresh pet wellness when clicked
+                                    viewModel.refreshPetWellness()
+                                },
+                                onPetInteraction = { 
+                                    viewModel.interactWithPet()
+                                },
+                                onPetFeed = { 
+                                    viewModel.feedPet()
+                                }
                             )
                         }
 

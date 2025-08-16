@@ -235,6 +235,86 @@ class CalculateWellnessScoreUseCaseTest {
     }
 
     @Test
+    fun `invoke should support force recalculation`() = runTest {
+        // Given
+        val testDate = System.currentTimeMillis()
+        val startOfDay = getStartOfDay(testDate)
+        val existingScore = WellnessScore(
+            date = startOfDay,
+            totalScore = 85,
+            timeLimitScore = 90,
+            focusSessionScore = 80,
+            breaksScore = 85,
+            sleepHygieneScore = 85,
+            level = WellnessLevel.WELLNESS_MASTER,
+            calculatedAt = System.currentTimeMillis() - 1000
+        )
+        
+        every { mockRepository.getAllWellnessScores() } returns flowOf(listOf(existingScore))
+
+        // When - force recalculation even though score exists
+        val result = calculateWellnessScoreUseCase(testDate, forceRecalculate = true)
+
+        // Then - should calculate new score, not return existing one
+        assertNotEquals(existingScore, result)
+        assertEquals(startOfDay, result.date)
+        coVerify { mockRepository.insertWellnessScore(any()) }
+    }
+
+    @Test
+    fun `invoke should recalculate if existing score is older than 30 minutes`() = runTest {
+        // Given
+        val testDate = System.currentTimeMillis()
+        val startOfDay = getStartOfDay(testDate)
+        val oldScore = WellnessScore(
+            date = startOfDay,
+            totalScore = 85,
+            timeLimitScore = 90,
+            focusSessionScore = 80,
+            breaksScore = 85,
+            sleepHygieneScore = 85,
+            level = WellnessLevel.WELLNESS_MASTER,
+            calculatedAt = System.currentTimeMillis() - (35 * 60 * 1000L) // 35 minutes ago
+        )
+        
+        every { mockRepository.getAllWellnessScores() } returns flowOf(listOf(oldScore))
+
+        // When
+        val result = calculateWellnessScoreUseCase(testDate, forceRecalculate = false)
+
+        // Then - should recalculate because score is too old
+        assertNotEquals(oldScore, result)
+        assertEquals(startOfDay, result.date)
+        coVerify { mockRepository.insertWellnessScore(any()) }
+    }
+
+    @Test
+    fun `invoke should return existing score if calculated within 30 minutes`() = runTest {
+        // Given
+        val testDate = System.currentTimeMillis()
+        val startOfDay = getStartOfDay(testDate)
+        val recentScore = WellnessScore(
+            date = startOfDay,
+            totalScore = 85,
+            timeLimitScore = 90,
+            focusSessionScore = 80,
+            breaksScore = 85,
+            sleepHygieneScore = 85,
+            level = WellnessLevel.WELLNESS_MASTER,
+            calculatedAt = System.currentTimeMillis() - (10 * 60 * 1000L) // 10 minutes ago
+        )
+        
+        every { mockRepository.getAllWellnessScores() } returns flowOf(listOf(recentScore))
+
+        // When
+        val result = calculateWellnessScoreUseCase(testDate, forceRecalculate = false)
+
+        // Then - should return existing score without recalculating
+        assertEquals(recentScore, result)
+        coVerify(exactly = 0) { mockRepository.insertWellnessScore(any()) }
+    }
+
+    @Test
     fun `wellness level enum should have correct score ranges`() {
         // Test the WellnessLevel.fromScore method works correctly
         assertEquals(WellnessLevel.DIGITAL_SPROUT, WellnessLevel.fromScore(0))

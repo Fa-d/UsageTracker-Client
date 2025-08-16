@@ -190,7 +190,7 @@ When blocking an app, suggest:
 - [x] 🌱 Growing plant metaphor for progress
 
 ### 3. Playful Elements
-- [ ] 🐾 Digital pet that reflects your digital wellness
+- [X] 🐾 Digital pet that reflects your digital wellness
 - [ ] 🎮 Mini-games during breaks
 - [ ] 🎯 Target shooting game for goal achievement
 - [ ] 🧩 Puzzle pieces collected for weekly achievements
@@ -219,20 +219,5 @@ When blocking an app, suggest:
 5. [ ] Export functionality
 
 ## 🎨 UI/UX DESIGN GUIDELINES
-
-### Color Psychology
-- 🟢 **Green**: Achievement, success, healthy habits
-- 🔵 **Blue**: Focus, productivity, calm
-- 🟠 **Orange**: Warning, moderate usage
-- 🔴 **Red**: Limit exceeded, urgent attention needed
-- 🟣 **Purple**: Premium features, motivation
-- 🟡 **Yellow**: Energy, happiness, achievements
-
-### Animation Guidelines
-- **Smooth transitions**: 300ms ease-in-out
-- **Success celebrations**: Bounce and scale animations
-- **Progress indicators**: Smooth fill animations
-- **Loading states**: Subtle pulse animations
-- **Achievement unlocks**: Explosion and confetti effects
 
 This comprehensive feature set will transform the screen time tracker into an engaging, gamified wellness platform that encourages healthy digital habits through psychology-backed design and meaningful rewards.

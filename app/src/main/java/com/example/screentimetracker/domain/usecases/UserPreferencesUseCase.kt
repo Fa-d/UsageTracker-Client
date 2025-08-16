@@ -22,7 +22,7 @@ class UserPreferencesUseCase @Inject constructor(
     }
     
     suspend fun getUserPreferencesOnce(): UserPreferences {
-        return userPreferencesDao.getUserPreferencesOnce() ?: getDefaultPreferences()
+        return userPreferencesDao.getUserPreferencesSync() ?: getDefaultPreferences()
     }
     
     private fun getDefaultPreferences(): UserPreferences {
@@ -51,27 +51,27 @@ class UserPreferencesUseCase @Inject constructor(
     
     suspend fun updateMotivationalMessages(enabled: Boolean) {
         ensurePreferencesExist()
-        userPreferencesDao.updateMotivationalMessages(enabled)
+        userPreferencesDao.updateMotivationalMessagesEnabled(enabled)
     }
     
     suspend fun updateAchievementCelebrations(enabled: Boolean) {
         ensurePreferencesExist()
-        userPreferencesDao.updateAchievementCelebrations(enabled)
+        userPreferencesDao.updateAchievementCelebrationsEnabled(enabled)
     }
     
     suspend fun updateBreakReminders(enabled: Boolean) {
         ensurePreferencesExist()
-        userPreferencesDao.updateBreakReminders(enabled)
+        userPreferencesDao.updateBreakRemindersEnabled(enabled)
     }
     
     suspend fun updateWellnessCoaching(enabled: Boolean) {
         ensurePreferencesExist()
-        userPreferencesDao.updateWellnessCoaching(enabled)
+        userPreferencesDao.updateWellnessCoachingEnabled(enabled)
     }
     
     suspend fun updateDefaultFocusDuration(minutes: Int) {
         ensurePreferencesExist()
-        userPreferencesDao.insertOrUpdatePreferences(
+        userPreferencesDao.insertOrUpdateUserPreferences(
             getUserPreferencesOnce().copy(
                 defaultFocusDurationMinutes = minutes,
                 updatedAt = System.currentTimeMillis()
@@ -81,7 +81,7 @@ class UserPreferencesUseCase @Inject constructor(
     
     suspend fun updateFocusModeEnabled(enabled: Boolean) {
         ensurePreferencesExist()
-        userPreferencesDao.insertOrUpdatePreferences(
+        userPreferencesDao.insertOrUpdateUserPreferences(
             getUserPreferencesOnce().copy(
                 focusModeEnabled = enabled,
                 updatedAt = System.currentTimeMillis()
@@ -91,7 +91,7 @@ class UserPreferencesUseCase @Inject constructor(
     
     suspend fun updateNotificationSound(soundName: String) {
         ensurePreferencesExist()
-        userPreferencesDao.insertOrUpdatePreferences(
+        userPreferencesDao.insertOrUpdateUserPreferences(
             getUserPreferencesOnce().copy(
                 notificationSound = soundName,
                 updatedAt = System.currentTimeMillis()
@@ -100,13 +100,13 @@ class UserPreferencesUseCase @Inject constructor(
     }
     
     suspend fun saveAllPreferences(preferences: UserPreferences) {
-        userPreferencesDao.insertOrUpdatePreferences(preferences.copy(updatedAt = System.currentTimeMillis()))
+        userPreferencesDao.insertOrUpdateUserPreferences(preferences.copy(updatedAt = System.currentTimeMillis()))
     }
     
     private suspend fun ensurePreferencesExist() {
-        val existing = userPreferencesDao.getUserPreferencesOnce()
+        val existing = userPreferencesDao.getUserPreferencesSync()
         if (existing == null) {
-            userPreferencesDao.insertOrUpdatePreferences(getDefaultPreferences())
+            userPreferencesDao.insertOrUpdateUserPreferences(getDefaultPreferences())
         }
     }
     

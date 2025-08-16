@@ -19,6 +19,9 @@ import com.example.screentimetracker.domain.model.Achievement
 import com.example.screentimetracker.domain.model.WellnessScore
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.dashboard.state.AppUsageUIModel
+import com.example.screentimetracker.data.repository.DigitalPetRepository
+import com.example.screentimetracker.data.local.DigitalPet
+import com.example.screentimetracker.data.local.PetStats
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +42,7 @@ class DashboardViewModel @Inject constructor(
     val challengeManagerUseCase: ChallengeManagerUseCase,
     val focusSessionManagerUseCase: FocusSessionManagerUseCase,
     val weeklyInsightsUseCase: WeeklyInsightsUseCase,
+    private val digitalPetRepository: DigitalPetRepository,
     private val application: Application
 ) : ViewModel() {
 
@@ -54,6 +58,12 @@ class DashboardViewModel @Inject constructor(
     private val _wellnessScore = MutableStateFlow<WellnessScore?>(null)
     val wellnessScore: StateFlow<WellnessScore?> = _wellnessScore.asStateFlow()
 
+    private val _digitalPet = MutableStateFlow<DigitalPet?>(null)
+    val digitalPet: StateFlow<DigitalPet?> = _digitalPet.asStateFlow()
+
+    private val _petStats = MutableStateFlow<PetStats?>(null)
+    val petStats: StateFlow<PetStats?> = _petStats.asStateFlow()
+
     init {
         // Initialize achievements first
         viewModelScope.launch {
@@ -64,13 +74,23 @@ class DashboardViewModel @Inject constructor(
             }
         }
 
-        // Load dashboard data, achievements, and wellness score
+        // Initialize digital pet if needed
+        viewModelScope.launch {
+            try {
+                createDefaultPetIfNeeded()
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error initializing digital pet", e)
+            }
+        }
+
+        // Load dashboard data, achievements, wellness score, and digital pet
         viewModelScope.launch {
             combine(
                 getDashboardDataUseCase(),
                 getHistoricalDataUseCase(),
-                getAchievementsUseCase()
-            ) { todayData, historicalData, achievements ->
+                getAchievementsUseCase(),
+                digitalPetRepository.getPet()
+            ) { todayData, historicalData, achievements, digitalPet ->
                 val appUsageUIModels = todayData.appDetailsToday.map { detail ->
                     AppUsageUIModel(
                         packageName = detail.packageName,
@@ -95,12 +115,47 @@ class DashboardViewModel @Inject constructor(
                 // Update achievements state
                 _achievements.value = achievements
 
-                // Calculate wellness score for today
+                // Calculate wellness score for today (dynamic calculation)
                 try {
-                    val todayWellnessScore = calculateWellnessScoreUseCase(System.currentTimeMillis())
+                    val todayWellnessScore = calculateWellnessScoreUseCase(System.currentTimeMillis(), forceRecalculate = false)
                     _wellnessScore.value = todayWellnessScore
                 } catch (e: Exception) {
                     Log.e("DashboardViewModel", "Error calculating wellness score", e)
+                }
+
+                // Update digital pet state and wellness
+                _digitalPet.value = digitalPet
+                if (digitalPet != null) {
+                    try {
+                        val stats = digitalPetRepository.getPetStats(digitalPet)
+                        _petStats.value = stats
+                        
+                        // Update pet wellness with dynamic wellness score if enough time has passed
+                        if (digitalPetRepository.shouldUpdatePetWellness()) {
+                            val currentState = _uiState.value.copy(
+                                isLoading = false,
+                                totalScreenUnlocksToday = todayData.totalScreenUnlocksToday,
+                                appUsagesToday = appUsageUIModels,
+                                totalScreenTimeTodayMillis = todayData.totalScreenTimeFromSessionsToday,
+                                historicalAppSummaries = historicalData.appSummaries,
+                                historicalUnlockSummaries = historicalData.unlockSummaries,
+                                averageDailyScreenTimeMillisLastWeek = avgScreenTime,
+                                averageDailyUnlocksLastWeek = avgUnlocks,
+                                error = null
+                            )
+                            
+                            // Update pet with current wellness score for dynamic response
+                            val updatedPet = digitalPetRepository.updatePetWithWellness(
+                                currentState, 
+                                wellnessScore = _wellnessScore.value
+                            )
+                            _digitalPet.value = updatedPet
+                            val updatedStats = digitalPetRepository.getPetStats(updatedPet)
+                            _petStats.value = updatedStats
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DashboardViewModel", "Error calculating pet stats", e)
+                    }
                 }
 
                 _uiState.value.copy(
@@ -149,6 +204,92 @@ class DashboardViewModel @Inject constructor(
                     Log.d("DashboardViewModel", "Received ${events.size} timeline events.")
                     _timelineEvents.value = events
                 }
+        }
+    }
+
+    fun updatePetWithCurrentWellness() {
+        viewModelScope.launch {
+            try {
+                val currentState = _uiState.value
+                val updatedPet = digitalPetRepository.updatePetWithWellness(
+                    currentState,
+                    wellnessScore = _wellnessScore.value
+                )
+                _digitalPet.value = updatedPet
+                val stats = digitalPetRepository.getPetStats(updatedPet)
+                _petStats.value = stats
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error updating pet wellness", e)
+            }
+        }
+    }
+
+    fun interactWithPet() {
+        viewModelScope.launch {
+            try {
+                val updatedPet = digitalPetRepository.petInteraction()
+                if (updatedPet != null) {
+                    _digitalPet.value = updatedPet
+                    val stats = digitalPetRepository.getPetStats(updatedPet)
+                    _petStats.value = stats
+                }
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error interacting with pet", e)
+            }
+        }
+    }
+
+    fun feedPet() {
+        viewModelScope.launch {
+            try {
+                val updatedPet = digitalPetRepository.feedPet()
+                if (updatedPet != null) {
+                    _digitalPet.value = updatedPet
+                    val stats = digitalPetRepository.getPetStats(updatedPet)
+                    _petStats.value = stats
+                }
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error feeding pet", e)
+            }
+        }
+    }
+
+    fun createDefaultPetIfNeeded() {
+        viewModelScope.launch {
+            try {
+                if (digitalPetRepository.isFirstTimeUser()) {
+                    val newPet = digitalPetRepository.createDefaultPet()
+                    _digitalPet.value = newPet
+                    val stats = digitalPetRepository.getPetStats(newPet)
+                    _petStats.value = stats
+                }
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error creating default pet", e)
+            }
+        }
+    }
+
+    fun refreshPetWellness() {
+        viewModelScope.launch {
+            try {
+                updatePetWithCurrentWellness()
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error refreshing pet wellness", e)
+            }
+        }
+    }
+    
+    fun refreshWellnessScore() {
+        viewModelScope.launch {
+            try {
+                val todayWellnessScore = calculateWellnessScoreUseCase(System.currentTimeMillis(), forceRecalculate = true)
+                _wellnessScore.value = todayWellnessScore
+                
+                // Update pet with the new wellness score for immediate response
+                updatePetWithCurrentWellness()
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error refreshing wellness score", e)
+            }
         }
     }
 }

@@ -27,9 +27,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         PrivacySettings::class,
         MindfulnessSession::class,
         ReplacementActivity::class,
-        AppCategory::class
+        AppCategory::class,
+        DigitalPet::class
     ],
-    version = 13, // Incremented version for UserPreferences AI features columns
+    version = 14, // Incremented version for DigitalPet table
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -54,6 +55,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun mindfulnessSessionDao(): MindfulnessSessionDao
     abstract fun replacementActivityDao(): ReplacementActivityDao
     abstract fun appCategoryDao(): AppCategoryDao
+    abstract fun digitalPetDao(): DigitalPetDao
 
     companion object {
         const val DATABASE_NAME = "screen_time_tracker_db"
@@ -214,6 +216,43 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""
                     ALTER TABLE `user_preferences` 
                     ADD COLUMN `ai_onboarding_completed` INTEGER NOT NULL DEFAULT 0
+                """)
+            }
+        }
+        
+        // Migration from version 13 to 14: Add DigitalPet table
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create DigitalPet table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `digital_pet` (
+                        `id` INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
+                        `name` TEXT NOT NULL DEFAULT 'Zen',
+                        `pet_type` TEXT NOT NULL DEFAULT 'TREE',
+                        `level` INTEGER NOT NULL DEFAULT 1,
+                        `experience_points` INTEGER NOT NULL DEFAULT 0,
+                        `health` INTEGER NOT NULL DEFAULT 100,
+                        `happiness` INTEGER NOT NULL DEFAULT 100,
+                        `energy` INTEGER NOT NULL DEFAULT 100,
+                        `wellness_streak_days` INTEGER NOT NULL DEFAULT 0,
+                        `last_fed_timestamp` INTEGER NOT NULL,
+                        `last_wellness_check` INTEGER NOT NULL,
+                        `created_at` INTEGER NOT NULL,
+                        `updated_at` INTEGER NOT NULL
+                    )
+                """)
+                
+                // Insert default digital pet
+                val currentTime = System.currentTimeMillis()
+                database.execSQL("""
+                    INSERT OR IGNORE INTO `digital_pet` (
+                        `id`, `name`, `pet_type`, `level`, `experience_points`,
+                        `health`, `happiness`, `energy`, `wellness_streak_days`,
+                        `last_fed_timestamp`, `last_wellness_check`, `created_at`, `updated_at`
+                    ) VALUES (
+                        1, 'Zen', 'TREE', 1, 0, 100, 100, 100, 0, 
+                        $currentTime, $currentTime, $currentTime, $currentTime
+                    )
                 """)
             }
         }

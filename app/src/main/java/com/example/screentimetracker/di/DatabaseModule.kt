@@ -23,8 +23,10 @@ import com.example.screentimetracker.data.local.MindfulnessSessionDao
 import com.example.screentimetracker.data.local.PrivacySettingsDao
 import com.example.screentimetracker.data.local.ReplacementActivityDao
 import com.example.screentimetracker.data.local.AppCategoryDao
+import com.example.screentimetracker.data.local.DigitalPetDao
 import com.example.screentimetracker.data.repository.TrackerRepositoryImpl
 import com.example.screentimetracker.data.repository.AppCategoryRepositoryImpl
+import com.example.screentimetracker.data.repository.UserPreferencesRepository
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import com.example.screentimetracker.domain.repository.AppCategoryRepository
 import dagger.Module
@@ -45,7 +47,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13) // Add the proper migrations
+            .addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14) // Add the proper migrations
           //  .fallbackToDestructiveMigrationOnDowngrade() // Only for downgrades
         .build()
     }
@@ -175,6 +177,20 @@ object DatabaseModule {
     @Singleton
     fun provideAppCategoryDao(db: AppDatabase): AppCategoryDao {
         return db.appCategoryDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideDigitalPetDao(db: AppDatabase): DigitalPetDao {
+        return db.digitalPetDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(
+        userPreferencesDao: UserPreferencesDao
+    ): UserPreferencesRepository {
+        return UserPreferencesRepository(userPreferencesDao)
     }
     
     @Provides

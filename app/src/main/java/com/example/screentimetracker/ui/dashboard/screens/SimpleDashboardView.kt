@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
 import com.example.screentimetracker.ui.dashboard.cards.OverviewCard
+import com.example.screentimetracker.ui.dashboard.cards.DigitalPetCard
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.theme.*
 import com.example.screentimetracker.utils.millisToReadableTime
@@ -29,10 +30,15 @@ import com.example.screentimetracker.utils.millisToReadableTime
 @Composable
 fun SimpleDashboardView(
     state: DashboardState,
+    digitalPet: com.example.screentimetracker.data.local.DigitalPet?,
+    petStats: com.example.screentimetracker.data.local.PetStats?,
     onNavigateToAnalytics: () -> Unit,
     onNavigateToWellness: () -> Unit,
     onNavigateToHabits: (() -> Unit)? = null,
-    onNavigateToTimeRestrictions: (() -> Unit)? = null
+    onNavigateToTimeRestrictions: (() -> Unit)? = null,
+    onPetClick: () -> Unit = {},
+    onPetInteraction: () -> Unit = {},
+    onPetFeed: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -119,6 +125,20 @@ fun SimpleDashboardView(
                 emoji = "📱",
                 color = MaterialTheme.colorScheme.secondary,
                 subtitle = "App launches"
+            )
+        }
+
+        // Digital Pet Card
+        if (digitalPet != null && petStats != null) {
+            DigitalPetCard(
+                pet = digitalPet,
+                petStats = petStats,
+                onPetClick = onPetClick,
+                onInteract = onPetInteraction,
+                onFeed = onPetFeed,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             )
         }
 

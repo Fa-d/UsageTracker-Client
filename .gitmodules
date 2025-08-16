@@ -1,0 +1,3 @@
+[submodule "ai_insights"]
+	path = ai_insights
+	url = https://github.com/Fa-d/usageTracker_ai_insight.git

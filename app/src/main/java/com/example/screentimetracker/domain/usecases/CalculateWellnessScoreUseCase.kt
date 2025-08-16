@@ -9,10 +9,14 @@ import javax.inject.Inject
 class CalculateWellnessScoreUseCase @Inject constructor(
     private val repository: TrackerRepository
 ) {
-    suspend operator fun invoke(date: Long): WellnessScore {
+    suspend operator fun invoke(date: Long, forceRecalculate: Boolean = false): WellnessScore {
         val startOfDay = getStartOfDay(date)
         val existingScore = repository.getAllWellnessScores().first().find { it.date == startOfDay }
-        if (existingScore != null) {
+        
+        // Check if we should recalculate based on time or force flag
+        val shouldRecalculate = forceRecalculate || shouldRecalculateScore(existingScore)
+        
+        if (existingScore != null && !shouldRecalculate) {
             return existingScore
         } else {
             // Calculate real wellness score based on actual data
@@ -44,7 +48,7 @@ class CalculateWellnessScoreUseCase @Inject constructor(
                 calculatedAt = System.currentTimeMillis()
             )
             
-            // Save calculated score to database
+            // Save calculated score to database (insert or update)
             repository.insertWellnessScore(wellnessScore)
             return wellnessScore
         }
@@ -58,6 +62,18 @@ class CalculateWellnessScoreUseCase @Inject constructor(
         calendar.set(java.util.Calendar.SECOND, 0)
         calendar.set(java.util.Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
+    }
+    
+    private fun shouldRecalculateScore(existingScore: WellnessScore?): Boolean {
+        if (existingScore == null) return true
+        
+        val currentTime = System.currentTimeMillis()
+        val timeSinceCalculation = currentTime - existingScore.calculatedAt
+        
+        // Recalculate every 30 minutes for dynamic updates during the day
+        val recalculationInterval = 30 * 60 * 1000L // 30 minutes
+        
+        return timeSinceCalculation > recalculationInterval
     }
     
     private suspend fun calculateTimeLimitScore(startOfDay: Long, endOfDay: Long): Int {

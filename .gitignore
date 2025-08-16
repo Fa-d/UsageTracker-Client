@@ -17,5 +17,11 @@
 *.aar
 *.zip
 *.jar
-/app/build/
-/ai_insights/build/
+
+# Build directories for all modules
+**/build/
+build/
+
+# Gradle files
+.gradle/
+gradle/

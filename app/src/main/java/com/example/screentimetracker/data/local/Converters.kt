@@ -16,4 +16,14 @@ class Converters {
         val listType = object : TypeToken<List<String>>() {}.type
         return Gson().fromJson(value, listType) ?: emptyList()
     }
+    
+    @TypeConverter
+    fun fromPetType(petType: PetType): String {
+        return petType.name
+    }
+    
+    @TypeConverter
+    fun toPetType(petType: String): PetType {
+        return PetType.valueOf(petType)
+    }
 }
