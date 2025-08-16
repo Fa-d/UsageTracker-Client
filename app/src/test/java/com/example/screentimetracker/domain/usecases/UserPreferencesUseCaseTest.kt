@@ -4,8 +4,6 @@ import com.example.screentimetracker.data.local.UserPreferences
 import com.example.screentimetracker.data.local.UserPreferencesDao
 import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.data.local.ColorScheme
-import com.example.screentimetracker.data.local.PersonalityMode
-import com.example.screentimetracker.data.local.DashboardLayout
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.first
@@ -23,8 +21,6 @@ class UserPreferencesUseCaseTest {
     private val testPreferences = UserPreferences(
         themeMode = "DARK",
         colorScheme = "COLORFUL",
-        personalityMode = "MOTIVATIONAL_BUDDY",
-        dashboardLayout = "DETAILED",
         motivationalMessagesEnabled = false,
         achievementCelebrationsEnabled = false,
         breakRemindersEnabled = false,
@@ -80,35 +76,35 @@ class UserPreferencesUseCaseTest {
     fun `updateThemeMode creates preferences if none exist and updates theme`() = runTest {
         // Given
         coEvery { userPreferencesDao.getUserPreferencesOnce() } returns null
-        coEvery { userPreferencesDao.insertOrUpdatePreferences(any()) } just Runs
+        coEvery { userPreferencesDao.insertOrUpdateUserPreferences(any()) } just Runs
         coEvery { userPreferencesDao.updateThemeMode(any(), any()) } just Runs
 
         // When
         userPreferencesUseCase.updateThemeMode(ThemeMode.DARK)
 
         // Then
-        coVerify { userPreferencesDao.insertOrUpdatePreferences(defaultPreferences) }
+        coVerify { userPreferencesDao.insertOrUpdateUserPreferences(defaultPreferences) }
         coVerify { userPreferencesDao.updateThemeMode("DARK", any()) }
     }
 
     @Test
     fun `updateThemeMode updates existing preferences`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
         coEvery { userPreferencesDao.updateThemeMode(any(), any()) } just Runs
 
         // When
         userPreferencesUseCase.updateThemeMode(ThemeMode.LIGHT)
 
         // Then
-        coVerify(exactly = 0) { userPreferencesDao.insertOrUpdatePreferences(any()) }
+        coVerify(exactly = 0) { userPreferencesDao.insertOrUpdateUserPreferences(any()) }
         coVerify { userPreferencesDao.updateThemeMode("LIGHT", any()) }
     }
 
     @Test
     fun `updateColorScheme updates color scheme correctly`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
         coEvery { userPreferencesDao.updateColorScheme(any(), any()) } just Runs
 
         // When
@@ -118,49 +114,24 @@ class UserPreferencesUseCaseTest {
         coVerify { userPreferencesDao.updateColorScheme("MINIMAL", any()) }
     }
 
-    @Test
-    fun `updatePersonalityMode updates personality mode correctly`() = runTest {
-        // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
-        coEvery { userPreferencesDao.updatePersonalityMode(any(), any()) } just Runs
-
-        // When
-        userPreferencesUseCase.updatePersonalityMode(PersonalityMode.STRICT_COACH)
-
-        // Then
-        coVerify { userPreferencesDao.updatePersonalityMode("STRICT_COACH", any()) }
-    }
 
     @Test
-    fun `updateDashboardLayout updates dashboard layout correctly`() = runTest {
+    fun `updateMotivationalMessagesEnabled updates flag correctly`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
-        coEvery { userPreferencesDao.updateDashboardLayout(any(), any()) } just Runs
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
+        coEvery { userPreferencesDao.updateMotivationalMessagesEnabled(any(), any()) } just Runs
 
         // When
-        userPreferencesUseCase.updateDashboardLayout(DashboardLayout.COMPACT)
+        userPreferencesUseCase.updateMotivationalMessagesEnabled(true)
 
         // Then
-        coVerify { userPreferencesDao.updateDashboardLayout("COMPACT", any()) }
-    }
-
-    @Test
-    fun `updateMotivationalMessages updates flag correctly`() = runTest {
-        // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
-        coEvery { userPreferencesDao.updateMotivationalMessages(any(), any()) } just Runs
-
-        // When
-        userPreferencesUseCase.updateMotivationalMessages(true)
-
-        // Then
-        coVerify { userPreferencesDao.updateMotivationalMessages(true, any()) }
+        coVerify { userPreferencesDao.updateMotivationalMessagesEnabled(true, any()) }
     }
 
     @Test
     fun `getThemeMode returns correct parsed enum`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
 
         // When
         val result = userPreferencesUseCase.getThemeMode()
@@ -185,7 +156,7 @@ class UserPreferencesUseCaseTest {
     @Test
     fun `getColorScheme returns correct parsed enum`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
 
         // When
         val result = userPreferencesUseCase.getColorScheme()
@@ -194,76 +165,13 @@ class UserPreferencesUseCaseTest {
         assertEquals(ColorScheme.COLORFUL, result)
     }
 
-    @Test
-    fun `getPersonalityMode returns correct parsed enum`() = runTest {
-        // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
 
-        // When
-        val result = userPreferencesUseCase.getPersonalityMode()
-
-        // Then
-        assertEquals(PersonalityMode.MOTIVATIONAL_BUDDY, result)
-    }
-
-    @Test
-    fun `getDashboardLayout returns correct parsed enum`() = runTest {
-        // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
-
-        // When
-        val result = userPreferencesUseCase.getDashboardLayout()
-
-        // Then
-        assertEquals(DashboardLayout.DETAILED, result)
-    }
-
-    @Test
-    fun `getMotivationalMessage returns strict coach message`() = runTest {
-        // Given
-        val strictCoachPreferences = testPreferences.copy(personalityMode = "STRICT_COACH")
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns strictCoachPreferences
-
-        // When
-        val result = userPreferencesUseCase.getMotivationalMessage(MotivationContext.TIME_WARNING)
-
-        // Then
-        assertTrue(result.contains("Time's up!"))
-        assertTrue(result.contains("need to stop"))
-    }
-
-    @Test
-    fun `getMotivationalMessage returns gentle guide message`() = runTest {
-        // Given
-        val gentleGuidePreferences = testPreferences.copy(personalityMode = "GENTLE_GUIDE")
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns gentleGuidePreferences
-
-        // When
-        val result = userPreferencesUseCase.getMotivationalMessage(MotivationContext.BREAK_REMINDER)
-
-        // Then
-        assertTrue(result.contains("How about"))
-        assertTrue(result.contains("when you're ready") || result.contains("will thank you"))
-    }
-
-    @Test
-    fun `getMotivationalMessage returns motivational buddy message`() = runTest {
-        // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences // Uses MOTIVATIONAL_BUDDY
-
-        // When
-        val result = userPreferencesUseCase.getMotivationalMessage(MotivationContext.GOAL_ACHIEVED)
-
-        // Then
-        assertTrue(result.contains("YES!") || result.contains("crushed"))
-        assertTrue(result.contains("🎉") || result.contains("proud"))
-    }
 
     @Test
     fun `updateNotificationSound updates sound correctly`() = runTest {
         // Given
-        coEvery { userPreferencesDao.getUserPreferencesOnce() } returns testPreferences
-        coEvery { userPreferencesDao.insertOrUpdatePreferences(any()) } just Runs
+        coEvery { userPreferencesDao.getUserPreferencesSync() } returns testPreferences
+        coEvery { userPreferencesDao.insertOrUpdateUserPreferences(any()) } just Runs
 
         // When
         userPreferencesUseCase.updateNotificationSound("custom_sound.mp3")
@@ -271,7 +179,7 @@ class UserPreferencesUseCaseTest {
         // Then
         // Verify the saved preferences have the correct sound
         coVerify { 
-            userPreferencesDao.insertOrUpdatePreferences(
+            userPreferencesDao.insertOrUpdateUserPreferences(
                 match { it.notificationSound == "custom_sound.mp3" }
             ) 
         }
@@ -282,14 +190,14 @@ class UserPreferencesUseCaseTest {
         // Given
         val originalTimestamp = 12345L
         val preferencesToSave = testPreferences.copy(updatedAt = originalTimestamp)
-        coEvery { userPreferencesDao.insertOrUpdatePreferences(any()) } just Runs
+        coEvery { userPreferencesDao.insertOrUpdateUserPreferences(any()) } just Runs
 
         // When
         userPreferencesUseCase.saveAllPreferences(preferencesToSave)
 
         // Then
         coVerify { 
-            userPreferencesDao.insertOrUpdatePreferences(
+            userPreferencesDao.insertOrUpdateUserPreferences(
                 match { it.updatedAt > originalTimestamp }
             ) 
         }

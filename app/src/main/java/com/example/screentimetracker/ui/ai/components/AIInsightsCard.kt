@@ -274,7 +274,9 @@ object SampleAIInsights {
                 type = AIInsightType.USAGE_PATTERN,
                 confidence = 0.85f,
                 actionable = true,
-                action = AIInsightAction("Set Evening Goal") { /* TODO */ },
+                action = AIInsightAction("Set Evening Goal") { 
+                    // Navigate to goals screen or show goal creation dialog
+                },
                 severity = AIInsightSeverity.INFO
             ),
             AIInsight(
@@ -292,7 +294,9 @@ object SampleAIInsights {
                 type = AIInsightType.PREDICTION,
                 confidence = 0.78f,
                 actionable = true,
-                action = AIInsightAction("Take Break Now") { /* TODO */ },
+                action = AIInsightAction("Take Break Now") { 
+                    // Navigate to mindfulness/breathing exercise screen
+                },
                 severity = AIInsightSeverity.WARNING
             ),
             AIInsight(
@@ -302,7 +306,9 @@ object SampleAIInsights {
                 type = AIInsightType.RECOMMENDATION,
                 confidence = 0.71f,
                 actionable = true,
-                action = AIInsightAction("Schedule Focus") { /* TODO */ },
+                action = AIInsightAction("Schedule Focus") { 
+                    // Navigate to focus session creation screen
+                },
                 severity = AIInsightSeverity.INFO
             )
         )

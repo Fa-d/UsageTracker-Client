@@ -37,7 +37,11 @@ import com.example.screentimetracker.utils.millisToReadableTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppSearchScreen(navController: NavController, viewModel: DashboardViewModel) {
+fun AppSearchScreen(
+    navController: NavController, 
+    viewModel: DashboardViewModel,
+    onAppSelected: (String) -> Unit = {}
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
 
@@ -77,7 +81,10 @@ fun AppSearchScreen(navController: NavController, viewModel: DashboardViewModel)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { /* TODO: Handle app selection */ }
+                            .clickable { 
+                                onAppSelected(it.appName)
+                                navController.popBackStack() 
+                            }
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

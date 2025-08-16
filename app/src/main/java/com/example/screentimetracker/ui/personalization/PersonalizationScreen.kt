@@ -15,7 +15,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -26,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.screentimetracker.data.local.DashboardLayout
-import com.example.screentimetracker.data.local.PersonalityMode
 import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.data.local.UserPreferences
 import com.example.screentimetracker.ui.components.PlayfulCard
@@ -38,12 +35,10 @@ fun PersonalizationScreen(
     preferences: UserPreferences,
     onThemeModeChanged: (ThemeMode) -> Unit,
     onColorSchemeChanged: (AppColorScheme) -> Unit,
-    onPersonalityModeChanged: (PersonalityMode) -> Unit,
     onMotivationalMessagesChanged: (Boolean) -> Unit,
     onAchievementCelebrationsChanged: (Boolean) -> Unit,
     onBreakRemindersChanged: (Boolean) -> Unit,
-    onWellnessCoachingChanged: (Boolean) -> Unit,
-    onDashboardLayoutChanged: (DashboardLayout) -> Unit
+    onWellnessCoachingChanged: (Boolean) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -165,68 +160,6 @@ fun PersonalizationScreen(
             }
         }
         
-        // Personality Mode
-        item {
-            PlayfulCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Person,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Personality Mode",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    Text(
-                        text = "Choose how the app communicates with you",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Column(modifier = Modifier.selectableGroup()) {
-                        PersonalityMode.entries.forEach { personalityMode ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = PersonalityMode.valueOf(preferences.personalityMode) == personalityMode,
-                                    onClick = { onPersonalityModeChanged(personalityMode) }
-                                )
-                                Column(modifier = Modifier.padding(start = 8.dp)) {
-                                    Text(
-                                        text = personalityMode.displayName,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        text = personalityMode.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
         
         // Enhanced Notifications & Messages
         item {
@@ -365,62 +298,5 @@ fun PersonalizationScreen(
             }
         }
         
-        // Dashboard Layout
-        item {
-            PlayfulCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "📊 Dashboard Layout",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    Text(
-                        text = "Choose how much detail to show on your dashboard",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Column(modifier = Modifier.selectableGroup()) {
-                        DashboardLayout.entries.forEach { layout ->
-                            val description = when (layout) {
-                                DashboardLayout.STANDARD -> "Balanced view with key metrics"
-                                DashboardLayout.COMPACT -> "Minimal cards with essential info"
-                                DashboardLayout.DETAILED -> "Expanded cards with comprehensive data"
-                            }
-                            
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = DashboardLayout.valueOf(preferences.dashboardLayout) == layout,
-                                    onClick = { onDashboardLayoutChanged(layout) }
-                                )
-                                Column(modifier = Modifier.padding(start = 8.dp)) {
-                                    Text(
-                                        text = layout.name.lowercase().replaceFirstChar { it.uppercase() },
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text = description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

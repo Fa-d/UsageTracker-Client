@@ -172,8 +172,13 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                             SimpleSettingsView(
                                 currentThemeMode = com.example.screentimetracker.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
                                 onThemeModeChange = personalizationViewModel::updateThemeMode,
-                                onNavigateToPersonalization = { navController.navigate("personalization_route") },
-                                onNavigateToAdvancedSettings = { navController.navigate("advanced_settings_route") }
+                                onNavigateToAdvancedSettings = { navController.navigate("advanced_settings_route") },
+                                preferences = personalizationState.preferences,
+                                onColorSchemeChanged = personalizationViewModel::updateColorScheme,
+                                onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,
+                                onAchievementCelebrationsChanged = personalizationViewModel::updateAchievementCelebrations,
+                                onBreakRemindersChanged = personalizationViewModel::updateBreakReminders,
+                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching
                             )
                         }
                         composable("app_search_route") {
@@ -227,25 +232,16 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 viewModel = viewModel
                             )
                         }
-                        composable("personalization_route") {
-                            PersonalizationScreen(
-                                preferences = personalizationState.preferences,
-                                onThemeModeChanged = personalizationViewModel::updateThemeMode,
-                                onColorSchemeChanged = personalizationViewModel::updateColorScheme,
-                                onPersonalityModeChanged = personalizationViewModel::updatePersonalityMode,
-                                onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,
-                                onAchievementCelebrationsChanged = personalizationViewModel::updateAchievementCelebrations,
-                                onBreakRemindersChanged = personalizationViewModel::updateBreakReminders,
-                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching,
-                                onDashboardLayoutChanged = personalizationViewModel::updateDashboardLayout
-                            )
-                        }
                         composable("advanced_settings_route") {
                             AdvancedSettingsScreen(
                                 privacyMode = privacyMode,
                                 onPrivacyModeChange = { privacyMode = it },
                                 syncEnabled = syncEnabled,
                                 onSyncEnabledChange = { syncEnabled = it },
+                                usageAlertsEnabled = personalizationState.preferences.achievementCelebrationsEnabled,
+                                onUsageAlertsChange = personalizationViewModel::updateAchievementCelebrations,
+                                goalRemindersEnabled = personalizationState.preferences.breakRemindersEnabled,
+                                onGoalRemindersChange = personalizationViewModel::updateBreakReminders,
                                 onNavigateToProgressiveLimits = {
                                     navController.navigate("progressive_limits_route")
                                 },

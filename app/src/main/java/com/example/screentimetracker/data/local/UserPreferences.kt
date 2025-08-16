@@ -15,14 +15,8 @@ data class UserPreferences(
     @ColumnInfo(name = "color_scheme")
     val colorScheme: String = "DEFAULT", // DEFAULT, COLORFUL, MINIMAL
     
-    @ColumnInfo(name = "personality_mode")
-    val personalityMode: String = "GENTLE_GUIDE", // STRICT_COACH, GENTLE_GUIDE, MOTIVATIONAL_BUDDY
-    
     @ColumnInfo(name = "notification_sound")
     val notificationSound: String = "DEFAULT",
-    
-    @ColumnInfo(name = "dashboard_layout")
-    val dashboardLayout: String = "STANDARD", // STANDARD, COMPACT, DETAILED
     
     @ColumnInfo(name = "motivational_messages_enabled")
     val motivationalMessagesEnabled: Boolean = true,
@@ -77,30 +71,3 @@ enum class ColorScheme {
     DEFAULT, COLORFUL, MINIMAL
 }
 
-enum class PersonalityMode(
-    val displayName: String,
-    val description: String,
-    val motivationStyle: String
-) {
-    STRICT_COACH(
-        "Strict Coach", 
-        "Direct and firm guidance to keep you on track",
-        "FIRM"
-    ),
-    GENTLE_GUIDE(
-        "Gentle Guide", 
-        "Supportive and understanding approach",
-        "SUPPORTIVE"
-    ),
-    MOTIVATIONAL_BUDDY(
-        "Motivational Buddy", 
-        "Energetic and encouraging companion",
-        "ENTHUSIASTIC"
-    )
-}
-
-enum class DashboardLayout {
-    STANDARD, // Current layout
-    COMPACT,  // Minimal cards with essential info
-    DETAILED  // Expanded cards with more metrics
-}

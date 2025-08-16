@@ -34,6 +34,7 @@ fun ReplacementActivitiesScreen(
     onBackPressed: () -> Unit,
     triggeredByAppBlock: Boolean = false,
     blockedAppName: String = "",
+    onCreateCustomActivity: () -> Unit = {},
     viewModel: ReplacementActivitiesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -58,7 +59,7 @@ fun ReplacementActivitiesScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { /* TODO: Navigate to custom activity creation */ }
+                        onClick = onCreateCustomActivity
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Add custom activity")
                     }

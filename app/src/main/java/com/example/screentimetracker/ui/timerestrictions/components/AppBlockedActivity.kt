@@ -120,8 +120,10 @@ class AppBlockedActivity : ComponentActivity() {
         finish()
     }
 
+    @Suppress("DEPRECATION", "MissingSuperCall")
     override fun onBackPressed() {
         // Prevent back button from bypassing the restriction
+        // Don't call super.onBackPressed() to prevent bypassing the restriction
         goToHome()
     }
 }

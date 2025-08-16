@@ -21,11 +21,18 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,14 +41,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.screentimetracker.data.local.ThemeMode
+import com.example.screentimetracker.data.local.UserPreferences
+import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
 import com.example.screentimetracker.ui.components.PlayfulCard
+import com.example.screentimetracker.ui.personalization.PersonalizationScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleSettingsView(
-    currentThemeMode: ThemeMode = ThemeMode.SYSTEM, onThemeModeChange: (ThemeMode) -> Unit,
-    onNavigateToPersonalization: () -> Unit,
-    onNavigateToAdvancedSettings: () -> Unit
+    currentThemeMode: ThemeMode = ThemeMode.SYSTEM, 
+    onThemeModeChange: (ThemeMode) -> Unit,
+    onNavigateToAdvancedSettings: () -> Unit,
+    // Personalization parameters for bottom sheet
+    preferences: UserPreferences = UserPreferences(),
+    onColorSchemeChanged: (AppColorScheme) -> Unit = {},
+    onMotivationalMessagesChanged: (Boolean) -> Unit = {},
+    onAchievementCelebrationsChanged: (Boolean) -> Unit = {},
+    onBreakRemindersChanged: (Boolean) -> Unit = {},
+    onWellnessCoachingChanged: (Boolean) -> Unit = {}
 ) {
+    var showPersonalizationBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState()
+    
+    // Personalization Bottom Sheet
+    if (showPersonalizationBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showPersonalizationBottomSheet = false },
+            sheetState = bottomSheetState
+        ) {
+            PersonalizationScreen(
+                preferences = preferences,
+                onThemeModeChanged = onThemeModeChange,
+                onColorSchemeChanged = onColorSchemeChanged,
+                onMotivationalMessagesChanged = onMotivationalMessagesChanged,
+                onAchievementCelebrationsChanged = onAchievementCelebrationsChanged,
+                onBreakRemindersChanged = onBreakRemindersChanged,
+                onWellnessCoachingChanged = onWellnessCoachingChanged
+            )
+        }
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -164,7 +202,7 @@ fun SimpleSettingsView(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onNavigateToPersonalization() }
+                            .clickable { showPersonalizationBottomSheet = true }
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -246,8 +284,8 @@ fun SimpleSettingsView(
 @Composable
 fun SimpleSettingsViewPreview() {
     SimpleSettingsView(
-        currentThemeMode = ThemeMode.SYSTEM, onThemeModeChange = {},
-        onNavigateToPersonalization = {},
+        currentThemeMode = ThemeMode.SYSTEM, 
+        onThemeModeChange = {},
         onNavigateToAdvancedSettings = {}
     )
 }

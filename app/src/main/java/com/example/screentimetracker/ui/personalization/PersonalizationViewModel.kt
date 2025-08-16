@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.screentimetracker.data.local.UserPreferences
 import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
-import com.example.screentimetracker.data.local.PersonalityMode
-import com.example.screentimetracker.data.local.DashboardLayout
 import com.example.screentimetracker.domain.usecases.UserPreferencesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -77,25 +75,6 @@ class PersonalizationViewModel @Inject constructor(
         }
     }
     
-    fun updatePersonalityMode(personalityMode: PersonalityMode) {
-        viewModelScope.launch {
-            try {
-                userPreferencesUseCase.updatePersonalityMode(personalityMode)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
-            }
-        }
-    }
-    
-    fun updateDashboardLayout(dashboardLayout: DashboardLayout) {
-        viewModelScope.launch {
-            try {
-                userPreferencesUseCase.updateDashboardLayout(dashboardLayout)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
-            }
-        }
-    }
     
     fun updateMotivationalMessages(enabled: Boolean) {
         viewModelScope.launch {

@@ -39,7 +39,6 @@ fun PlayfulBottomNav(
         NavItem("analytics_route", "Analytics", Icons.Filled.Analytics, MaterialTheme.colorScheme.secondary),
         NavItem("wellness_route", "Wellness", Icons.Filled.Healing, MaterialTheme.colorScheme.tertiary),
         NavItem("goals_route", "Goals", Icons.Filled.EmojiEvents, MaterialTheme.colorScheme.tertiary),
-        NavItem("personalization_route", "Style", Icons.Filled.Palette, MaterialTheme.colorScheme.secondary),
         NavItem("settings_route", "Settings", Icons.Filled.Settings, MaterialTheme.colorScheme.secondary)
     )
 

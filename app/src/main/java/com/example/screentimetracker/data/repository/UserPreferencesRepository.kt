@@ -31,16 +31,8 @@ class UserPreferencesRepository @Inject constructor(
         userPreferencesDao.updateColorScheme(colorScheme, System.currentTimeMillis())
     }
     
-    suspend fun updatePersonalityMode(personalityMode: String) {
-        userPreferencesDao.updatePersonalityMode(personalityMode, System.currentTimeMillis())
-    }
-    
     suspend fun updateNotificationSound(notificationSound: String) {
         userPreferencesDao.updateNotificationSound(notificationSound, System.currentTimeMillis())
-    }
-    
-    suspend fun updateDashboardLayout(dashboardLayout: String) {
-        userPreferencesDao.updateDashboardLayout(dashboardLayout, System.currentTimeMillis())
     }
     
     suspend fun updateMotivationalMessagesEnabled(enabled: Boolean) {

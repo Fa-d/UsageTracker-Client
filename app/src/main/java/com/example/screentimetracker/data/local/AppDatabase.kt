@@ -30,7 +30,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AppCategory::class,
         DigitalPet::class
     ],
-    version = 14, // Incremented version for DigitalPet table
+    version = 15, // Incremented version to remove personality_mode and dashboard_layout columns
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -254,6 +254,63 @@ abstract class AppDatabase : RoomDatabase() {
                         $currentTime, $currentTime, $currentTime, $currentTime
                     )
                 """)
+            }
+        }
+        
+        // Migration from version 14 to 15: Remove personality_mode and dashboard_layout columns
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create a new table without the removed columns
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `user_preferences_new` (
+                        `id` INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
+                        `theme_mode` TEXT NOT NULL DEFAULT 'SYSTEM',
+                        `color_scheme` TEXT NOT NULL DEFAULT 'DEFAULT',
+                        `notification_sound` TEXT NOT NULL DEFAULT 'DEFAULT',
+                        `motivational_messages_enabled` INTEGER NOT NULL DEFAULT 1,
+                        `achievement_celebrations_enabled` INTEGER NOT NULL DEFAULT 1,
+                        `break_reminders_enabled` INTEGER NOT NULL DEFAULT 1,
+                        `wellness_coaching_enabled` INTEGER NOT NULL DEFAULT 1,
+                        `default_focus_duration_minutes` INTEGER DEFAULT 25,
+                        `focus_mode_enabled` INTEGER NOT NULL DEFAULT 1,
+                        `ai_features_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `ai_insights_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `ai_goal_recommendations_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `ai_predictive_coaching_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `ai_usage_predictions_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `ai_module_downloaded` INTEGER NOT NULL DEFAULT 0,
+                        `ai_onboarding_completed` INTEGER NOT NULL DEFAULT 0,
+                        `updated_at` INTEGER NOT NULL
+                    )
+                """)
+                
+                // Copy data from old table to new table (excluding personality_mode and dashboard_layout)
+                database.execSQL("""
+                    INSERT INTO `user_preferences_new` (
+                        `id`, `theme_mode`, `color_scheme`, `notification_sound`,
+                        `motivational_messages_enabled`, `achievement_celebrations_enabled`,
+                        `break_reminders_enabled`, `wellness_coaching_enabled`,
+                        `default_focus_duration_minutes`, `focus_mode_enabled`,
+                        `ai_features_enabled`, `ai_insights_enabled`, `ai_goal_recommendations_enabled`,
+                        `ai_predictive_coaching_enabled`, `ai_usage_predictions_enabled`,
+                        `ai_module_downloaded`, `ai_onboarding_completed`, `updated_at`
+                    )
+                    SELECT 
+                        `id`, `theme_mode`, `color_scheme`, `notification_sound`,
+                        `motivational_messages_enabled`, `achievement_celebrations_enabled`,
+                        `break_reminders_enabled`, `wellness_coaching_enabled`,
+                        `default_focus_duration_minutes`, `focus_mode_enabled`,
+                        `ai_features_enabled`, `ai_insights_enabled`, `ai_goal_recommendations_enabled`,
+                        `ai_predictive_coaching_enabled`, `ai_usage_predictions_enabled`,
+                        `ai_module_downloaded`, `ai_onboarding_completed`, `updated_at`
+                    FROM `user_preferences`
+                """)
+                
+                // Drop the old table
+                database.execSQL("DROP TABLE `user_preferences`")
+                
+                // Rename the new table
+                database.execSQL("ALTER TABLE `user_preferences_new` RENAME TO `user_preferences`")
             }
         }
     }

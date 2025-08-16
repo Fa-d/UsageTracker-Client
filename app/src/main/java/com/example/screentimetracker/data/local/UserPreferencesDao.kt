@@ -21,11 +21,6 @@ interface UserPreferencesDao {
     @Query("UPDATE user_preferences SET color_scheme = :colorScheme, updated_at = :updatedAt WHERE id = 1")
     suspend fun updateColorScheme(colorScheme: String, updatedAt: Long = System.currentTimeMillis())
     
-    @Query("UPDATE user_preferences SET personality_mode = :personalityMode, updated_at = :updatedAt WHERE id = 1")
-    suspend fun updatePersonalityMode(personalityMode: String, updatedAt: Long = System.currentTimeMillis())
-    
-    @Query("UPDATE user_preferences SET dashboard_layout = :dashboardLayout, updated_at = :updatedAt WHERE id = 1")
-    suspend fun updateDashboardLayout(dashboardLayout: String, updatedAt: Long = System.currentTimeMillis())
     
     @Query("UPDATE user_preferences SET notification_sound = :notificationSound, updated_at = :updatedAt WHERE id = 1")
     suspend fun updateNotificationSound(notificationSound: String, updatedAt: Long = System.currentTimeMillis())

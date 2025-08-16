@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +40,10 @@ fun AdvancedSettingsScreen(
     onPrivacyModeChange: (Boolean) -> Unit,
     syncEnabled: Boolean,
     onSyncEnabledChange: (Boolean) -> Unit,
+    usageAlertsEnabled: Boolean = true,
+    onUsageAlertsChange: (Boolean) -> Unit = {},
+    goalRemindersEnabled: Boolean = true,
+    onGoalRemindersChange: (Boolean) -> Unit = {},
     onNavigateToProgressiveLimits: () -> Unit = {},
     onNavigateToLimiterConfig: () -> Unit = {},
     onNavigateToPrivacySettings: () -> Unit = {},
@@ -164,8 +169,8 @@ fun AdvancedSettingsScreen(
                             Text("Get notified about limits", fontSize = 13.sp, color = Color.Gray)
                         }
                         Switch(
-                            checked = true, 
-                            onCheckedChange = {},
+                            checked = usageAlertsEnabled, 
+                            onCheckedChange = onUsageAlertsChange,
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.White,
                                 checkedTrackColor = Color(0xFFF59E42),
@@ -185,8 +190,8 @@ fun AdvancedSettingsScreen(
                             Text("Daily goal notifications", fontSize = 13.sp, color = Color.Gray)
                         }
                         Switch(
-                            checked = true, 
-                            onCheckedChange = {},
+                            checked = goalRemindersEnabled, 
+                            onCheckedChange = onGoalRemindersChange,
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.White,
                                 checkedTrackColor = Color(0xFFEF4444),
@@ -361,20 +366,78 @@ fun AdvancedSettingsScreen(
             PlayfulCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
                     Text(
                         text = "📊 Data Management",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Export data, clear cache, and manage storage",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
-                    // Add data management options here in future updates
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Export Data Option
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { /* TODO: Implement data export */ }
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "Export Data",
+                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                "Export your usage data as CSV",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Clear Cache Option
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { /* TODO: Implement cache clear */ }
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "Clear Cache",
+                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                "Free up storage space",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
