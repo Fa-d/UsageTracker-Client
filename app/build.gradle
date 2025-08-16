@@ -23,6 +23,9 @@ android {
         }
     }
 
+    // Dynamic Feature Modules
+    dynamicFeatures = [':ai_insights']
+
     buildTypes {
         release {
             minifyEnabled false
@@ -65,6 +68,10 @@ dependencies {
     // Core Kotlin & AndroidX
     implementation 'androidx.core:core-ktx:1.16.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.2'
+
+    // Google Play Feature Delivery
+    implementation 'com.google.android.play:feature-delivery:2.1.0'
+    implementation 'com.google.android.play:feature-delivery-ktx:2.1.0'
 
     // Jetpack Compose
     implementation 'androidx.activity:activity-compose:1.10.1'

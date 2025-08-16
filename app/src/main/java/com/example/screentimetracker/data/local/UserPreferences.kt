@@ -42,6 +42,28 @@ data class UserPreferences(
     @ColumnInfo(name = "focus_mode_enabled")
     val focusModeEnabled: Boolean = true,
     
+    // AI Features
+    @ColumnInfo(name = "ai_features_enabled")
+    val aiFeaturesEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "ai_insights_enabled")
+    val aiInsightsEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "ai_goal_recommendations_enabled")
+    val aiGoalRecommendationsEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "ai_predictive_coaching_enabled")
+    val aiPredictiveCoachingEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "ai_usage_predictions_enabled")
+    val aiUsagePredictionsEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "ai_module_downloaded")
+    val aiModuleDownloaded: Boolean = false,
+    
+    @ColumnInfo(name = "ai_onboarding_completed")
+    val aiOnboardingCompleted: Boolean = false,
+    
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long = System.currentTimeMillis()
 )

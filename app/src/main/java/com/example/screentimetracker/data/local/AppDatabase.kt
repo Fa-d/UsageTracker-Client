@@ -29,7 +29,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ReplacementActivity::class,
         AppCategory::class
     ],
-    version = 12, // Incremented version for UserPreferences focus mode columns
+    version = 13, // Incremented version for UserPreferences AI features columns
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -173,6 +173,47 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("""
                     ALTER TABLE `user_preferences` 
                     ADD COLUMN `focus_mode_enabled` INTEGER NOT NULL DEFAULT 1
+                """)
+            }
+        }
+        
+        // Migration from version 12 to 13: Add AI features columns to UserPreferences
+        val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add AI feature columns to user_preferences table
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_features_enabled` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_insights_enabled` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_goal_recommendations_enabled` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_predictive_coaching_enabled` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_usage_predictions_enabled` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_module_downloaded` INTEGER NOT NULL DEFAULT 0
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `ai_onboarding_completed` INTEGER NOT NULL DEFAULT 0
                 """)
             }
         }
