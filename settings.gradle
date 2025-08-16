@@ -14,4 +14,11 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ScreenTimeTracker"
 include ':app'
-include ':ai_insights'
+
+// Conditionally include AI insights module if submodule exists
+if (file('ai_insights').exists() && file('ai_insights/.git').exists()) {
+    include ':ai_insights'
+    println "AI Insights module found and included"
+} else {
+    println "AI Insights module not found - building without AI features"
+}

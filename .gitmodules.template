@@ -1,0 +1,4 @@
+[submodule "ai_insights"]
+	path = ai_insights
+	url = https://github.com/YOUR_USERNAME/UsageTracker-AI-Insights.git
+	branch = main

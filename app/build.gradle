@@ -23,8 +23,11 @@ android {
         }
     }
 
-    // Dynamic Feature Modules
-    dynamicFeatures = [':ai_insights']
+    // Dynamic Feature Modules - conditionally include AI insights
+    dynamicFeatures = []
+    if (project.findProject(':ai_insights') != null) {
+        dynamicFeatures.add(':ai_insights')
+    }
 
     buildTypes {
         release {
