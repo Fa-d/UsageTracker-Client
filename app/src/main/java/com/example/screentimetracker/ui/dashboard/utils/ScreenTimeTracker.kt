@@ -62,7 +62,6 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        var focusMode by remember { mutableStateOf(false) }
         var privacyMode by remember { mutableStateOf(false) }
         var syncEnabled by remember { mutableStateOf(true) }
         var selectedDate by remember { mutableStateOf("today") }
@@ -150,8 +149,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("goals_route") {
                             GoalsView(
-                                focusMode = focusMode,
-                                onFocusModeChange = { focusMode = it },
+                                focusMode = false, // Legacy parameter, no longer used
+                                onFocusModeChange = { }, // Legacy parameter, no longer used
                                 onNavigateToSmartGoals = { navController.navigate("smart_goals_route") }
                             )
                         }

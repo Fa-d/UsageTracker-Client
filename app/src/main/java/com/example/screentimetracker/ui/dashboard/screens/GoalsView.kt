@@ -26,6 +26,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,8 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
+import com.example.screentimetracker.ui.focus.components.FocusDurationDialog
+import com.example.screentimetracker.ui.focus.viewmodels.FocusModeViewModel
+import com.example.screentimetracker.ui.goals.viewmodels.UserGoalsViewModel
 import com.example.screentimetracker.ui.limiter.screens.AppLimitSettingDialog
 import com.example.screentimetracker.ui.limiter.viewmodels.LimiterConfigViewModel
+import com.example.screentimetracker.ui.goals.components.GoalCreationDialog
 import com.example.screentimetracker.ui.smartgoals.components.GoalRecommendationCard
 import com.example.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
 import com.example.screentimetracker.ui.theme.LavenderPurple
@@ -57,6 +62,10 @@ fun GoalsView(
     val limiterState by limiterViewModel.uiState
     val smartGoalsViewModel: SmartGoalsViewModel = hiltViewModel()
     val smartGoalsState by smartGoalsViewModel.uiState
+    val focusModeViewModel: FocusModeViewModel = hiltViewModel()
+    val focusModeState by focusModeViewModel.uiState.collectAsState()
+    val userGoalsViewModel: UserGoalsViewModel = hiltViewModel()
+    val userGoalsState by userGoalsViewModel.uiState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,27 +122,38 @@ fun GoalsView(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            val screenTimeGoal = userGoalsState.dailyScreenTimeGoal
+            val screenTimeProgress = userGoalsViewModel.getScreenTimeProgress()
+            val formattedCurrentTime = userGoalsViewModel.formatDuration(userGoalsState.currentScreenTime)
+            val formattedTargetTime = screenTimeGoal?.let { userGoalsViewModel.formatDuration(it.targetValue) } ?: "Not set"
+            
             PlayfulMetricCard(
                 modifier = Modifier.weight(1f),
                 title = "Daily Limit",
-                value = "4h",
+                value = if (screenTimeGoal != null) "$formattedCurrentTime / $formattedTargetTime" else "No goal set",
                 emoji = "⏰",
-                color = SkyBlue,
+                color = if (screenTimeProgress > 0.8f) VibrantOrange else SkyBlue,
                 subtitle = "Screen time goal"
             )
+            
+            val unlockGoal = userGoalsState.unlockFrequencyGoal
+            val unlockProgress = userGoalsViewModel.getUnlockProgress()
+            val currentUnlocks = userGoalsState.currentUnlockCount
+            val targetUnlocks = unlockGoal?.targetValue?.toInt() ?: 0
+            
             PlayfulMetricCard(
                 modifier = Modifier.weight(1f),
-                title = "Mindful Breaks",
-                value = "8",
-                emoji = "☕",
-                color = VibrantOrange,
-                subtitle = "Taken today"
+                title = "Max Unlocks",
+                value = if (unlockGoal != null) "$currentUnlocks / $targetUnlocks" else "No goal set",
+                emoji = "📱",
+                color = if (unlockProgress > 0.8f) VibrantOrange else LimeGreen,
+                subtitle = "Daily unlock limit"
             )
         }
 
         // Focus Mode Card
         PlayfulCard(
-            backgroundColor = if (focusMode) LimeGreen.copy(alpha = 0.15f) else PlayfulSecondary.copy(alpha = 0.1f),
+            backgroundColor = if (focusModeState.isActive) LimeGreen.copy(alpha = 0.15f) else PlayfulSecondary.copy(alpha = 0.1f),
             gradientBackground = true
         ) {
             Column {
@@ -143,12 +163,17 @@ fun GoalsView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Focus Mode", fontWeight = FontWeight.Medium)
-                        Text("Block distracting apps", fontSize = 13.sp, color = Color.Gray)
+                        Text("🧘 Focus Mode", fontWeight = FontWeight.Medium)
+                        Text(
+                            if (focusModeState.isActive) "Session in progress" else "Block distracting apps", 
+                            fontSize = 13.sp, 
+                            color = Color.Gray
+                        )
                     }
                     Switch(
-                        checked = focusMode,
-                        onCheckedChange = onFocusModeChange,
+                        checked = focusModeState.isActive,
+                        onCheckedChange = { focusModeViewModel.toggleFocusMode() },
+                        enabled = !focusModeState.isLoading,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
                             checkedTrackColor = Color(0xFF22C55E),
@@ -157,85 +182,234 @@ fun GoalsView(
                         )
                     )
                 }
-                if (focusMode) {
+                
+                if (focusModeState.isActive) {
+                    Spacer(Modifier.height(12.dp))
+                    
+                    // Session progress
+                    val progressPercentage = if (focusModeState.targetDurationMillis > 0) {
+                        (focusModeState.currentSessionDuration.toFloat() / focusModeState.targetDurationMillis.toFloat()).coerceAtMost(1f)
+                    } else 0f
+                    
+                    // Progress bar
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .background(Color(0xFFE5E7EB), shape = MaterialTheme.shapes.extraLarge)
+                    ) {
+                        Box(
+                            Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth(progressPercentage)
+                                .background(LimeGreen, shape = MaterialTheme.shapes.extraLarge)
+                        )
+                    }
+                    
+                    Spacer(Modifier.height(8.dp))
+                    
+                    // Session info
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            "Time: ${formatDuration(focusModeState.currentSessionDuration)} / ${focusModeState.selectedDurationMinutes}m",
+                            fontSize = 12.sp,
+                            color = Color(0xFF15803D)
+                        )
+                        Text(
+                            "${focusModeState.blockedApps.size} apps blocked",
+                            fontSize = 12.sp,
+                            color = Color(0xFF15803D)
+                        )
+                    }
+                    
+                    if (focusModeState.interruptionCount > 0) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            "⚠️ ${focusModeState.interruptionCount} interruption${if (focusModeState.interruptionCount > 1) "s" else ""}",
+                            fontSize = 11.sp,
+                            color = VibrantOrange
+                        )
+                    }
+                } else if (!focusModeState.isLoading && focusModeState.blockedApps.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Ready to block ${focusModeState.blockedApps.size} distracting apps",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+                
+                // Error handling
+                focusModeState.error?.let { error ->
                     Spacer(Modifier.height(8.dp))
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFDCFCE7), shape = MaterialTheme.shapes.small)
+                            .background(VibrantOrange.copy(alpha = 0.1f), shape = MaterialTheme.shapes.small)
                             .padding(8.dp)
                     ) {
                         Text(
-                            "Focus mode is active. 3 apps are blocked.",
-                            fontSize = 13.sp,
-                            color = Color(0xFF15803D)
+                            error,
+                            fontSize = 12.sp,
+                            color = VibrantOrange
                         )
                     }
                 }
             }
         }
-        // Daily Goals
+        // Detailed Daily Goals
         Card(
             modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             )
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Daily Goals", fontWeight = FontWeight.Medium)
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Screen Time Limit
-                    Column {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Daily Goals", fontWeight = FontWeight.Medium)
+                    if (userGoalsState.activeGoals.isEmpty() && !userGoalsState.isLoading) {
+                        androidx.compose.material3.TextButton(
+                            onClick = { userGoalsViewModel.showGoalCreationDialog() }
                         ) {
-                            Text("Screen Time Limit", fontSize = 13.sp)
-                            Text("4h 32m / 6h 00m", fontSize = 13.sp)
-                        }
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .background(
-                                    Color(0xFFE5E7EB), shape = MaterialTheme.shapes.extraLarge
-                                )
-                        ) {
-                            Box(
-                                Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(0.75f)
-                                    .background(
-                                        Color(0xFF2563EB), shape = MaterialTheme.shapes.extraLarge
-                                    )
+                            androidx.compose.material3.Icon(
+                                androidx.compose.material.icons.Icons.Filled.Add,
+                                contentDescription = "Add goals",
+                                tint = MaterialTheme.colorScheme.primary
                             )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Add Goals", color = MaterialTheme.colorScheme.primary)
+                        }
+                    } else if (!userGoalsState.isLoading) {
+                        androidx.compose.material3.TextButton(
+                            onClick = { userGoalsViewModel.showGoalCreationDialog() }
+                        ) {
+                            androidx.compose.material3.Icon(
+                                androidx.compose.material.icons.Icons.Filled.Add,
+                                contentDescription = "Add goal",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Add", color = MaterialTheme.colorScheme.primary)
                         }
                     }
-                    // Max Unlocks
-                    Column {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Max Unlocks", fontSize = 13.sp)
-                            Text("87 / 100", fontSize = 13.sp)
-                        }
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .background(
-                                    Color(0xFFE5E7EB), shape = MaterialTheme.shapes.extraLarge
-                                )
-                        ) {
-                            Box(
-                                Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(0.87f)
-                                    .background(
-                                        Color(0xFF22C55E), shape = MaterialTheme.shapes.extraLarge
+                }
+                
+                if (userGoalsState.isLoading) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            "Loading your goals...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                } else if (userGoalsState.activeGoals.isEmpty()) {
+                    Text(
+                        "No daily goals set yet. Tap 'Add Goals' to create your first goals and start tracking your progress.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        // Screen Time Limit
+                        userGoalsState.dailyScreenTimeGoal?.let { goal ->
+                            val progress = userGoalsViewModel.getScreenTimeProgress()
+                            val currentTime = userGoalsViewModel.formatDuration(userGoalsState.currentScreenTime)
+                            val targetTime = userGoalsViewModel.formatDuration(goal.targetValue)
+                            
+                            Column {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text("Screen Time Limit", fontSize = 13.sp)
+                                    Text("$currentTime / $targetTime", fontSize = 13.sp)
+                                }
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .background(
+                                            Color(0xFFE5E7EB), shape = MaterialTheme.shapes.extraLarge
+                                        )
+                                ) {
+                                    Box(
+                                        Modifier
+                                            .fillMaxHeight()
+                                            .fillMaxWidth(progress)
+                                            .background(
+                                                if (progress > 0.8f) VibrantOrange else Color(0xFF2563EB),
+                                                shape = MaterialTheme.shapes.extraLarge
+                                            )
                                     )
-                            )
+                                }
+                            }
                         }
+                        
+                        // Max Unlocks
+                        userGoalsState.unlockFrequencyGoal?.let { goal ->
+                            val progress = userGoalsViewModel.getUnlockProgress()
+                            val currentUnlocks = userGoalsState.currentUnlockCount
+                            val targetUnlocks = goal.targetValue.toInt()
+                            
+                            Column {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text("Max Unlocks", fontSize = 13.sp)
+                                    Text("$currentUnlocks / $targetUnlocks", fontSize = 13.sp)
+                                }
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .background(
+                                            Color(0xFFE5E7EB), shape = MaterialTheme.shapes.extraLarge
+                                        )
+                                ) {
+                                    Box(
+                                        Modifier
+                                            .fillMaxHeight()
+                                            .fillMaxWidth(progress)
+                                            .background(
+                                                if (progress > 0.8f) VibrantOrange else Color(0xFF22C55E),
+                                                shape = MaterialTheme.shapes.extraLarge
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Show error if any
+                userGoalsState.error?.let { error ->
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(VibrantOrange.copy(alpha = 0.1f), shape = MaterialTheme.shapes.small)
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            error,
+                            fontSize = 12.sp,
+                            color = VibrantOrange
+                        )
                     }
                 }
             }
@@ -440,5 +614,32 @@ fun GoalsView(
                 onDismiss = { limiterViewModel.onDismissAppSelectionDialog() }
             )
         }
+        
+        // Focus Duration Dialog
+        if (focusModeState.showDurationDialog) {
+            FocusDurationDialog(
+                selectedDuration = focusModeState.selectedDurationMinutes,
+                onDurationChanged = { focusModeViewModel.updateSelectedDuration(it) },
+                onConfirm = { focusModeViewModel.startFocusSession(it) },
+                onDismiss = { focusModeViewModel.dismissDurationDialog() }
+            )
+        }
+        
+        // Goal Creation Dialog
+        if (userGoalsState.showGoalCreationDialog) {
+            GoalCreationDialog(
+                onDismiss = { userGoalsViewModel.dismissGoalCreationDialog() },
+                onCreateGoal = { goalType, targetValue ->
+                    userGoalsViewModel.createGoal(goalType, targetValue)
+                }
+            )
+        }
     }
+}
+
+// Helper function to format duration
+private fun formatDuration(millis: Long): String {
+    val minutes = (millis / 60000).toInt()
+    val seconds = ((millis % 60000) / 1000).toInt()
+    return String.format("%02d:%02d", minutes, seconds)
 }

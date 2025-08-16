@@ -36,6 +36,12 @@ data class UserPreferences(
     @ColumnInfo(name = "wellness_coaching_enabled")
     val wellnessCoachingEnabled: Boolean = true,
     
+    @ColumnInfo(name = "default_focus_duration_minutes")
+    val defaultFocusDurationMinutes: Int? = 25, // Default Pomodoro duration
+    
+    @ColumnInfo(name = "focus_mode_enabled")
+    val focusModeEnabled: Boolean = true,
+    
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long = System.currentTimeMillis()
 )

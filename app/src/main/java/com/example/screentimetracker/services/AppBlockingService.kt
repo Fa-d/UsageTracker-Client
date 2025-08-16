@@ -10,6 +10,7 @@ import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.example.screentimetracker.R
 import com.example.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
+import com.example.screentimetracker.domain.usecases.FocusSessionManagerUseCase
 import com.example.screentimetracker.ui.timerestrictions.components.AppBlockedActivity
 import com.example.screentimetracker.utils.logger.AppLogger
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +25,9 @@ class AppBlockingService : Service() {
 
     @Inject
     lateinit var timeRestrictionManager: TimeRestrictionManagerUseCase
+    
+    @Inject
+    lateinit var focusSessionManager: FocusSessionManagerUseCase
     
     @Inject
     lateinit var appLogger: AppLogger
@@ -72,15 +76,29 @@ class AppBlockingService : Service() {
     }
 
     private fun startForegroundService() {
-        val notification = NotificationCompat.Builder(this, "app_blocking_channel")
-            .setContentTitle("Time Restrictions Active")
-            .setContentText("Monitoring app usage for restrictions")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
+        serviceScope.launch {
+            val isFocusModeActive = focusSessionManager.isSessionActive()
+            val notificationTitle = if (isFocusModeActive) {
+                "🧘 Focus Mode Active"
+            } else {
+                "Time Restrictions Active"
+            }
+            val notificationText = if (isFocusModeActive) {
+                "Blocking distracting apps during focus session"
+            } else {
+                "Monitoring app usage for restrictions"
+            }
+            
+            val notification = NotificationCompat.Builder(this@AppBlockingService, "app_blocking_channel")
+                .setContentTitle(notificationTitle)
+                .setContentText(notificationText)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
 
-        startForeground(NOTIFICATION_ID, notification)
+            startForeground(NOTIFICATION_ID, notification)
+        }
     }
 
     private fun startAppMonitoring() {
@@ -112,11 +130,28 @@ class AppBlockingService : Service() {
                         return@launch
                     }
                     
-                    val isBlocked = timeRestrictionManager.isAppBlockedByTimeRestriction(currentApp)
+                    // Check both time restrictions and focus mode
+                    val isBlockedByTimeRestriction = timeRestrictionManager.isAppBlockedByTimeRestriction(currentApp)
+                    val isBlockedByFocusMode = focusSessionManager.isAppBlocked(currentApp)
                     
-                    if (isBlocked) {
-                        appLogger.d("AppBlockingService", "Blocking app: $currentApp")
-                        showBlockedAppScreen(currentApp)
+                    if (isBlockedByTimeRestriction || isBlockedByFocusMode) {
+                        val blockReason = when {
+                            isBlockedByFocusMode -> "Focus session active"
+                            isBlockedByTimeRestriction -> "Time restriction active"
+                            else -> "App blocked"
+                        }
+                        
+                        appLogger.d("AppBlockingService", "Blocking app: $currentApp - $blockReason")
+                        showBlockedAppScreen(currentApp, blockReason)
+                        
+                        // Record interruption if it's during focus mode
+                        if (isBlockedByFocusMode) {
+                            serviceScope.launch {
+                                // This could be improved to integrate with the FocusModeViewModel
+                                // For now, we'll just log it
+                                appLogger.w("AppBlockingService", "Focus session interrupted by attempt to open $currentApp")
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -139,11 +174,12 @@ class AppBlockingService : Service() {
         }
     }
 
-    private fun showBlockedAppScreen(packageName: String) {
+    private fun showBlockedAppScreen(packageName: String, reason: String = "App blocked") {
         try {
             val intent = Intent(this, AppBlockedActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 putExtra("blocked_app_package", packageName)
+                putExtra("block_reason", reason)
             }
             startActivity(intent)
         } catch (e: Exception) {

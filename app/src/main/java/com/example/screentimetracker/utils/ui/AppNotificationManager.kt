@@ -31,6 +31,8 @@ interface AppNotificationManager {
     fun showFocusSessionComplete(durationMinutes: Int, success: Boolean)
     fun showMilestoneNotification(title: String, description: String)
     fun showContentBlockedNotification(featureName: String)
+    fun showGoalWarning(message: String)
+    fun showGoalExceededWarning(message: String)
 }
 
 @Singleton
@@ -59,6 +61,8 @@ class AppNotificationManagerImpl @Inject constructor(
         private const val FOCUS_SESSION_ID = 7000
         private const val MILESTONE_ID = 8000
         private const val CONTENT_BLOCKED_ID = 9000
+        private const val GOAL_WARNING_ID = 10000
+        private const val GOAL_EXCEEDED_ID = 11000
         private const val TAG = "AppNotificationManager"
     }
 
@@ -381,6 +385,52 @@ class AppNotificationManagerImpl @Inject constructor(
         try { notificationManager.notify(CONTENT_BLOCKED_ID, notification) } 
         catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for content blocked.", e) }
         appLogger.i(TAG, "Content blocked notification shown for: $featureName")
+    }
+
+    override fun showGoalWarning(message: String) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        
+        val notification = NotificationCompat.Builder(context, MOTIVATION_CHANNEL_ID)
+            .setContentTitle("⚠️ Goal Progress Warning")
+            .setContentText(message)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .build()
+        
+        try { notificationManager.notify(GOAL_WARNING_ID, notification) } 
+        catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for goal warning.", e) }
+        appLogger.i(TAG, "Goal warning notification shown")
+    }
+
+    override fun showGoalExceededWarning(message: String) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        
+        val notification = NotificationCompat.Builder(context, WARNING_NOTIFICATION_CHANNEL_ID)
+            .setContentTitle("🚨 Goal Exceeded!")
+            .setContentText(message)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setVibrate(longArrayOf(0, 500, 200, 500))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setColor(Color.RED)
+            .build()
+        
+        try { notificationManager.notify(GOAL_EXCEEDED_ID, notification) } 
+        catch (e: SecurityException) { appLogger.e(TAG, "Missing POST_NOTIFICATIONS permission for goal exceeded.", e) }
+        appLogger.i(TAG, "Goal exceeded notification shown")
     }
 
     private fun getAppName(packageName: String): String {

@@ -69,6 +69,26 @@ class UserPreferencesUseCase @Inject constructor(
         userPreferencesDao.updateWellnessCoaching(enabled)
     }
     
+    suspend fun updateDefaultFocusDuration(minutes: Int) {
+        ensurePreferencesExist()
+        userPreferencesDao.insertOrUpdatePreferences(
+            getUserPreferencesOnce().copy(
+                defaultFocusDurationMinutes = minutes,
+                updatedAt = System.currentTimeMillis()
+            )
+        )
+    }
+    
+    suspend fun updateFocusModeEnabled(enabled: Boolean) {
+        ensurePreferencesExist()
+        userPreferencesDao.insertOrUpdatePreferences(
+            getUserPreferencesOnce().copy(
+                focusModeEnabled = enabled,
+                updatedAt = System.currentTimeMillis()
+            )
+        )
+    }
+    
     suspend fun updateNotificationSound(soundName: String) {
         ensurePreferencesExist()
         userPreferencesDao.insertOrUpdatePreferences(

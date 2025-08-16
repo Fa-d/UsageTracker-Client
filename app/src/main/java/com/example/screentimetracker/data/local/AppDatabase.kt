@@ -29,7 +29,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ReplacementActivity::class,
         AppCategory::class
     ],
-    version = 11, // Incremented version for AppCategory entity
+    version = 12, // Incremented version for UserPreferences focus mode columns
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -122,6 +122,57 @@ abstract class AppDatabase : RoomDatabase() {
                         `lastUpdated` INTEGER NOT NULL,
                         `appName` TEXT NOT NULL
                     )
+                """)
+                
+                // Create MindfulnessSession table if it doesn't exist
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `mindfulness_sessions` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `sessionType` TEXT NOT NULL,
+                        `durationMillis` INTEGER NOT NULL,
+                        `startTime` INTEGER NOT NULL,
+                        `endTime` INTEGER NOT NULL,
+                        `completionRate` REAL NOT NULL,
+                        `userRating` INTEGER NOT NULL,
+                        `notes` TEXT NOT NULL,
+                        `triggeredByAppBlock` INTEGER NOT NULL,
+                        `appThatWasBlocked` TEXT NOT NULL
+                    )
+                """)
+                
+                // Create ReplacementActivity table if it doesn't exist
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `replacement_activities` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `activityType` TEXT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `emoji` TEXT NOT NULL,
+                        `estimatedDurationMinutes` INTEGER NOT NULL,
+                        `category` TEXT NOT NULL,
+                        `difficultyLevel` INTEGER NOT NULL,
+                        `isCustom` INTEGER NOT NULL,
+                        `timesCompleted` INTEGER NOT NULL,
+                        `averageRating` REAL NOT NULL,
+                        `lastCompletedAt` INTEGER NOT NULL,
+                        `createdAt` INTEGER NOT NULL
+                    )
+                """)
+            }
+        }
+        
+        // Migration from version 11 to 12: Add focus mode columns to UserPreferences
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add new columns to user_preferences table
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `default_focus_duration_minutes` INTEGER DEFAULT 25
+                """)
+                
+                database.execSQL("""
+                    ALTER TABLE `user_preferences` 
+                    ADD COLUMN `focus_mode_enabled` INTEGER NOT NULL DEFAULT 1
                 """)
             }
         }
