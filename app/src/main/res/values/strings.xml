@@ -11,4 +11,7 @@
         
         Your privacy is protected - all data stays on your device and is never shared.
     </string>
+    
+    <!-- Dynamic Feature Module Titles -->
+    <string name="ai_insights">AI Insights</string>
 </resources>

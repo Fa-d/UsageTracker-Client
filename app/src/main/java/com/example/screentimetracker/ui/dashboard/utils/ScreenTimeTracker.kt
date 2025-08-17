@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.screentimetracker.ui.ai.viewmodels.AIViewModel
 import com.example.screentimetracker.ui.analytics.AnalyticsScreen
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
 import com.example.screentimetracker.ui.components.PlayfulBottomNav
@@ -40,14 +41,17 @@ import com.example.screentimetracker.ui.replacementactivities.screens.Replacemen
 import com.example.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
 import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
 import com.example.screentimetracker.ui.wellness.WellnessScreen
+import com.example.screentimetracker.ui.ai.AISettingsScreen
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
 @Composable
 fun ScreenTimeTracker(viewModel: DashboardViewModel) {
     val personalizationViewModel: PersonalizationViewModel = hiltViewModel()
+    val aiViewModel: AIViewModel = hiltViewModel()
     CompositionLocalProvider(LocalDashboardViewModel provides viewModel) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
+        val aiState by aiViewModel.uiState.collectAsStateWithLifecycle()
         val achievements by viewModel.achievements.collectAsStateWithLifecycle()
         val wellnessScore by viewModel.wellnessScore.collectAsStateWithLifecycle()
         val digitalPet by viewModel.digitalPet.collectAsStateWithLifecycle()
@@ -80,6 +84,8 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 state = state,
                                 digitalPet = digitalPet,
                                 petStats = petStats,
+                                aiInsights = aiState.insights,
+                                isLoadingInsights = aiState.isLoadingInsights,
                                 onNavigateToAnalytics = { navController.navigate("analytics_route") },
                                 onNavigateToWellness = { navController.navigate("wellness_route") },
                                 onNavigateToHabits = { navController.navigate("habits_route") },
@@ -93,6 +99,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 },
                                 onPetFeed = { 
                                     viewModel.feedPet()
+                                },
+                                onRefreshAIInsights = {
+                                    aiViewModel.generateAIInsights()
                                 }
                             )
                         }
@@ -135,6 +144,9 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 onNavigateToPrivacySettings = {
                                     navController.navigate("privacy_settings_route")
                                 },
+                                onNavigateToAISettings = {
+                                    navController.navigate("ai_settings_route")
+                                },
                                 onNavigateToMindfulness = {
                                     navController.navigate("mindfulness_route")
                                 },
@@ -168,6 +180,12 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         composable("privacy_settings_route") {
                             PrivacySettingsScreen(
                                 onBackPressed = { navController.popBackStack() }
+                            )
+                        }
+                        composable("ai_settings_route") {
+                            AISettingsScreen(
+                                viewModel = aiViewModel,
+                                onNavigateBack = { navController.popBackStack() }
                             )
                         }
                         composable("mindfulness_route") {

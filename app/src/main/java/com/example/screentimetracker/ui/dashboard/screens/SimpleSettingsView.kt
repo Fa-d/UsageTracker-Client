@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,6 +78,7 @@ fun SimpleSettingsView(
     onNavigateToLimiterConfig: () -> Unit = {},
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToMindfulness: () -> Unit = {},
+    onNavigateToAISettings: () -> Unit = {},
     onNavigateToReplacementActivities: () -> Unit = {},
     onExportData: () -> Unit = {},
     onClearCache: () -> Unit = {}
@@ -534,6 +536,36 @@ fun SimpleSettingsView(
                         )
                     }
 
+                    // AI Features
+                    Row(Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToAISettings() }
+                        .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Psychology,
+                                contentDescription = null,
+                                tint = Color(0xFF059669),
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
+                            Column {
+                                Text("AI Features", fontWeight = FontWeight.Medium)
+                                Text(
+                                    "Smart insights and recommendations",
+                                    fontSize = 13.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+
                     // Mindfulness & Breathing
                     Row(Modifier
                         .fillMaxWidth()
@@ -860,6 +892,7 @@ fun SimpleSettingsViewPreview() {
         onNavigateToProgressiveLimits = {},
         onNavigateToLimiterConfig = {},
         onNavigateToPrivacySettings = {},
+        onNavigateToAISettings = {},
         onNavigateToMindfulness = {},
         onNavigateToReplacementActivities = {},
         onExportData = {},

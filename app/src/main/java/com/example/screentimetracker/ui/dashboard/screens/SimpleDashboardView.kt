@@ -26,19 +26,24 @@ import com.example.screentimetracker.ui.dashboard.cards.DigitalPetCard
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
 import com.example.screentimetracker.ui.theme.*
 import com.example.screentimetracker.utils.millisToReadableTime
+import com.example.screentimetracker.ui.ai.components.AIInsightsCard
+import com.example.screentimetracker.ui.ai.components.AIInsight
 
 @Composable
 fun SimpleDashboardView(
     state: DashboardState,
     digitalPet: com.example.screentimetracker.data.local.DigitalPet?,
     petStats: com.example.screentimetracker.data.local.PetStats?,
+    aiInsights: List<AIInsight> = emptyList(),
+    isLoadingInsights: Boolean = false,
     onNavigateToAnalytics: () -> Unit,
     onNavigateToWellness: () -> Unit,
     onNavigateToHabits: (() -> Unit)? = null,
     onNavigateToTimeRestrictions: (() -> Unit)? = null,
     onPetClick: () -> Unit = {},
     onPetInteraction: () -> Unit = {},
-    onPetFeed: () -> Unit = {}
+    onPetFeed: () -> Unit = {},
+    onRefreshAIInsights: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -141,6 +146,16 @@ fun SimpleDashboardView(
                     .padding(horizontal = 16.dp)
             )
         }
+
+        // AI Insights Card
+        AIInsightsCard(
+            insights = aiInsights,
+            isLoading = isLoadingInsights,
+            onRefresh = onRefreshAIInsights,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
 
        /* // Overview Card
         OverviewCard(

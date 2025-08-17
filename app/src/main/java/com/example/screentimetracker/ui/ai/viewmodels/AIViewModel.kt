@@ -10,6 +10,8 @@ import com.example.screentimetracker.utils.AIDownloadManager
 import com.example.screentimetracker.utils.AIDownloadProgress
 import com.example.screentimetracker.utils.AIUtils
 import com.example.screentimetracker.utils.AIAvailabilityStatus
+import com.example.screentimetracker.domain.usecases.AIIntegrationUseCase
+import com.example.screentimetracker.ui.ai.components.AIInsight
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,13 +29,18 @@ data class AIFeatureState(
     val userPreferences: UserPreferences? = null,
     val error: String? = null,
     val showOptInDialog: Boolean = false,
-    val showDownloadDialog: Boolean = false
+    val showDownloadDialog: Boolean = false,
+    val insights: List<AIInsight> = emptyList(),
+    val recommendations: List<AIIntegrationUseCase.AIRecommendation> = emptyList(),
+    val wellnessAlerts: List<AIIntegrationUseCase.WellnessAlert> = emptyList(),
+    val isLoadingInsights: Boolean = false
 )
 
 @HiltViewModel
 class AIViewModel @Inject constructor(
     private val aiDownloadManager: AIDownloadManager,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val aiIntegrationUseCase: AIIntegrationUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AIFeatureState())
@@ -47,6 +54,8 @@ class AIViewModel @Inject constructor(
 
     init {
         observeAIState()
+        // Generate initial AI insights when app starts
+        refreshAIInsights()
     }
 
     private fun observeAIState() {
@@ -273,6 +282,51 @@ class AIViewModel @Inject constructor(
 
     fun getDownloadRequirements(): List<String> {
         return aiDownloadManager.getDownloadRequirements()
+    }
+
+    fun generateAIInsights() {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoadingInsights = true)
+                
+                // For now, use empty data since we don't have repository integration
+                val insights = aiIntegrationUseCase.generateAIInsights(
+                    sessionEvents = emptyList(),
+                    dailySummaries = emptyList()
+                )
+                
+                val recommendations = aiIntegrationUseCase.generateGoalRecommendations(
+                    sessionEvents = emptyList(),
+                    dailySummaries = emptyList()
+                )
+                
+                val wellnessAlerts = aiIntegrationUseCase.checkWellnessAlerts(
+                    sessionEvents = emptyList(),
+                    currentSessionDuration = 0L
+                )
+                
+                _uiState.value = _uiState.value.copy(
+                    insights = insights,
+                    recommendations = recommendations,
+                    wellnessAlerts = wellnessAlerts,
+                    isLoadingInsights = false
+                )
+                
+                Log.d("AIViewModel", "AI insights generated: ${insights.size} insights, ${recommendations.size} recommendations")
+            } catch (e: Exception) {
+                Log.e("AIViewModel", "Failed to generate AI insights", e)
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to generate insights: ${e.localizedMessage}",
+                    isLoadingInsights = false
+                )
+            }
+        }
+    }
+
+    fun refreshAIInsights() {
+        if (_uiState.value.isEnabled) {
+            generateAIInsights()
+        }
     }
 
     override fun onCleared() {
