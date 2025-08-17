@@ -1,8 +1,18 @@
 package com.example.screentimetracker.ui.dashboard.viewmodels
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.screentimetracker.domain.usecases.GetDashboardDataUseCase
@@ -291,5 +301,146 @@ class DashboardViewModel @Inject constructor(
                 Log.e("DashboardViewModel", "Error refreshing wellness score", e)
             }
         }
+    }
+
+    fun exportUsageData() {
+        viewModelScope.launch {
+            try {
+                val currentState = _uiState.value
+                val currentTime = System.currentTimeMillis()
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault())
+                val timestamp = dateFormat.format(Date(currentTime))
+                
+                // Create CSV content
+                val csvContent = StringBuilder()
+                csvContent.append("Export Date,${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(currentTime))}\n")
+                csvContent.append("Total Screen Time Today (minutes),${currentState.totalScreenTimeTodayMillis / (1000 * 60)}\n")
+                csvContent.append("Total Unlocks Today,${currentState.totalScreenUnlocksToday}\n")
+                csvContent.append("Average Daily Screen Time Last Week (minutes),${currentState.averageDailyScreenTimeMillisLastWeek / (1000 * 60)}\n")
+                csvContent.append("Average Daily Unlocks Last Week,${currentState.averageDailyUnlocksLastWeek}\n")
+                csvContent.append("\nApp Usage Today:\n")
+                csvContent.append("App Name,Package Name,Total Time (minutes),Open Count,Last Opened\n")
+                
+                currentState.appUsagesToday.forEach { app ->
+                    val lastOpenedDate = if (app.lastOpenedTimestamp > 0) {
+                        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(app.lastOpenedTimestamp))
+                    } else {
+                        "Never"
+                    }
+                    csvContent.append("${app.appName},${app.packageName},${app.totalDurationMillisToday / (1000 * 60)},${app.openCount},$lastOpenedDate\n")
+                }
+                
+                // Create file in app's external files directory
+                val downloadsDir = File(application.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "ScreenTimeTracker")
+                if (!downloadsDir.exists()) {
+                    downloadsDir.mkdirs()
+                }
+                
+                val fileName = "screen_time_export_$timestamp.csv"
+                val file = File(downloadsDir, fileName)
+                
+                FileWriter(file).use { writer ->
+                    writer.write(csvContent.toString())
+                }
+                
+                Log.d("DashboardViewModel", "Data exported to: ${file.absolutePath}")
+                
+                // Show success message and share intent
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    Toast.makeText(application, "Data exported to: $fileName", Toast.LENGTH_LONG).show()
+                    
+                    // Create share intent
+                    val uri = FileProvider.getUriForFile(
+                        application,
+                        "${application.packageName}.fileprovider",
+                        file
+                    )
+                    
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/csv"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        putExtra(Intent.EXTRA_SUBJECT, "Screen Time Data Export")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    
+                    val chooserIntent = Intent.createChooser(shareIntent, "Share Screen Time Data")
+                    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    application.startActivity(chooserIntent)
+                }
+                
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error exporting data", e)
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    Toast.makeText(application, "Failed to export data: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    fun clearCache() {
+        viewModelScope.launch {
+            try {
+                // Clear app's internal cache directory
+                val cacheDir = application.cacheDir
+                deleteDirectoryContents(cacheDir)
+                
+                // Clear external cache directory if it exists
+                application.externalCacheDir?.let { externalCacheDir ->
+                    deleteDirectoryContents(externalCacheDir)
+                }
+                
+                // Calculate freed space (approximate)
+                val cacheSize = calculateDirectorySize(cacheDir)
+                val externalCacheSize = application.externalCacheDir?.let { calculateDirectorySize(it) } ?: 0L
+                val totalFreed = cacheSize + externalCacheSize
+                
+                Log.d("DashboardViewModel", "Cache cleared successfully. Freed approximately ${totalFreed / 1024} KB")
+                
+                // Show success message
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    val freedMB = totalFreed / (1024 * 1024)
+                    val message = if (freedMB > 0) {
+                        "Cache cleared successfully! Freed ${freedMB} MB of storage"
+                    } else {
+                        "Cache cleared successfully!"
+                    }
+                    Toast.makeText(application, message, Toast.LENGTH_LONG).show()
+                }
+                
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error clearing cache", e)
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    Toast.makeText(application, "Failed to clear cache: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+    
+    private fun deleteDirectoryContents(directory: File) {
+        if (directory.exists() && directory.isDirectory) {
+            directory.listFiles()?.forEach { file ->
+                if (file.isDirectory) {
+                    deleteDirectoryContents(file)
+                    file.delete()
+                } else {
+                    file.delete()
+                }
+            }
+        }
+    }
+    
+    private fun calculateDirectorySize(directory: File): Long {
+        if (!directory.exists() || !directory.isDirectory) return 0L
+        
+        var size = 0L
+        directory.listFiles()?.forEach { file ->
+            size += if (file.isDirectory) {
+                calculateDirectorySize(file)
+            } else {
+                file.length()
+            }
+        }
+        return size
     }
 }

@@ -15,8 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,7 +22,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.screentimetracker.ui.advanced.AdvancedSettingsScreen
 import com.example.screentimetracker.ui.analytics.AnalyticsScreen
 import com.example.screentimetracker.ui.appsearch.AppSearchScreen
 import com.example.screentimetracker.ui.components.PlayfulBottomNav
@@ -36,14 +33,11 @@ import com.example.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
 import com.example.screentimetracker.ui.habits.screens.HabitsScreen
 import com.example.screentimetracker.ui.limiter.screens.LimiterConfigScreen
 import com.example.screentimetracker.ui.mindfulness.screens.BreathingExerciseScreen
-import com.example.screentimetracker.ui.personalization.PersonalizationScreen
 import com.example.screentimetracker.ui.personalization.PersonalizationViewModel
 import com.example.screentimetracker.ui.privacy.screens.PrivacySettingsScreen
 import com.example.screentimetracker.ui.progressivelimits.screens.ProgressiveLimitsScreen
 import com.example.screentimetracker.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import com.example.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
-import com.example.screentimetracker.ui.theme.PlayfulPrimary
-import com.example.screentimetracker.ui.theme.VibrantOrange
 import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
 import com.example.screentimetracker.ui.wellness.WellnessScreen
 
@@ -74,61 +68,6 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                /*             // Playful Header
-                             Box(
-                                 modifier = Modifier
-                                     .fillMaxWidth()
-                                     .then(
-                                         if (darkMode) {
-                                             Modifier.background(Color(0xFF27272A))
-                                         } else {
-                                             Modifier.background(
-                                                 brush = Brush.horizontalGradient(
-                                                     colors = listOf(
-                                                         PlayfulPrimary.copy(alpha = 0.1f),
-                                                         VibrantOrange.copy(alpha = 0.1f),
-                                                         LimeGreen.copy(alpha = 0.1f)
-                                                     )
-                                                 )
-                                             )
-                                         }
-                                     )
-                                     .padding(horizontal = 24.dp, vertical = 20.dp)
-                             ) {
-                                 Row(
-                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                     verticalAlignment = Alignment.CenterVertically,
-                                     modifier = Modifier.fillMaxWidth()
-                                 ) {
-                                     Column {
-                                         Text(
-                                             text = "📱 Screen Time Tracker",
-                                             fontSize = 20.sp,
-                                             fontWeight = FontWeight.Bold,
-                                             color = if (darkMode) Color.White else PlayfulPrimary
-                                         )
-                                         Text(
-                                             text = "Your digital wellness companion ✨",
-                                             fontSize = 14.sp,
-                                             color = if (darkMode) Color.White.copy(alpha = 0.7f)
-                                                   else PlayfulPrimary.copy(alpha = 0.7f)
-                                         )
-                                     }
-                                     if (focusMode) {
-                                         Text(
-                                             text = "🧘",
-                                             fontSize = 24.sp,
-                                             modifier = Modifier
-                                                 .background(
-                                                     LavenderPurple.copy(alpha = 0.2f),
-                                                     shape = androidx.compose.foundation.shape.CircleShape
-                                                 )
-                                                 .padding(8.dp)
-                                         )
-                                     }
-                                 }
-                             }
-             */
                 // Content
                 Box(
                     modifier = Modifier
@@ -178,7 +117,38 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,
                                 onAchievementCelebrationsChanged = personalizationViewModel::updateAchievementCelebrations,
                                 onBreakRemindersChanged = personalizationViewModel::updateBreakReminders,
-                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching
+                                onWellnessCoachingChanged = personalizationViewModel::updateWellnessCoaching,
+                                privacyMode = privacyMode,
+                                onPrivacyModeChange = { privacyMode = it },
+                                syncEnabled = syncEnabled,
+                                onSyncEnabledChange = { syncEnabled = it },
+                                usageAlertsEnabled = personalizationState.preferences.achievementCelebrationsEnabled,
+                                onUsageAlertsChange = personalizationViewModel::updateAchievementCelebrations,
+                                goalRemindersEnabled = personalizationState.preferences.breakRemindersEnabled,
+                                onGoalRemindersChange = personalizationViewModel::updateBreakReminders,
+                                onNavigateToProgressiveLimits = {
+                                    navController.navigate("progressive_limits_route")
+                                },
+                                onNavigateToLimiterConfig = {
+                                    navController.navigate("limiter_config_route")
+                                },
+                                onNavigateToPrivacySettings = {
+                                    navController.navigate("privacy_settings_route")
+                                },
+                                onNavigateToMindfulness = {
+                                    navController.navigate("mindfulness_route")
+                                },
+                                onNavigateToReplacementActivities = {
+                                    navController.navigate("replacement_activities_route")
+                                },
+                                onExportData = {
+                                    // Implement data export functionality
+                                    viewModel.exportUsageData()
+                                },
+                                onClearCache = {
+                                    // Implement cache clearing functionality
+                                    viewModel.clearCache()
+                                }
                             )
                         }
                         composable("app_search_route") {
@@ -232,32 +202,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                                 viewModel = viewModel
                             )
                         }
-                        composable("advanced_settings_route") {
-                            AdvancedSettingsScreen(
-                                privacyMode = privacyMode,
-                                onPrivacyModeChange = { privacyMode = it },
-                                syncEnabled = syncEnabled,
-                                onSyncEnabledChange = { syncEnabled = it },
-                                usageAlertsEnabled = personalizationState.preferences.achievementCelebrationsEnabled,
-                                onUsageAlertsChange = personalizationViewModel::updateAchievementCelebrations,
-                                goalRemindersEnabled = personalizationState.preferences.breakRemindersEnabled,
-                                onGoalRemindersChange = personalizationViewModel::updateBreakReminders,
-                                onNavigateToProgressiveLimits = {
-                                    navController.navigate("progressive_limits_route")
-                                },
-                                onNavigateToLimiterConfig = {
-                                    navController.navigate("limiter_config_route")
-                                },
-                                onNavigateToPrivacySettings = {
-                                    navController.navigate("privacy_settings_route")
-                                },
-                                onNavigateToMindfulness = {
-                                    navController.navigate("mindfulness_route")
-                                },
-                                onNavigateToReplacementActivities = {
-                                    navController.navigate("replacement_activities_route")
-                                })
-                        }
+
                     }
                 }
 
