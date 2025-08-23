@@ -16,11 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.screentimetracker.ui.components.PlayfulCard
 import com.example.screentimetracker.ui.components.PlayfulMetricCard
+import com.example.screentimetracker.ui.components.ModernCard
+import com.example.screentimetracker.ui.components.StatisticsCard
+import com.example.screentimetracker.ui.components.FeatureCard
+import com.example.screentimetracker.ui.components.ActionCard
+import com.example.screentimetracker.ui.components.CardVariant
+import com.example.screentimetracker.ui.components.Trend
 import com.example.screentimetracker.ui.dashboard.cards.OverviewCard
 import com.example.screentimetracker.ui.dashboard.cards.DigitalPetCard
 import com.example.screentimetracker.ui.dashboard.state.DashboardState
@@ -84,28 +91,56 @@ fun SimpleDashboardView(
             }
         }
 
-        // Core Metrics
+        // Primary Statistics Card
+        StatisticsCard(
+            title = "Screen Time Today",
+            value = millisToReadableTime(state.totalScreenTimeTodayMillis),
+            subtitle = "Digital wellness tracking",
+            icon = {
+                Text(
+                    text = "⏰",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            trend = Trend(
+                percentage = -12.5f,
+                isPositive = true,
+                label = "vs yesterday"
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            onClick = onNavigateToAnalytics
+        )
+
+        // Core Metrics Grid
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "Screen Time",
-                value = millisToReadableTime(state.totalScreenTimeTodayMillis),
-                emoji = "⏰",
-                color = MaterialTheme.colorScheme.primary,
-                subtitle = "Total today"
-            )
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
+            StatisticsCard(
                 title = "Focus Score",
                 value = calculateFocusScore(state),
-                emoji = "🎯",
-                color = MaterialTheme.colorScheme.secondary,
-                subtitle = "Productivity level"
+                modifier = Modifier.weight(1f),
+                icon = {
+                    Text(
+                        text = "🎯",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            )
+            StatisticsCard(
+                title = "Unlocks",
+                value = "${state.totalScreenUnlocksToday}",
+                modifier = Modifier.weight(1f),
+                icon = {
+                    Text(
+                        text = "🔓",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
             )
         }
 
@@ -115,21 +150,29 @@ fun SimpleDashboardView(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
-                title = "Unlocks",
-                value = "${state.totalScreenUnlocksToday}",
-                emoji = "🔓",
-                color = MaterialTheme.colorScheme.tertiary,
-                subtitle = "Screen activations"
-            )
-            PlayfulMetricCard(
-                modifier = Modifier.weight(1f),
+            StatisticsCard(
                 title = "App Opens",
                 value = "${state.appUsagesToday.sumOf { it.openCount }}",
-                emoji = "📱",
-                color = MaterialTheme.colorScheme.secondary,
-                subtitle = "App launches"
+                modifier = Modifier.weight(1f),
+                icon = {
+                    Text(
+                        text = "📱",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            )
+            StatisticsCard(
+                title = "Wellness",
+                value = "Good",
+                subtitle = "On track",
+                modifier = Modifier.weight(1f),
+                icon = {
+                    Text(
+                        text = "🌱",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                onClick = onNavigateToWellness
             )
         }
 
@@ -156,6 +199,48 @@ fun SimpleDashboardView(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         )
+
+        // Feature Cards
+        onNavigateToHabits?.let { navigateToHabits ->
+            FeatureCard(
+                title = "Build Better Habits",
+                description = "Track and improve your daily digital wellness habits",
+                gradientColors = listOf(
+                    MaterialTheme.colorScheme.tertiary,
+                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+                ),
+                icon = {
+                    Text(
+                        text = "💪",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White
+                    )
+                },
+                onClick = navigateToHabits,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+
+        onNavigateToTimeRestrictions?.let { navigateToTimeRestrictions ->
+            ActionCard(
+                title = "Time Restrictions",
+                description = "Set and manage app time limits to stay focused",
+                actionText = "Manage Limits",
+                onAction = navigateToTimeRestrictions,
+                icon = {
+                    Text(
+                        text = "⏰",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
 
        /* // Overview Card
         OverviewCard(

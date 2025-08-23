@@ -120,7 +120,6 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                             SimpleSettingsView(
                                 currentThemeMode = com.example.screentimetracker.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
                                 onThemeModeChange = personalizationViewModel::updateThemeMode,
-                                onNavigateToAdvancedSettings = { navController.navigate("advanced_settings_route") },
                                 preferences = personalizationState.preferences,
                                 onColorSchemeChanged = personalizationViewModel::updateColorScheme,
                                 onMotivationalMessagesChanged = personalizationViewModel::updateMotivationalMessages,

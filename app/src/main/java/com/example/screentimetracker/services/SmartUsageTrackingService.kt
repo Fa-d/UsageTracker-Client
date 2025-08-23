@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.example.screentimetracker.R
 import com.example.screentimetracker.domain.repository.TrackerRepository
 import com.example.screentimetracker.services.limiter.AppUsageLimiter
+import com.example.screentimetracker.services.UsageStatsPoller
 import com.example.screentimetracker.ui.MainActivity
 import com.example.screentimetracker.utils.logger.AppLogger
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,12 +32,15 @@ class SmartUsageTrackingService : Service() {
     @Inject
     lateinit var appUsageLimiter: AppUsageLimiter
     @Inject
+    lateinit var usageStatsPoller: UsageStatsPoller
+    @Inject
     lateinit var appLogger: AppLogger
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     private var trackingJob: Job? = null
     private var isTrackingActive = false
+    private var isUsagePollingActive = false
 
     companion object {
         private const val TAG = "SmartTrackingService"
@@ -64,7 +68,7 @@ class SmartUsageTrackingService : Service() {
             "Smart Usage Tracking",
             NotificationManager.IMPORTANCE_MIN
         )
-        serviceChannel.description = "Lightweight usage monitoring for limited apps"
+        serviceChannel.description = "Continuous app usage tracking and monitoring"
         manager?.createNotificationChannel(serviceChannel)
     }
 
@@ -97,7 +101,7 @@ class SmartUsageTrackingService : Service() {
             }
         }
         
-        return START_NOT_STICKY // Don't restart if killed when not needed
+        return START_STICKY // Restart if killed to maintain continuous tracking
     }
 
     private fun startSmartTracking() {
@@ -112,6 +116,10 @@ class SmartUsageTrackingService : Service() {
         trackingJob = serviceScope.launch {
             while (isActive && isTrackingActive) {
                 try {
+                    // Track usage statistics for dashboard
+                    trackUsageStatistics()
+                    
+                    // Check limits for limited apps
                     val hasActiveLimitedApps = checkCurrentLimits()
                     
                     // Adjust polling interval based on activity
@@ -123,21 +131,24 @@ class SmartUsageTrackingService : Service() {
                     
                     delay(pollingInterval)
                     
-                    // Auto-stop if no limited apps are being used
-                    if (!hasActiveLimitedApps) {
-                        val shouldContinue = shouldStartTracking()
-                        if (!shouldContinue) {
-                            appLogger.d(TAG, "No limited apps active, stopping smart tracking")
-                            stopSmartTracking()
-                            break
-                        }
-                    }
-                    
                 } catch (e: Exception) {
                     appLogger.e(TAG, "Error in smart tracking loop", e)
                     delay(BACKGROUND_POLLING_INTERVAL_MS)
                 }
             }
+        }
+    }
+
+    private fun trackUsageStatistics() {
+        try {
+            // Start polling for usage statistics if not already running
+            if (!isUsagePollingActive) {
+                usageStatsPoller.startPolling(serviceScope)
+                isUsagePollingActive = true
+                appLogger.d(TAG, "Started usage statistics polling")
+            }
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error starting usage statistics tracking", e)
         }
     }
 
@@ -159,12 +170,12 @@ class SmartUsageTrackingService : Service() {
 
     private suspend fun shouldStartTracking(): Boolean {
         return try {
-            // Check if there are any limited apps configured
-            val limitedApps = repository.getAllLimitedAppsOnce()
-            limitedApps.isNotEmpty()
+            // Always return true to ensure continuous tracking for usage statistics
+            // Even without limited apps, we need to track for dashboard data
+            true
         } catch (e: Exception) {
             appLogger.e(TAG, "Error checking if tracking should start", e)
-            false
+            true // Default to tracking
         }
     }
 
@@ -173,6 +184,12 @@ class SmartUsageTrackingService : Service() {
         isTrackingActive = false
         trackingJob?.cancel()
         trackingJob = null
+        
+        // Stop usage stats polling
+        if (isUsagePollingActive) {
+            usageStatsPoller.stopPolling()
+            isUsagePollingActive = false
+        }
         
         // Stop foreground service
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -185,11 +202,11 @@ class SmartUsageTrackingService : Service() {
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, pendingIntentFlags)
         
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Usage Limits Active")
-            .setContentText("Monitoring app usage limits")
+            .setContentTitle("Usage Tracking Active")
+            .setContentText("Monitoring app usage and limits")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
-            .setOngoing(false) // Allow dismissal when not actively needed
+            .setOngoing(true) // Keep persistent for background tracking
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
@@ -201,6 +218,13 @@ class SmartUsageTrackingService : Service() {
         appLogger.d(TAG, "SmartUsageTrackingService destroying")
         isTrackingActive = false
         trackingJob?.cancel()
+        
+        // Stop usage stats polling
+        if (isUsagePollingActive) {
+            usageStatsPoller.stopPolling()
+            isUsagePollingActive = false
+        }
+        
         serviceJob.cancel()
         super.onDestroy()
     }

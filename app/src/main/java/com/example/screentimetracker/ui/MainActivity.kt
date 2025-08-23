@@ -75,10 +75,14 @@ private fun AppContent(
         permissionManager.checkAllPermissions()
     }
 
+    val context = LocalContext.current
+    
     // Start service when permissions are granted
     LaunchedEffect(permissionState.allRequiredPermissionsGranted) {
         if (permissionState.allRequiredPermissionsGranted && !serviceManager.isServiceRunning()) {
             serviceManager.startTrackingService()
+            // Also start the smart tracking service for usage limits
+            com.example.screentimetracker.services.SmartUsageTrackingService.ServiceController.startSmartTracking(context)
         }
     }
 

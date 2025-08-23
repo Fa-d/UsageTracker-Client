@@ -50,6 +50,10 @@ import androidx.compose.ui.unit.sp
 import com.example.screentimetracker.data.local.ThemeMode
 import com.example.screentimetracker.data.local.UserPreferences
 import com.example.screentimetracker.ui.components.PlayfulCard
+import com.example.screentimetracker.ui.components.ModernCard
+import com.example.screentimetracker.ui.components.ActionCard
+import com.example.screentimetracker.ui.components.CardVariant
+import com.example.screentimetracker.ui.components.StatisticsCard
 import com.example.screentimetracker.ui.personalization.PersonalizationScreen
 import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
 
@@ -58,8 +62,6 @@ import com.example.screentimetracker.data.local.ColorScheme as AppColorScheme
 fun SimpleSettingsView(
     currentThemeMode: ThemeMode = ThemeMode.SYSTEM, 
     onThemeModeChange: (ThemeMode) -> Unit,
-    onNavigateToAdvancedSettings: () -> Unit,
-    // Personalization parameters for bottom sheet
     preferences: UserPreferences = UserPreferences(),
     onColorSchemeChanged: (AppColorScheme) -> Unit = {},
     onMotivationalMessagesChanged: (Boolean) -> Unit = {},
@@ -208,105 +210,22 @@ fun SimpleSettingsView(
 
         // Settings Categories
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(
-                        "Settings Categories",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+            ActionCard(
+                title = "Personalization",
+                description = "Themes, colors, and app personality",
+                actionText = "Customize",
+                onAction = { showPersonalizationBottomSheet = true },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                     )
-
-                    // Personalization
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { showPersonalizationBottomSheet = true }
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = null,
-                                tint = Color(0xFF8B5CF6),
-                                modifier = Modifier.padding(end = 12.dp)
-                            )
-                            Column {
-                                Text("Personalization", fontWeight = FontWeight.Medium)
-                                Text(
-                                    "Themes, colors, and app personality",
-                                    fontSize = 13.sp,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    }
-
-                    // Advanced Settings
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onNavigateToAdvancedSettings() }
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = null,
-                                tint = Color(0xFF06B6D4),
-                                modifier = Modifier.padding(end = 12.dp)
-                            )
-                            Column {
-                                Text("Advanced Settings", fontWeight = FontWeight.Medium)
-                                Text(
-                                    "Privacy, data, and advanced features",
-                                    fontSize = 13.sp,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
-        item {
-            PlayfulCard(
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                gradientBackground = true
-            ) {
-                Column {
-                    Text(
-                        text = "⚙️ Advanced Settings",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Configure advanced features and privacy settings",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
+
         // Privacy & Data
         item {
             Card(
@@ -874,7 +793,6 @@ fun SimpleSettingsViewPreview() {
     SimpleSettingsView(
         currentThemeMode = ThemeMode.SYSTEM,
         onThemeModeChange = {},
-        onNavigateToAdvancedSettings = {},
         preferences = UserPreferences(),
         onColorSchemeChanged = {},
         onMotivationalMessagesChanged = {},
