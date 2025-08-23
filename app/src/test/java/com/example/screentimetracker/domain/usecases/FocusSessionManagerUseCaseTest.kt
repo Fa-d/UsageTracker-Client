@@ -1,9 +1,9 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.FocusSession
-import com.example.screentimetracker.domain.repository.TrackerRepository
-import com.example.screentimetracker.utils.logger.AppLogger
-import com.example.screentimetracker.utils.ui.AppNotificationManager
+import dev.sadakat.screentimetracker.data.local.FocusSession
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
+import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf

@@ -1,8 +1,8 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.domain.model.WellnessLevel
-import com.example.screentimetracker.domain.model.WellnessScore
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.domain.model.WellnessLevel
+import dev.sadakat.screentimetracker.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

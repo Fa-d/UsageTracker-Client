@@ -1,9 +1,9 @@
-package com.example.screentimetracker.ui.habits
+package dev.sadakat.screentimetracker.ui.habits
 
-import com.example.screentimetracker.data.local.HabitTracker
-import com.example.screentimetracker.domain.usecases.HabitTrackerUseCase
-import com.example.screentimetracker.ui.habits.viewmodels.HabitTrackerViewModel
-import com.example.screentimetracker.ui.habits.viewmodels.HabitUiState
+import dev.sadakat.screentimetracker.data.local.HabitTracker
+import dev.sadakat.screentimetracker.domain.usecases.HabitTrackerUseCase
+import dev.sadakat.screentimetracker.ui.habits.viewmodels.HabitTrackerViewModel
+import dev.sadakat.screentimetracker.ui.habits.viewmodels.HabitUiState
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -1,9 +1,9 @@
-package com.example.screentimetracker.ui.dashboard.cards
+package dev.sadakat.screentimetracker.ui.dashboard.cards
 
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.screentimetracker.domain.usecases.WeeklyInsightsUseCase
-import com.example.screentimetracker.ui.base.BaseComposeInstrumentedTest
+import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
+import dev.sadakat.screentimetracker.ui.base.BaseComposeInstrumentedTest
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.*
 import io.mockk.impl.annotations.MockK

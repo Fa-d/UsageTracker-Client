@@ -1,12 +1,12 @@
-package com.example.screentimetracker.domain.categorization
+package dev.sadakat.screentimetracker.domain.categorization
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import com.example.screentimetracker.data.local.AppCategory
-import com.example.screentimetracker.data.local.AppCategoryDao
-import com.example.screentimetracker.data.local.AppCategories
-import com.example.screentimetracker.utils.logger.AppLogger
+import dev.sadakat.screentimetracker.data.local.AppCategory
+import dev.sadakat.screentimetracker.data.local.AppCategoryDao
+import dev.sadakat.screentimetracker.data.local.AppCategories
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

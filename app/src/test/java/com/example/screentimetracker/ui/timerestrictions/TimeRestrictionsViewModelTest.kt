@@ -1,9 +1,9 @@
-package com.example.screentimetracker.ui.timerestrictions
+package dev.sadakat.screentimetracker.ui.timerestrictions
 
-import com.example.screentimetracker.data.local.TimeRestriction
-import com.example.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
-import com.example.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsUiEvent
-import com.example.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
+import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
+import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsUiEvent
+import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -182,7 +182,7 @@ class TimeRestrictionsViewModelTest {
         val startMinute = 30
         val endHour = 17
         val endMinute = 0
-        val selectedApps = listOf("com.example.app")
+        val selectedApps = listOf("com.sadakat.app")
         val selectedDays = listOf(1, 2, 3, 4, 5)
 
         // When
@@ -232,7 +232,7 @@ class TimeRestrictionsViewModelTest {
     @Test
     fun `checkAppBlocked should call usecase and update state`() = runTest {
         // Given
-        val packageName = "com.example.app"
+        val packageName = "com.sadakat.app"
         val isBlocked = true
         coEvery { timeRestrictionManagerUseCase.isAppBlockedByTimeRestriction(packageName) } returns isBlocked
 

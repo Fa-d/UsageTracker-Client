@@ -1,4 +1,4 @@
-package com.example.screentimetracker.ui.components
+package dev.sadakat.screentimetracker.ui.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.screentimetracker.ui.base.BaseComposeInstrumentedTest
+import dev.sadakat.screentimetracker.ui.base.BaseComposeInstrumentedTest
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith

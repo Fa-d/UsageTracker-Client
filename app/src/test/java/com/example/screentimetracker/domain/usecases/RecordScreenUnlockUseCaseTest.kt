@@ -1,7 +1,7 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.ScreenUnlockEvent
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.data.local.ScreenUnlockEvent
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test

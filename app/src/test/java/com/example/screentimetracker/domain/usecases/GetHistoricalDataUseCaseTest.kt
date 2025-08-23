@@ -1,8 +1,8 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.DailyAppSummary
-import com.example.screentimetracker.data.local.DailyScreenUnlockSummary
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.data.local.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.DailyScreenUnlockSummary
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

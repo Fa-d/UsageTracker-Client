@@ -1,8 +1,8 @@
-package com.example.screentimetracker.ui.dashboard
+package dev.sadakat.screentimetracker.ui.dashboard
 
 import androidx.lifecycle.SavedStateHandle
-import com.example.screentimetracker.domain.usecases.*
-import com.example.screentimetracker.ui.dashboard.viewmodels.QuickActionsViewModel
+import dev.sadakat.screentimetracker.domain.usecases.*
+import dev.sadakat.screentimetracker.ui.dashboard.viewmodels.QuickActionsViewModel
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

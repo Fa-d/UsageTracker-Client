@@ -1,13 +1,13 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.AppSessionDataAggregate
-import com.example.screentimetracker.data.local.AppSessionEvent
-import com.example.screentimetracker.data.local.DailyAppSummary
-import com.example.screentimetracker.data.local.UserGoal
-import com.example.screentimetracker.domain.model.WellnessScore
-import com.example.screentimetracker.domain.repository.TrackerRepository
-import com.example.screentimetracker.utils.logger.AppLogger
-import com.example.screentimetracker.utils.ui.AppNotificationManager
+import dev.sadakat.screentimetracker.data.local.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.data.local.AppSessionEvent
+import dev.sadakat.screentimetracker.data.local.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.UserGoal
+import dev.sadakat.screentimetracker.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
+import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -88,7 +88,7 @@ class EnhancedWeeklyInsightsUseCaseTest {
             focusSessionScore = 15,
             breaksScore = 15,
             sleepHygieneScore = 15,
-            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            level = dev.sadakat.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
             calculatedAt = weekStart
         ),
         WellnessScore(
@@ -98,7 +98,7 @@ class EnhancedWeeklyInsightsUseCaseTest {
             focusSessionScore = 20,
             breaksScore = 20,
             sleepHygieneScore = 15,
-            level = com.example.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
+            level = dev.sadakat.screentimetracker.domain.model.WellnessLevel.BALANCED_USER,
             calculatedAt = weekStart + TimeUnit.DAYS.toMillis(1)
         )
     )
@@ -137,7 +137,7 @@ class EnhancedWeeklyInsightsUseCaseTest {
         coEvery { repository.getAllSessionsInRange(any(), any()) } returns flowOf(sampleSessions)
         coEvery { repository.getActiveGoals() } returns flowOf(sampleGoals)
 
-        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
+        val mockAppCategorizer = mockk<dev.sadakat.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
         useCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger, mockAppCategorizer)
     }
 

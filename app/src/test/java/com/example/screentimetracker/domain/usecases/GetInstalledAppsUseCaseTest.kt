@@ -1,4 +1,4 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
 import android.app.Application
 import android.content.Intent

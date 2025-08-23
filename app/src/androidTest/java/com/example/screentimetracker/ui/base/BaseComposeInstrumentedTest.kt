@@ -1,4 +1,4 @@
-package com.example.screentimetracker.ui.base
+package dev.sadakat.screentimetracker.ui.base
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import dagger.hilt.android.testing.HiltAndroidRule

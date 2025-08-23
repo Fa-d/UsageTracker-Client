@@ -1,9 +1,9 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.TimeRestriction
-import com.example.screentimetracker.domain.repository.TrackerRepository
-import com.example.screentimetracker.utils.logger.AppLogger
-import com.example.screentimetracker.utils.ui.AppNotificationManager
+import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
+import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify

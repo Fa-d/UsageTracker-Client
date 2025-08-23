@@ -1,4 +1,4 @@
-package com.example.screentimetracker
+package dev.sadakat.screentimetracker
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
@@ -6,22 +6,22 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
-import com.example.screentimetracker.data.local.AppSessionDataAggregate
-import com.example.screentimetracker.data.local.DailyAppSummary
-import com.example.screentimetracker.data.local.TimeRestriction
-import com.example.screentimetracker.domain.model.WellnessLevel
-import com.example.screentimetracker.domain.model.WellnessScore
-import com.example.screentimetracker.domain.repository.TrackerRepository
-import com.example.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
-import com.example.screentimetracker.domain.usecases.WeeklyInsightsUseCase
-import com.example.screentimetracker.services.NotificationScheduler
-import com.example.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
-import com.example.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
-import com.example.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
-import com.example.screentimetracker.ui.timerestrictions.viewmodels.RestrictionStatusPreview
-import com.example.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
-import com.example.screentimetracker.utils.logger.AppLogger
-import com.example.screentimetracker.utils.ui.AppNotificationManager
+import dev.sadakat.screentimetracker.data.local.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.data.local.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.domain.model.WellnessLevel
+import dev.sadakat.screentimetracker.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
+import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
+import dev.sadakat.screentimetracker.services.NotificationScheduler
+import dev.sadakat.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
+import dev.sadakat.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
+import dev.sadakat.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
+import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.RestrictionStatusPreview
+import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
+import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
@@ -158,7 +158,7 @@ class EndToEndUserFlowTest {
             notificationManager,
             appLogger
         )
-        val mockAppCategorizer = mockk<com.example.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
+        val mockAppCategorizer = mockk<dev.sadakat.screentimetracker.domain.categorization.AppCategorizer>(relaxed = true)
         weeklyInsightsUseCase = WeeklyInsightsUseCase(repository, notificationManager, appLogger, mockAppCategorizer)
         notificationScheduler =
             NotificationScheduler(ApplicationProvider.getApplicationContext(), appLogger)

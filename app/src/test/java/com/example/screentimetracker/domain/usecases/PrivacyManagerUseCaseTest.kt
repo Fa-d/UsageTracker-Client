@@ -1,7 +1,7 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.PrivacySettings
-import com.example.screentimetracker.data.local.PrivacySettingsDao
+import dev.sadakat.screentimetracker.data.local.PrivacySettings
+import dev.sadakat.screentimetracker.data.local.PrivacySettingsDao
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery

@@ -1,9 +1,9 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.UserPreferences
-import com.example.screentimetracker.data.local.UserPreferencesDao
-import com.example.screentimetracker.data.local.ThemeMode
-import com.example.screentimetracker.data.local.ColorScheme
+import dev.sadakat.screentimetracker.data.local.UserPreferences
+import dev.sadakat.screentimetracker.data.local.UserPreferencesDao
+import dev.sadakat.screentimetracker.data.local.ThemeMode
+import dev.sadakat.screentimetracker.data.local.ColorScheme
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.first

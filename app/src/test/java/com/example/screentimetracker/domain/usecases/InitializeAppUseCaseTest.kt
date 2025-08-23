@@ -1,11 +1,11 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.example.screentimetracker.workers.HistoricalDataWorker
+import dev.sadakat.screentimetracker.workers.HistoricalDataWorker
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test

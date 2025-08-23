@@ -1,7 +1,7 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.AppSessionEvent
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.data.local.AppSessionEvent
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +24,7 @@ class RecordAppSessionUseCaseTest {
     @Test
     fun `invoke with packageName, startTime, endTime should insert AppSessionEvent`() = runTest {
         // Given
-        val packageName = "com.example.testapp"
+        val packageName = "com.sadakat.testapp"
         val startTime = 1000L
         val endTime = 2000L
 
@@ -39,7 +39,7 @@ class RecordAppSessionUseCaseTest {
     fun `invoke with AppSessionEvent should insert AppSessionEvent`() = runTest {
         // Given
         val sessionEvent = AppSessionEvent(
-            packageName = "com.example.testapp",
+            packageName = "com.sadakat.testapp",
             startTimeMillis = 1000L,
             endTimeMillis = 2000L,
             durationMillis = 1000L
@@ -55,7 +55,7 @@ class RecordAppSessionUseCaseTest {
     @Test
     fun `invoke with endTime less than startTime should correct and insert AppSessionEvent`() = runTest {
         // Given
-        val packageName = "com.example.testapp"
+        val packageName = "com.sadakat.testapp"
         val startTime = 2000L
         val endTime = 1000L // Invalid end time
 
@@ -75,7 +75,7 @@ class RecordAppSessionUseCaseTest {
     fun `invoke with AppSessionEvent and invalid times should correct and insert`() = runTest {
         // Given
         val sessionEvent = AppSessionEvent(
-            packageName = "com.example.testapp",
+            packageName = "com.sadakat.testapp",
             startTimeMillis = 2000L,
             endTimeMillis = 1000L,
             durationMillis = 500L // Incorrect duration
@@ -97,7 +97,7 @@ class RecordAppSessionUseCaseTest {
     fun `invoke with AppSessionEvent and inconsistent duration should correct and insert`() = runTest {
         // Given
         val sessionEvent = AppSessionEvent(
-            packageName = "com.example.testapp",
+            packageName = "com.sadakat.testapp",
             startTimeMillis = 1000L,
             endTimeMillis = 3000L,
             durationMillis = 500L // Inconsistent duration

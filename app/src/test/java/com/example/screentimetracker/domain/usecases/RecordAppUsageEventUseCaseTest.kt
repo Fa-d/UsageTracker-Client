@@ -1,7 +1,7 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.AppUsageEvent
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.data.local.AppUsageEvent
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +24,7 @@ class RecordAppUsageEventUseCaseTest {
     @Test
     fun `invoke should insert an AppUsageEvent with provided data`() = runTest {
         // Given
-        val packageName = "com.example.app"
+        val packageName = "com.sadakat.app"
         val eventName = "app_opened"
         val timestamp = System.currentTimeMillis()
 

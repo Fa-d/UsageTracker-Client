@@ -1,7 +1,7 @@
-package com.example.screentimetracker.domain.usecases
+package dev.sadakat.screentimetracker.domain.usecases
 
-import com.example.screentimetracker.data.local.LimitedApp
-import com.example.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.data.local.LimitedApp
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -77,7 +77,7 @@ class RemoveLimitedAppUseCaseTest {
     fun `invoke should handle app with zero time limit`() = runTest {
         // Given - even with invalid time limit, removal should work
         val limitedApp = LimitedApp(
-            packageName = "com.example.app",
+            packageName = "com.sadakat.app",
             timeLimitMillis = 0L
         )
 

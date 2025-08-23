@@ -1,8 +1,8 @@
-package com.example.screentimetracker.ui.smartgoals
+package dev.sadakat.screentimetracker.ui.smartgoals
 
-import com.example.screentimetracker.domain.usecases.SmartGoalSettingUseCase
-import com.example.screentimetracker.domain.usecases.SmartGoalSettingUseCase.*
-import com.example.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
+import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase
+import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.*
+import dev.sadakat.screentimetracker.ui.smartgoals.viewmodels.SmartGoalsViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.*
