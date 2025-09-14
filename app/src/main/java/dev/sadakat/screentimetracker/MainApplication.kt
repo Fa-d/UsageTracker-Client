@@ -44,8 +44,8 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
 
     private fun scheduleDailyAggregationWork() {
         val workRequest = PeriodicWorkRequestBuilder<DailyAggregationWorker>(
-            repeatInterval = 1, // Repeat once per day
-            repeatIntervalTimeUnit = TimeUnit.DAYS
+            1L, // Repeat once per day
+            TimeUnit.DAYS
         )
         // .setInitialDelay(calculateInitialDelay(), TimeUnit.MILLISECONDS) // Optional: delay to run at specific time like midnight
         .build()
@@ -60,8 +60,8 @@ class MainApplication : Application(), Configuration.Provider { // Implement Con
 
     private fun scheduleHabitTrackerWork() {
         val workRequest = PeriodicWorkRequestBuilder<HabitTrackerWorker>(
-            repeatInterval = 1, // Repeat once per hour
-            repeatIntervalTimeUnit = TimeUnit.HOURS
+            1L, // Repeat once per hour
+            TimeUnit.HOURS
         )
         .build()
 

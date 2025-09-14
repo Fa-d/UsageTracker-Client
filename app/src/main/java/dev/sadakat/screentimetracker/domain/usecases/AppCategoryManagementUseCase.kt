@@ -25,7 +25,7 @@ class AppCategoryManagementUseCase @Inject constructor(
     
     suspend fun updateCategoryManually(packageName: String, category: String) {
         try {
-            appCategorizer.updateCategoryManually(packageName, category)
+            appCategoryRepository.updateCategoryManually(packageName, category)
             appLogger.d(TAG, "Updated category for $packageName to $category")
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to update category for $packageName", e)
@@ -61,7 +61,7 @@ class AppCategoryManagementUseCase @Inject constructor(
     
     suspend fun getCategoryStats(): Map<String, Int> {
         return try {
-            appCategorizer.getCategoryStats()
+            appCategoryRepository.getCategoryStats()
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to get category stats", e)
             emptyMap()
@@ -79,7 +79,7 @@ class AppCategoryManagementUseCase @Inject constructor(
     
     suspend fun cleanupStaleCategories() {
         try {
-            appCategorizer.cleanStaleCache()
+            appCategoryRepository.cleanStaleCache()
             appLogger.d(TAG, "Cleaned up stale categories")
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to clean up stale categories", e)

@@ -326,4 +326,20 @@ class TrackerRepositoryImpl @Inject constructor(
         val totalUsage = sessions.sumOf { it.durationMillis }
         return totalUsage / 7 // Average per day
     }
+    
+    // --- AI Insights Methods ---
+    override suspend fun generateAIInsights(usageData: Any, userGoals: Any): List<Any> {
+        // Placeholder implementation - in real app would call AI service
+        return emptyList()
+    }
+    
+    override suspend fun generateGoalRecommendations(userData: Any, currentGoals: Any): List<Any> {
+        // Placeholder implementation - in real app would call AI service
+        return emptyList()
+    }
+    
+    override suspend fun checkWellnessAlerts(recentData: Any): List<Any> {
+        // Placeholder implementation - in real app would call AI service
+        return emptyList()
+    }
 }

@@ -3,6 +3,7 @@ package dev.sadakat.screentimetracker.data.local
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -14,7 +15,8 @@ import androidx.room.PrimaryKey
             childColumns = ["limit_id"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["limit_id"])]
 )
 data class ProgressiveMilestone(
     @PrimaryKey(autoGenerate = true)

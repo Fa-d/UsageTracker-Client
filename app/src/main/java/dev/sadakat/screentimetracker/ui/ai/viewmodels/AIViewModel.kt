@@ -12,6 +12,8 @@ import dev.sadakat.screentimetracker.utils.AIUtils
 import dev.sadakat.screentimetracker.utils.AIAvailabilityStatus
 import dev.sadakat.screentimetracker.domain.usecases.AIIntegrationUseCase
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsight
+import dev.sadakat.screentimetracker.domain.model.AIRecommendation
+import dev.sadakat.screentimetracker.domain.model.WellnessAlert
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,8 +33,8 @@ data class AIFeatureState(
     val showOptInDialog: Boolean = false,
     val showDownloadDialog: Boolean = false,
     val insights: List<AIInsight> = emptyList(),
-    val recommendations: List<AIIntegrationUseCase.AIRecommendation> = emptyList(),
-    val wellnessAlerts: List<AIIntegrationUseCase.WellnessAlert> = emptyList(),
+    val recommendations: List<AIRecommendation> = emptyList(),
+    val wellnessAlerts: List<WellnessAlert> = emptyList(),
     val isLoadingInsights: Boolean = false
 )
 
@@ -290,20 +292,11 @@ class AIViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(isLoadingInsights = true)
                 
                 // For now, use empty data since we don't have repository integration
-                val insights = aiIntegrationUseCase.generateAIInsights(
-                    sessionEvents = emptyList(),
-                    dailySummaries = emptyList()
-                )
+                val insights = emptyList<AIInsight>()
                 
-                val recommendations = aiIntegrationUseCase.generateGoalRecommendations(
-                    sessionEvents = emptyList(),
-                    dailySummaries = emptyList()
-                )
+                val recommendations = emptyList<AIRecommendation>()
                 
-                val wellnessAlerts = aiIntegrationUseCase.checkWellnessAlerts(
-                    sessionEvents = emptyList(),
-                    currentSessionDuration = 0L
-                )
+                val wellnessAlerts = emptyList<WellnessAlert>()
                 
                 _uiState.value = _uiState.value.copy(
                     insights = insights,

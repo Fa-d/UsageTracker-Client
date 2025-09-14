@@ -1,0 +1,231 @@
+package dev.sadakat.screentimetracker.services
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import dev.sadakat.screentimetracker.R
+import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
+import dev.sadakat.screentimetracker.ui.MainActivity
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class SmartUsageTrackingService : Service() {
+
+    @Inject
+    lateinit var repository: TrackerRepository
+    @Inject
+    lateinit var appUsageLimiter: AppUsageLimiter
+    @Inject
+    lateinit var appLogger: AppLogger
+
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+    private var trackingJob: Job? = null
+    private var isTrackingActive = false
+
+    companion object {
+        private const val TAG = "SmartTrackingService"
+        const val NOTIFICATION_CHANNEL_ID = "SmartTrackingChannel"
+        private const val FOREGROUND_NOTIFICATION_ID = 2
+        const val ACTION_START_SMART_TRACKING = "dev.sadakat.screentimetracker.ACTION_START_SMART_TRACKING"
+        const val ACTION_STOP_SMART_TRACKING = "dev.sadakat.screentimetracker.ACTION_STOP_SMART_TRACKING"
+        const val ACTION_CHECK_LIMITS = "dev.sadakat.screentimetracker.ACTION_CHECK_LIMITS"
+        
+        // Smart polling intervals
+        private const val ACTIVE_POLLING_INTERVAL_MS = 30_000L // 30 seconds for active limited apps
+        private const val BACKGROUND_POLLING_INTERVAL_MS = 300_000L // 5 minutes for background checks
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        appLogger.d(TAG, "SmartUsageTrackingService created")
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        val manager = getSystemService(NotificationManager::class.java)
+        val serviceChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            "Smart Usage Tracking",
+            NotificationManager.IMPORTANCE_MIN
+        )
+        serviceChannel.description = "Lightweight usage monitoring for limited apps"
+        manager?.createNotificationChannel(serviceChannel)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        appLogger.d(TAG, "onStartCommand, action: ${intent?.action}")
+
+        when (intent?.action) {
+            ACTION_START_SMART_TRACKING -> {
+                if (!isTrackingActive) {
+                    startSmartTracking()
+                }
+            }
+            ACTION_STOP_SMART_TRACKING -> {
+                stopSmartTracking()
+            }
+            ACTION_CHECK_LIMITS -> {
+                serviceScope.launch {
+                    checkCurrentLimits()
+                }
+            }
+            else -> {
+                // Default behavior - start if needed
+                serviceScope.launch {
+                    if (shouldStartTracking()) {
+                        startSmartTracking()
+                    } else {
+                        stopSelf()
+                    }
+                }
+            }
+        }
+        
+        return START_NOT_STICKY // Don't restart if killed when not needed
+    }
+
+    private fun startSmartTracking() {
+        if (isTrackingActive) return
+        
+        appLogger.i(TAG, "Starting smart usage tracking")
+        isTrackingActive = true
+        
+        // Only show notification when actively tracking limited apps
+        startForeground(FOREGROUND_NOTIFICATION_ID, createTrackingNotification())
+        
+        trackingJob = serviceScope.launch {
+            while (isActive && isTrackingActive) {
+                try {
+                    val hasActiveLimitedApps = checkCurrentLimits()
+                    
+                    // Adjust polling interval based on activity
+                    val pollingInterval = if (hasActiveLimitedApps) {
+                        ACTIVE_POLLING_INTERVAL_MS
+                    } else {
+                        BACKGROUND_POLLING_INTERVAL_MS
+                    }
+                    
+                    delay(pollingInterval)
+                    
+                    // Auto-stop if no limited apps are being used
+                    if (!hasActiveLimitedApps) {
+                        val shouldContinue = shouldStartTracking()
+                        if (!shouldContinue) {
+                            appLogger.d(TAG, "No limited apps active, stopping smart tracking")
+                            stopSmartTracking()
+                            break
+                        }
+                    }
+                    
+                } catch (e: Exception) {
+                    appLogger.e(TAG, "Error in smart tracking loop", e)
+                    delay(BACKGROUND_POLLING_INTERVAL_MS)
+                }
+            }
+        }
+    }
+
+    private suspend fun checkCurrentLimits(): Boolean {
+        return try {
+            val hasActiveLimitedApps = appUsageLimiter.hasActiveLimitedApps()
+            
+            if (hasActiveLimitedApps) {
+                // Perform limit checks
+                appUsageLimiter.performPeriodicLimitCheck()
+            }
+            
+            hasActiveLimitedApps
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error checking current limits", e)
+            false
+        }
+    }
+
+    private suspend fun shouldStartTracking(): Boolean {
+        return try {
+            // Check if there are any limited apps configured
+            val limitedApps = repository.getAllLimitedAppsOnce()
+            limitedApps.isNotEmpty()
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error checking if tracking should start", e)
+            false
+        }
+    }
+
+    private fun stopSmartTracking() {
+        appLogger.i(TAG, "Stopping smart usage tracking")
+        isTrackingActive = false
+        trackingJob?.cancel()
+        trackingJob = null
+        
+        // Stop foreground service
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private fun createTrackingNotification(): Notification {
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, pendingIntentFlags)
+        
+        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setContentTitle("Usage Limits Active")
+            .setContentText("Monitoring app usage limits")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentIntent(pendingIntent)
+            .setOngoing(false) // Allow dismissal when not actively needed
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .build()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onDestroy() {
+        appLogger.d(TAG, "SmartUsageTrackingService destroying")
+        isTrackingActive = false
+        trackingJob?.cancel()
+        serviceJob.cancel()
+        super.onDestroy()
+    }
+
+    // Static methods for easy service control
+    object ServiceController {
+        fun startSmartTracking(context: android.content.Context) {
+            val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
+                action = ACTION_START_SMART_TRACKING
+            }
+            context.startService(intent)
+        }
+
+        fun stopSmartTracking(context: android.content.Context) {
+            val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
+                action = ACTION_STOP_SMART_TRACKING
+            }
+            context.startService(intent)
+        }
+
+        fun checkLimits(context: android.content.Context) {
+            val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
+                action = ACTION_CHECK_LIMITS
+            }
+            context.startService(intent)
+        }
+    }
+}

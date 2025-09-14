@@ -15,12 +15,3 @@ data class Achievement(
         get() = if (targetValue > 0) (currentProgress.toFloat() / targetValue * 100).coerceAtMost(100f) else 0f
 }
 
-enum class AchievementCategory {
-    STREAK,
-    MINDFUL,
-    FOCUS,
-    CLEANER,
-    WARRIOR,
-    EARLY_BIRD,
-    DIGITAL_SUNSET
-}

@@ -160,4 +160,32 @@ class AppCategoryRepositoryImpl @Inject constructor(
             appLogger.e(TAG, "Error upserting ${appCategories.size} categories", e)
         }
     }
+    
+    override suspend fun getCategoryStats(): Map<String, Int> {
+        return try {
+            val categories = appCategoryDao.getAllCategories()
+            val stats = mutableMapOf<String, Int>()
+            categories.groupBy { it.category }.forEach { (category, apps) ->
+                stats[category] = apps.size
+            }
+            stats
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error getting category stats", e)
+            emptyMap()
+        }
+    }
+    
+    override suspend fun cleanStaleCache() {
+        try {
+            // Clean categories older than 30 days - simplified implementation
+            val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24L * 60L * 60L * 1000L)
+            val staleCategories = appCategoryDao.getStaleCategories(thirtyDaysAgo)
+            staleCategories.forEach { category ->
+                appCategoryDao.deleteCategory(category)
+            }
+            appLogger.d(TAG, "Cleaned ${staleCategories.size} stale cache entries")
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error cleaning stale cache", e)
+        }
+    }
 }

@@ -5,6 +5,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -14,6 +15,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ScreenTimeTracker"
 include ':app'
+include ':core:common'
 
 // Conditionally include AI insights module if submodule exists
 if (file('ai_insights').exists() && file('ai_insights/.git').exists()) {
