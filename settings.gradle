@@ -20,6 +20,8 @@ include ':core:database'
 include ':core:ui'
 include ':domain:tracking'
 include ':domain:goals'
+include ':domain:habits'
+include ':domain:wellness'
 include ':feature:dashboard'
 
 // Conditionally include AI insights module if submodule exists
