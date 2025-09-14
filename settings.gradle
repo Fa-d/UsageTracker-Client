@@ -17,6 +17,10 @@ rootProject.name = "ScreenTimeTracker"
 include ':app'
 include ':core:common'
 include ':core:database'
+include ':core:ui'
+include ':domain:tracking'
+include ':domain:goals'
+include ':feature:dashboard'
 
 // Conditionally include AI insights module if submodule exists
 if (file('ai_insights').exists() && file('ai_insights/.git').exists()) {

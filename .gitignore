@@ -25,3 +25,4 @@ build/
 # Gradle files
 .gradle/
 gradle/
+/buildSrc/.kotlin/

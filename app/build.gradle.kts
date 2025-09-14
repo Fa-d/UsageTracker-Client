@@ -47,6 +47,10 @@ dependencies {
     // Core modules
     implementation(project(":core:common"))
     implementation(project(":core:database"))
+    implementation(project(":core:ui"))
+
+    // Feature modules
+    implementation(project(":feature:dashboard"))
 
     // Hilt
     implementation(libs.hilt.android)
