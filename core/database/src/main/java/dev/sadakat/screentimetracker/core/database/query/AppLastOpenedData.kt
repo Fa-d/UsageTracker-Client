@@ -1,4 +1,4 @@
-package dev.sadakat.screentimetracker.core.database.entities
+package dev.sadakat.screentimetracker.core.database.query
 
 // Data class for last opened timestamp data
 data class AppLastOpenedData(

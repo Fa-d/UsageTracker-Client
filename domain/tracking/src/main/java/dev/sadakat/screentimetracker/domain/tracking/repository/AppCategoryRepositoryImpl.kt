@@ -3,7 +3,7 @@ package dev.sadakat.screentimetracker.domain.tracking.repository
 import dev.sadakat.screentimetracker.core.database.entities.AppCategory
 import dev.sadakat.screentimetracker.core.database.dao.AppCategoryDao
 import dev.sadakat.screentimetracker.domain.tracking.repository.AppCategoryRepository
-import android.util.Log
+import dev.sadakat.screentimetracker.core.common.util.logger.AppLogger
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,179 +13,58 @@ class AppCategoryRepositoryImpl @Inject constructor(
     private val appCategoryDao: AppCategoryDao,
     private val appLogger: AppLogger
 ) : AppCategoryRepository {
-    
+
     companion object {
         private const val TAG = "AppCategoryRepository"
     }
-    
-    override suspend fun getCategoryByPackage(packageName: String): AppCategory? {
-        return try {
-            appCategoryDao.getCategoryByPackage(packageName)
+
+    override suspend fun insertCategory(category: AppCategory) {
+        try {
+            appCategoryDao.insertCategory(category)
         } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting category for package $packageName", e)
+            appLogger.e(TAG, "Error inserting category", e)
+        }
+    }
+
+    override suspend fun updateCategory(category: AppCategory) {
+        try {
+            appCategoryDao.updateCategory(category)
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error updating category", e)
+        }
+    }
+
+    override suspend fun deleteCategory(category: AppCategory) {
+        try {
+            appCategoryDao.deleteCategory(category)
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error deleting category", e)
+        }
+    }
+
+    override suspend fun getCategoryById(categoryId: String): AppCategory? {
+        return try {
+            appCategoryDao.getCategoryById(categoryId)
+        } catch (e: Exception) {
+            appLogger.e(TAG, "Error getting category by id $categoryId", e)
             null
         }
     }
-    
-    override fun getCategoryByPackageFlow(packageName: String): Flow<AppCategory?> {
-        return appCategoryDao.getCategoryByPackageFlow(packageName)
+
+    override fun getAllCategories(): Flow<List<AppCategory>> {
+        return appCategoryDao.getAllCategories()
     }
-    
-    override suspend fun getAppsByCategory(category: String): List<AppCategory> {
+
+    override fun getCategoriesByType(type: String): Flow<List<AppCategory>> {
+        return appCategoryDao.getCategoriesByType(type)
+    }
+
+    override suspend fun getCategoryByPackageName(packageName: String): AppCategory? {
         return try {
-            appCategoryDao.getAppsByCategory(category)
+            appCategoryDao.getCategoryByPackageName(packageName)
         } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting apps by category $category", e)
-            emptyList()
-        }
-    }
-    
-    override suspend fun getAllCategories(): List<AppCategory> {
-        return try {
-            appCategoryDao.getAllCategories()
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting all categories", e)
-            emptyList()
-        }
-    }
-    
-    override fun getAllCategoriesFlow(): Flow<List<AppCategory>> {
-        return appCategoryDao.getAllCategoriesFlow()
-    }
-    
-    override suspend fun getDistinctCategories(): List<String> {
-        return try {
-            appCategoryDao.getDistinctCategories()
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting distinct categories", e)
-            emptyList()
-        }
-    }
-    
-    override suspend fun getAppCountByCategory(category: String): Int {
-        return try {
-            appCategoryDao.getAppCountByCategory(category)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting app count for category $category", e)
-            0
-        }
-    }
-    
-    override suspend fun getCategoriesBySource(source: String): List<AppCategory> {
-        return try {
-            appCategoryDao.getCategoriesBySource(source)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting categories by source $source", e)
-            emptyList()
-        }
-    }
-    
-    override suspend fun getStaleCategories(timestamp: Long): List<AppCategory> {
-        return try {
-            appCategoryDao.getStaleCategories(timestamp)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting stale categories", e)
-            emptyList()
-        }
-    }
-    
-    override suspend fun insertCategory(appCategory: AppCategory) {
-        try {
-            appCategoryDao.insertCategory(appCategory)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error inserting category for ${appCategory.packageName}", e)
-        }
-    }
-    
-    override suspend fun insertCategories(appCategories: List<AppCategory>) {
-        try {
-            appCategoryDao.insertCategories(appCategories)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error inserting ${appCategories.size} categories", e)
-        }
-    }
-    
-    override suspend fun updateCategory(appCategory: AppCategory) {
-        try {
-            appCategoryDao.updateCategory(appCategory)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error updating category for ${appCategory.packageName}", e)
-        }
-    }
-    
-    override suspend fun deleteCategory(appCategory: AppCategory) {
-        try {
-            appCategoryDao.deleteCategory(appCategory)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error deleting category for ${appCategory.packageName}", e)
-        }
-    }
-    
-    override suspend fun deleteCategoryByPackage(packageName: String) {
-        try {
-            appCategoryDao.deleteCategoryByPackage(packageName)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error deleting category by package $packageName", e)
-        }
-    }
-    
-    override suspend fun deleteCategoriesBySource(source: String) {
-        try {
-            appCategoryDao.deleteCategoriesBySource(source)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error deleting categories by source $source", e)
-        }
-    }
-    
-    override suspend fun deleteAllCategories() {
-        try {
-            appCategoryDao.deleteAllCategories()
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error deleting all categories", e)
-        }
-    }
-    
-    override suspend fun updateCategoryManually(packageName: String, category: String, timestamp: Long) {
-        try {
-            appCategoryDao.updateCategoryManually(packageName, category, timestamp)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error manually updating category for $packageName", e)
-        }
-    }
-    
-    override suspend fun upsertCategories(appCategories: List<AppCategory>) {
-        try {
-            appCategoryDao.upsertCategories(appCategories)
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error upserting ${appCategories.size} categories", e)
-        }
-    }
-    
-    override suspend fun getCategoryStats(): Map<String, Int> {
-        return try {
-            val categories = appCategoryDao.getAllCategories()
-            val stats = mutableMapOf<String, Int>()
-            categories.groupBy { it.category }.forEach { (category, apps) ->
-                stats[category] = apps.size
-            }
-            stats
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error getting category stats", e)
-            emptyMap()
-        }
-    }
-    
-    override suspend fun cleanStaleCache() {
-        try {
-            // Clean categories older than 30 days - simplified implementation
-            val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24L * 60L * 60L * 1000L)
-            val staleCategories = appCategoryDao.getStaleCategories(thirtyDaysAgo)
-            staleCategories.forEach { category ->
-                appCategoryDao.deleteCategory(category)
-            }
-            appLogger.d(TAG, "Cleaned ${staleCategories.size} stale cache entries")
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Error cleaning stale cache", e)
+            appLogger.e(TAG, "Error getting category for package $packageName", e)
+            null
         }
     }
 }

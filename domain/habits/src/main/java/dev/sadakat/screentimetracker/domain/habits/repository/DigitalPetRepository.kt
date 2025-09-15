@@ -1,9 +1,9 @@
 package dev.sadakat.screentimetracker.domain.habits.repository
 
 import dev.sadakat.screentimetracker.core.database.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.database.entities.PetType
 import dev.sadakat.screentimetracker.core.database.dao.DigitalPetDao
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,7 +38,8 @@ class DigitalPetRepository @Inject constructor(
         return defaultPet
     }
     
-    suspend fun updatePetWithWellness(
+    // TODO: Implement after moving DashboardState and DigitalPetManager
+    /*suspend fun updatePetWithWellness(
         dashboardState: DashboardState,
         targetScreenTimeHours: Float = 4f,
         wellnessScore: dev.sadakat.screentimetracker.domain.model.WellnessScore? = null
@@ -76,15 +77,16 @@ class DigitalPetRepository @Inject constructor(
         
         // Save updated pet to database
         digitalPetDao.insertOrUpdatePet(updatedPet)
-        
+
         return updatedPet
-    }
-    
-    suspend fun getPetStats(pet: DigitalPet? = null): PetStats {
+    }*/
+
+    // TODO: Implement after moving DigitalPetManager
+    /*suspend fun getPetStats(pet: DigitalPet? = null): PetStats {
         val currentPet = pet ?: getPetSync() ?: createDefaultPet()
         return DigitalPetManager.getPetStats(currentPet)
     }
-    
+
     fun getPetStatsFlow(): Flow<PetStats> {
         return getPet().map { pet ->
             if (pet != null) {
@@ -94,7 +96,7 @@ class DigitalPetRepository @Inject constructor(
                 DigitalPetManager.getPetStats(defaultPet)
             }
         }
-    }
+    }*/
     
     suspend fun updatePetName(newName: String) {
         digitalPetDao.updatePetName(newName, System.currentTimeMillis())
@@ -136,15 +138,16 @@ class DigitalPetRepository @Inject constructor(
         return createDefaultPet()
     }
     
-    suspend fun calculateWellnessFactors(dashboardState: DashboardState): WellnessFactors {
+    // TODO: Implement after moving DashboardState and DigitalPetManager
+    /*suspend fun calculateWellnessFactors(dashboardState: DashboardState): WellnessFactors {
         return DigitalPetManager.calculateWellnessFactors(dashboardState)
     }
-    
+
     suspend fun getMotivationalMessage(): String {
         val pet = getPetSync() ?: return "Welcome to your digital wellness journey!"
         val stats = getPetStats(pet)
         return DigitalPetManager.getMotivationalMessage(stats, pet.petType)
-    }
+    }*/
     
     private fun calculateDaysSinceLastUpdate(lastWellnessCheck: Long): Int {
         val currentTime = System.currentTimeMillis()

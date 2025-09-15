@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import dev.sadakat.screentimetracker.core.database.entities.*
+import dev.sadakat.screentimetracker.core.database.query.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.database.query.AppLastOpenedData
 import kotlinx.coroutines.flow.Flow
 
 @Dao

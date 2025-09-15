@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.screentimetracker.android.library)
+    alias(libs.plugins.screentimetracker.android.hilt)
     id("com.google.devtools.ksp")
 }
 

@@ -1,12 +1,12 @@
 package dev.sadakat.screentimetracker.domain.tracking.repository
 
-import dev.sadakat.screentimetracker.core.database.AppDatabase
-import dev.sadakat.screentimetracker.core.database.entities.AppOpenData
+import dev.sadakat.screentimetracker.core.database.ScreenTimeDatabase
+import dev.sadakat.screentimetracker.core.database.query.AppOpenData
 import dev.sadakat.screentimetracker.core.database.dao.AppSessionDao
-import dev.sadakat.screentimetracker.core.database.entities.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.database.query.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.core.database.entities.AppSessionEvent
 import dev.sadakat.screentimetracker.core.database.dao.AppUsageDao
-import dev.sadakat.screentimetracker.core.database.entities.AppUsageEvent
+import dev.sadakat.screentimetracker.core.database.model.AppUsageEntity
 import dev.sadakat.screentimetracker.core.database.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.core.database.dao.DailyAppSummaryDao
 import dev.sadakat.screentimetracker.core.database.entities.DailyScreenUnlockSummary
@@ -38,7 +38,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TrackerRepositoryImpl @Inject constructor(
-    val db: AppDatabase
+    val db: ScreenTimeDatabase
 ) : TrackerRepository {
 
     private val screenUnlockDao: ScreenUnlockDao = db.screenUnlockDao()
@@ -74,13 +74,13 @@ class TrackerRepositoryImpl @Inject constructor(
     }
 
     // App Usage Event Methods
-    override suspend fun insertAppUsageEvent(event: AppUsageEvent) {
-        appUsageDao.insertAppUsageEvent(event)
+    override suspend fun insertAppUsageEntity(event: AppUsageEntity) {
+        appUsageDao.insertAppUsageEntity(event)
     }
     override fun getAppOpenCountsSince(sinceTimestamp: Long): Flow<List<AppOpenData>> {
         return appUsageDao.getAppOpenCountsSince(sinceTimestamp)
     }
-    override fun getUsageEventsForApp(packageName: String): Flow<List<AppUsageEvent>> {
+    override fun getUsageEventsForApp(packageName: String): Flow<List<AppUsageEntity>> {
         return appUsageDao.getUsageEventsForApp(packageName)
     }
 

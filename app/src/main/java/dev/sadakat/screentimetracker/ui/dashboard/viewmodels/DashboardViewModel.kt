@@ -29,9 +29,9 @@ import dev.sadakat.screentimetracker.domain.model.Achievement
 import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
 import dev.sadakat.screentimetracker.ui.dashboard.state.AppUsageUIModel
-import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
-import dev.sadakat.screentimetracker.data.local.DigitalPet
-import dev.sadakat.screentimetracker.data.local.PetStats
+import dev.sadakat.screentimetracker.domain.habits.repository.DigitalPetRepository
+import dev.sadakat.screentimetracker.core.database.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.database.entities.PetStats
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

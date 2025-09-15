@@ -1,6 +1,11 @@
 package dev.sadakat.screentimetracker.core.database
 
-import dev.sadakat.screentimetracker.domain.model.LimitedApp as DomainLimitedApp
+import dev.sadakat.screentimetracker.core.common.model.LimitedApp as DomainLimitedApp
+import dev.sadakat.screentimetracker.core.common.model.Achievement as DomainAchievement
+import dev.sadakat.screentimetracker.core.common.model.AchievementCategory
+import dev.sadakat.screentimetracker.core.common.model.WellnessScore as DomainWellnessScore
+import dev.sadakat.screentimetracker.core.common.model.WellnessLevel
+import dev.sadakat.screentimetracker.core.database.entities.*
 
 fun LimitedApp.toDomain() = DomainLimitedApp(
     packageName = packageName,
@@ -13,13 +18,13 @@ fun DomainLimitedApp.toEntity() = LimitedApp(
 )
 
 // Achievement Mappers
-fun Achievement.toDomainModel(): dev.sadakat.screentimetracker.domain.model.Achievement {
-    return dev.sadakat.screentimetracker.domain.model.Achievement(
+fun Achievement.toDomainModel(): DomainAchievement {
+    return DomainAchievement(
         achievementId = achievementId,
         name = name,
         description = description,
         emoji = emoji,
-        category = dev.sadakat.screentimetracker.domain.model.AchievementCategory.valueOf(category.uppercase()),
+        category = AchievementCategory.valueOf(category.uppercase()),
         targetValue = targetValue,
         isUnlocked = isUnlocked,
         unlockedDate = unlockedDate,
@@ -27,7 +32,7 @@ fun Achievement.toDomainModel(): dev.sadakat.screentimetracker.domain.model.Achi
     )
 }
 
-fun dev.sadakat.screentimetracker.domain.model.Achievement.toDataModel(): Achievement {
+fun DomainAchievement.toDataModel(): Achievement {
     return Achievement(
         achievementId = achievementId,
         name = name,
@@ -42,20 +47,20 @@ fun dev.sadakat.screentimetracker.domain.model.Achievement.toDataModel(): Achiev
 }
 
 // Wellness Score Mappers
-fun WellnessScore.toDomainModel(): dev.sadakat.screentimetracker.domain.model.WellnessScore {
-    return dev.sadakat.screentimetracker.domain.model.WellnessScore(
+fun WellnessScore.toDomainModel(): DomainWellnessScore {
+    return DomainWellnessScore(
         date = date,
         totalScore = totalScore,
         timeLimitScore = timeLimitScore,
         focusSessionScore = focusSessionScore,
         breaksScore = breaksScore,
         sleepHygieneScore = sleepHygieneScore,
-        level = dev.sadakat.screentimetracker.domain.model.WellnessLevel.valueOf(level.uppercase()),
+        level = WellnessLevel.valueOf(level.uppercase()),
         calculatedAt = calculatedAt
     )
 }
 
-fun dev.sadakat.screentimetracker.domain.model.WellnessScore.toDataModel(): WellnessScore {
+fun DomainWellnessScore.toDataModel(): WellnessScore {
     return WellnessScore(
         date = date,
         totalScore = totalScore,

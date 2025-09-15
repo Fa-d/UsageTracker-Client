@@ -2,33 +2,13 @@ package dev.sadakat.screentimetracker.di
 
 import android.app.Application
 import androidx.room.Room
-import dev.sadakat.screentimetracker.data.local.AppDatabase
-import dev.sadakat.screentimetracker.data.local.AppSessionDao
-import dev.sadakat.screentimetracker.data.local.AppUsageDao
-import dev.sadakat.screentimetracker.data.local.DailyAppSummaryDao
-import dev.sadakat.screentimetracker.data.local.DailyScreenUnlockSummaryDao
-import dev.sadakat.screentimetracker.data.local.LimitedAppDao // Import LimitedAppDao
-import dev.sadakat.screentimetracker.data.local.ScreenUnlockDao
-import dev.sadakat.screentimetracker.data.local.AchievementDao
-import dev.sadakat.screentimetracker.data.local.WellnessScoreDao
-import dev.sadakat.screentimetracker.data.local.UserGoalDao
-import dev.sadakat.screentimetracker.data.local.ChallengeDao
-import dev.sadakat.screentimetracker.data.local.FocusSessionDao
-import dev.sadakat.screentimetracker.data.local.HabitTrackerDao
-import dev.sadakat.screentimetracker.data.local.TimeRestrictionDao
-import dev.sadakat.screentimetracker.data.local.ProgressiveLimitDao
-import dev.sadakat.screentimetracker.data.local.ProgressiveMilestoneDao
-import dev.sadakat.screentimetracker.data.local.UserPreferencesDao
-import dev.sadakat.screentimetracker.data.local.MindfulnessSessionDao
-import dev.sadakat.screentimetracker.data.local.PrivacySettingsDao
-import dev.sadakat.screentimetracker.data.local.ReplacementActivityDao
-import dev.sadakat.screentimetracker.data.local.AppCategoryDao
-import dev.sadakat.screentimetracker.data.local.DigitalPetDao
-import dev.sadakat.screentimetracker.data.repository.TrackerRepositoryImpl
-import dev.sadakat.screentimetracker.data.repository.AppCategoryRepositoryImpl
-import dev.sadakat.screentimetracker.data.repository.UserPreferencesRepository
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.domain.repository.AppCategoryRepository
+import dev.sadakat.screentimetracker.core.database.ScreenTimeDatabase
+import dev.sadakat.screentimetracker.core.database.dao.*
+import dev.sadakat.screentimetracker.core.database.repository.UserPreferencesRepository
+import dev.sadakat.screentimetracker.domain.tracking.repository.TrackerRepositoryImpl
+import dev.sadakat.screentimetracker.domain.tracking.repository.AppCategoryRepositoryImpl
+import dev.sadakat.screentimetracker.domain.tracking.repository.TrackerRepository
+import dev.sadakat.screentimetracker.domain.tracking.repository.AppCategoryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,147 +21,146 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(app: Application): AppDatabase {
+    fun provideScreenTimeDatabase(app: Application): ScreenTimeDatabase {
         return Room.databaseBuilder(
             app,
-            AppDatabase::class.java,
-            AppDatabase.DATABASE_NAME
+            ScreenTimeDatabase::class.java,
+            "screen_time_database"
         )
-            .addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14, AppDatabase.MIGRATION_14_15) // Add the proper migrations
-          //  .fallbackToDestructiveMigrationOnDowngrade() // Only for downgrades
+            .fallbackToDestructiveMigration() // For now, use destructive migration
         .build()
     }
 
     @Provides
     @Singleton
-    fun provideScreenUnlockDao(db: AppDatabase): ScreenUnlockDao {
+    fun provideScreenUnlockDao(db: ScreenTimeDatabase): ScreenUnlockDao {
         return db.screenUnlockDao()
     }
 
     @Provides
     @Singleton
-    fun provideAppUsageDao(db: AppDatabase): AppUsageDao {
+    fun provideAppUsageDao(db: ScreenTimeDatabase): AppUsageDao {
         return db.appUsageDao()
     }
 
     @Provides
     @Singleton
-    fun provideAppSessionDao(db: AppDatabase): AppSessionDao { // Provide AppSessionDao
+    fun provideAppSessionDao(db: ScreenTimeDatabase): AppSessionDao { // Provide AppSessionDao
         return db.appSessionDao()
     }
 
     @Provides
     @Singleton
-    fun provideTrackerRepository(db: AppDatabase): TrackerRepository {
-         // TrackerRepositoryImpl now gets AppDatabase and internally accesses db.appSessionDao()
+    fun provideTrackerRepository(db: ScreenTimeDatabase): TrackerRepository {
+         // TrackerRepositoryImpl now gets ScreenTimeDatabase and internally accesses db.appSessionDao()
         return TrackerRepositoryImpl(db)
     }
 
     @Provides
     @Singleton
-    fun provideDailyAppSummaryDao(db: AppDatabase): DailyAppSummaryDao {
+    fun provideDailyAppSummaryDao(db: ScreenTimeDatabase): DailyAppSummaryDao {
         return db.dailyAppSummaryDao()
     }
 
     @Provides
     @Singleton
-    fun provideDailyScreenUnlockSummaryDao(db: AppDatabase): DailyScreenUnlockSummaryDao {
+    fun provideDailyScreenUnlockSummaryDao(db: ScreenTimeDatabase): DailyScreenUnlockSummaryDao {
         return db.dailyScreenUnlockSummaryDao()
     }
 
     @Provides
     @Singleton
-    fun provideLimitedAppDao(db: AppDatabase): LimitedAppDao { // Provide LimitedAppDao
+    fun provideLimitedAppDao(db: ScreenTimeDatabase): LimitedAppDao { // Provide LimitedAppDao
         return db.limitedAppDao()
     }
 
     @Provides
     @Singleton
-    fun provideAchievementDao(db: AppDatabase): AchievementDao {
+    fun provideAchievementDao(db: ScreenTimeDatabase): AchievementDao {
         return db.achievementDao()
     }
 
     @Provides
     @Singleton
-    fun provideWellnessScoreDao(db: AppDatabase): WellnessScoreDao {
+    fun provideWellnessScoreDao(db: ScreenTimeDatabase): WellnessScoreDao {
         return db.wellnessScoreDao()
     }
 
     @Provides
     @Singleton
-    fun provideUserGoalDao(db: AppDatabase): UserGoalDao {
+    fun provideUserGoalDao(db: ScreenTimeDatabase): UserGoalDao {
         return db.userGoalDao()
     }
 
     @Provides
     @Singleton
-    fun provideChallengeDao(db: AppDatabase): ChallengeDao {
+    fun provideChallengeDao(db: ScreenTimeDatabase): ChallengeDao {
         return db.challengeDao()
     }
 
     @Provides
     @Singleton
-    fun provideFocusSessionDao(db: AppDatabase): FocusSessionDao {
+    fun provideFocusSessionDao(db: ScreenTimeDatabase): FocusSessionDao {
         return db.focusSessionDao()
     }
 
     @Provides
     @Singleton
-    fun provideHabitTrackerDao(db: AppDatabase): HabitTrackerDao {
+    fun provideHabitTrackerDao(db: ScreenTimeDatabase): HabitTrackerDao {
         return db.habitTrackerDao()
     }
 
     @Provides
     @Singleton
-    fun provideTimeRestrictionDao(db: AppDatabase): TimeRestrictionDao {
+    fun provideTimeRestrictionDao(db: ScreenTimeDatabase): TimeRestrictionDao {
         return db.timeRestrictionDao()
     }
 
     @Provides
     @Singleton
-    fun provideProgressiveLimitDao(db: AppDatabase): ProgressiveLimitDao {
+    fun provideProgressiveLimitDao(db: ScreenTimeDatabase): ProgressiveLimitDao {
         return db.progressiveLimitDao()
     }
 
     @Provides
     @Singleton
-    fun provideProgressiveMilestoneDao(db: AppDatabase): ProgressiveMilestoneDao {
+    fun provideProgressiveMilestoneDao(db: ScreenTimeDatabase): ProgressiveMilestoneDao {
         return db.progressiveMilestoneDao()
     }
 
     @Provides
     @Singleton
-    fun provideUserPreferencesDao(db: AppDatabase): UserPreferencesDao {
+    fun provideUserPreferencesDao(db: ScreenTimeDatabase): UserPreferencesDao {
         return db.userPreferencesDao()
     }
 
     @Provides
     @Singleton
-    fun provideMindfulnessSessionDao(db: AppDatabase): MindfulnessSessionDao {
+    fun provideMindfulnessSessionDao(db: ScreenTimeDatabase): MindfulnessSessionDao {
         return db.mindfulnessSessionDao()
     }
 
     @Provides
     @Singleton
-    fun providePrivacySettingsDao(db: AppDatabase): PrivacySettingsDao {
+    fun providePrivacySettingsDao(db: ScreenTimeDatabase): PrivacySettingsDao {
         return db.privacySettingsDao()
     }
 
     @Provides
     @Singleton
-    fun provideReplacementActivityDao(db: AppDatabase): ReplacementActivityDao {
+    fun provideReplacementActivityDao(db: ScreenTimeDatabase): ReplacementActivityDao {
         return db.replacementActivityDao()
     }
     
     @Provides
     @Singleton
-    fun provideAppCategoryDao(db: AppDatabase): AppCategoryDao {
+    fun provideAppCategoryDao(db: ScreenTimeDatabase): AppCategoryDao {
         return db.appCategoryDao()
     }
     
     @Provides
     @Singleton
-    fun provideDigitalPetDao(db: AppDatabase): DigitalPetDao {
+    fun provideDigitalPetDao(db: ScreenTimeDatabase): DigitalPetDao {
         return db.digitalPetDao()
     }
     
