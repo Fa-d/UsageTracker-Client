@@ -23,7 +23,15 @@ include ':domain:goals'
 include ':domain:habits'
 include ':domain:wellness'
 include ':domain:limits'
+include ':domain:analytics'
 include ':feature:dashboard'
+include ':feature:goals'
+include ':feature:habits'
+include ':feature:focus'
+include ':feature:analytics'
+include ':feature:limits'
+include ':feature:wellness'
+include ':feature:settings'
 
 // Conditionally include AI insights module if submodule exists
 if (file('ai_insights').exists() && file('ai_insights/.git').exists()) {
