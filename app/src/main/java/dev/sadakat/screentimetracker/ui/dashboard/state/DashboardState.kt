@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.ui.dashboard.state
 
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary // Import if using directly
-import dev.sadakat.screentimetracker.data.local.DailyScreenUnlockSummary // Import if using directly
+import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary // Import if using directly
+import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary // Import if using directly
 
 // Data class to represent an app's usage info for the UI for the CURRENT DAY
 data class AppUsageUIModel(

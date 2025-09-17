@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.data.local.Challenge
+import dev.sadakat.screentimetracker.data.local.entities.Challenge
 import dev.sadakat.screentimetracker.domain.usecases.ChallengeManagerUseCase
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -30,8 +30,9 @@ import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
 import dev.sadakat.screentimetracker.ui.dashboard.state.AppUsageUIModel
 import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
-import dev.sadakat.screentimetracker.data.local.DigitalPet
-import dev.sadakat.screentimetracker.data.local.PetStats
+import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.data.local.entities.PetStats
+import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,8 +60,8 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DashboardState(isLoading = true))
     val uiState: StateFlow<DashboardState> = _uiState.asStateFlow()
 
-    private val _timelineEvents = MutableStateFlow<List<dev.sadakat.screentimetracker.data.local.AppSessionEvent>>(emptyList())
-    val timelineEvents: StateFlow<List<dev.sadakat.screentimetracker.data.local.AppSessionEvent>> = _timelineEvents.asStateFlow()
+    private val _timelineEvents = MutableStateFlow<List<AppSessionEvent>>(emptyList())
+    val timelineEvents: StateFlow<List<AppSessionEvent>> = _timelineEvents.asStateFlow()
 
     private val _achievements = MutableStateFlow<List<Achievement>>(emptyList())
     val achievements: StateFlow<List<Achievement>> = _achievements.asStateFlow()

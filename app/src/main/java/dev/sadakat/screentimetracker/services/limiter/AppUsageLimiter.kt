@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import dev.sadakat.screentimetracker.data.local.toDomain
+import dev.sadakat.screentimetracker.data.local.mappers.toDomain
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 

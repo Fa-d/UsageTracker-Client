@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary
-import dev.sadakat.screentimetracker.data.local.DailyScreenUnlockSummary
+import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

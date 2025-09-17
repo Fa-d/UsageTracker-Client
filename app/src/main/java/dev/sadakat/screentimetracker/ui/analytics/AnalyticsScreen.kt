@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
+import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
 import dev.sadakat.screentimetracker.ui.dashboard.state.CategoryData
 import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
@@ -175,7 +176,7 @@ fun AnalyticsScreen(
 }
 
 @Composable
-fun WeeklyTrendChart(historicalAppSummaries: List<dev.sadakat.screentimetracker.data.local.DailyAppSummary>) {
+fun WeeklyTrendChart(historicalAppSummaries: List<DailyAppSummary>) {
     val dailyData = historicalAppSummaries
         .groupBy { it.dateMillis }
         .mapValues { entry -> entry.value.sumOf { it.totalDurationMillis } }

@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.ui.habits
 
-import dev.sadakat.screentimetracker.data.local.HabitTracker
+import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.domain.usecases.HabitTrackerUseCase
 import dev.sadakat.screentimetracker.ui.habits.viewmodels.HabitTrackerViewModel
 import dev.sadakat.screentimetracker.ui.habits.viewmodels.HabitUiState

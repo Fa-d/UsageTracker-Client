@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.ui.focus.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.FocusSession
+import dev.sadakat.screentimetracker.data.local.entities.FocusSession
 import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetAllLimitedAppsUseCase
 import dev.sadakat.screentimetracker.domain.usecases.UserPreferencesUseCase

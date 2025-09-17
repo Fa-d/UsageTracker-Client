@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.sadakat.screentimetracker.data.local.ReplacementActivity
+import dev.sadakat.screentimetracker.data.local.entities.ReplacementActivity
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.ui.replacementactivities.viewmodels.ReplacementActivitiesViewModel
 

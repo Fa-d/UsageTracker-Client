@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.ui.ai.AIDownloadState
-import dev.sadakat.screentimetracker.data.local.UserPreferences
+import dev.sadakat.screentimetracker.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.data.repository.UserPreferencesRepository
 import dev.sadakat.screentimetracker.utils.AIDownloadManager
 import dev.sadakat.screentimetracker.utils.AIDownloadProgress

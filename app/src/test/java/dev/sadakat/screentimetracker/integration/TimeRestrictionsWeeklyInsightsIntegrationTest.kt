@@ -1,8 +1,8 @@
 package dev.sadakat.screentimetracker
 
-import dev.sadakat.screentimetracker.data.local.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase

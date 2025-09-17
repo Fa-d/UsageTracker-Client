@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.LimitedApp
+import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

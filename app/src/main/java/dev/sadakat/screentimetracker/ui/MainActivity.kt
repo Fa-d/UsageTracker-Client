@@ -16,7 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.sadakat.screentimetracker.data.local.ThemeMode
+import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.data.local.entities.ColorScheme
 import dev.sadakat.screentimetracker.domain.permissions.PermissionManager
 import dev.sadakat.screentimetracker.domain.service.ServiceManager
 import dev.sadakat.screentimetracker.ui.permissions.PermissionScreen
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
             
             ScreenTimeTrackerTheme(
                 themeMode = ThemeMode.valueOf(personalizationState.preferences.themeMode),
-                colorScheme = dev.sadakat.screentimetracker.data.local.ColorScheme.valueOf(personalizationState.preferences.colorScheme)
+                colorScheme = ColorScheme.valueOf(personalizationState.preferences.colorScheme)
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

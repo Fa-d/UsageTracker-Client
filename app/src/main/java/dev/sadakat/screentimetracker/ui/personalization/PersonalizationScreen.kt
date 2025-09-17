@@ -25,10 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.sadakat.screentimetracker.data.local.ThemeMode
-import dev.sadakat.screentimetracker.data.local.UserPreferences
+import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
-import dev.sadakat.screentimetracker.data.local.ColorScheme as AppColorScheme
+import dev.sadakat.screentimetracker.data.local.entities.ColorScheme as AppColorScheme
 
 @Composable
 fun PersonalizationScreen(
