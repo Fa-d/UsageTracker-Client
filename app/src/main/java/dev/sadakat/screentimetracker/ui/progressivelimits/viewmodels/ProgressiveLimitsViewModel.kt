@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.ui.progressivelimits.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.ProgressiveLimit
+import dev.sadakat.screentimetracker.data.local.entities.ProgressiveLimit
 import dev.sadakat.screentimetracker.domain.usecases.ProgressiveLimitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

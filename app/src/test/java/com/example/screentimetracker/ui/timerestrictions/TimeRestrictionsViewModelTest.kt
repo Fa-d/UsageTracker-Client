@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.ui.timerestrictions
 
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsUiEvent
 import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel

@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.ui.mindfulness.viewmodels.MindfulnessViewModel
 import dev.sadakat.screentimetracker.ui.mindfulness.viewmodels.MindfulnessUiState
+import dev.sadakat.screentimetracker.data.local.entities.MindfulnessSession
 import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.sin
@@ -426,7 +427,7 @@ private fun BreathingSessionControls(
 
 @Composable
 private fun SessionCompletionDialog(
-    sessionData: dev.sadakat.screentimetracker.data.local.MindfulnessSession,
+    sessionData: MindfulnessSession,
     onDismiss: () -> Unit,
     onRatingSubmitted: (Int, String) -> Unit
 ) {

@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.ui.habits.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.HabitTracker
+import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.domain.usecases.HabitTrackerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

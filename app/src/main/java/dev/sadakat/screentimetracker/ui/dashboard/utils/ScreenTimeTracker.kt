@@ -42,6 +42,7 @@ import dev.sadakat.screentimetracker.ui.smartgoals.screens.SmartGoalsScreen
 import dev.sadakat.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen
 import dev.sadakat.screentimetracker.ui.wellness.WellnessScreen
 import dev.sadakat.screentimetracker.ui.ai.AISettingsScreen
+import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 
@@ -118,7 +119,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("settings_route") {
                             SimpleSettingsView(
-                                currentThemeMode = dev.sadakat.screentimetracker.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
+                                currentThemeMode = ThemeMode.valueOf(personalizationState.preferences.themeMode),
                                 onThemeModeChange = personalizationViewModel::updateThemeMode,
                                 preferences = personalizationState.preferences,
                                 onColorSchemeChanged = personalizationViewModel::updateColorScheme,

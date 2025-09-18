@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import dev.sadakat.screentimetracker.data.local.toDomain
+import dev.sadakat.screentimetracker.data.local.mappers.toDomain
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 
@@ -110,7 +110,7 @@ class AppUsageLimiter @Inject constructor(
                 val continuousDuration = currentTime - startTime
 
                 // Check if we need to show warning
-                if (continuousDuration >= limitedApp.timeLimitMillis && 
+                if (continuousDuration >= limitedApp.timeLimitMillis &&
                     warningShownForCurrentSessionApp != limitedApp.packageName) {
                     appNotificationManager.showWarningNotification(limitedApp, continuousDuration)
                     warningShownForCurrentSessionApp = limitedApp.packageName
@@ -118,7 +118,7 @@ class AppUsageLimiter @Inject constructor(
                 }
 
                 // Check if we need to take action
-                if (continuousDuration >= (limitedApp.timeLimitMillis * 3) && 
+                if (continuousDuration >= (limitedApp.timeLimitMillis * 3) &&
                     threeXActionTakenForCurrentSessionApp != limitedApp.packageName) {
                     appToastManager.bringAppToForeground(limitedApp.packageName)
                     appToastManager.showDissuasionToast(getAppName(limitedApp.packageName))
@@ -136,13 +136,13 @@ class AppUsageLimiter @Inject constructor(
     fun getRemainingTime(packageName: String): Long? {
         val limitedApp = currentLimitedAppDetails ?: return null
         val startTime = continuousUsageStartTimeForLimiterMillis ?: return null
-        
+
         if (limitedApp.packageName != packageName) return null
-        
+
         val currentTime = System.currentTimeMillis()
         val usedTime = currentTime - startTime
         val remainingTime = limitedApp.timeLimitMillis - usedTime
-        
+
         return if (remainingTime > 0) remainingTime else 0
     }
 

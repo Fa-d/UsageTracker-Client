@@ -6,9 +6,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
-import dev.sadakat.screentimetracker.data.local.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.domain.model.WellnessLevel
 import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository

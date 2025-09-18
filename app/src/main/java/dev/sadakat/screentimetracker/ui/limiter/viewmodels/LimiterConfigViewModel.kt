@@ -5,7 +5,7 @@ import androidx.compose.runtime.State // Explicit import for State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.LimitedApp
+import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

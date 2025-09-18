@@ -35,12 +35,14 @@ import dev.sadakat.screentimetracker.ui.theme.*
 import dev.sadakat.screentimetracker.utils.millisToReadableTime
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsightsCard
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsight
+import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.data.local.entities.PetStats
 
 @Composable
 fun SimpleDashboardView(
     state: DashboardState,
-    digitalPet: dev.sadakat.screentimetracker.data.local.DigitalPet?,
-    petStats: dev.sadakat.screentimetracker.data.local.PetStats?,
+    digitalPet: DigitalPet?,
+    petStats: PetStats?,
     aiInsights: List<AIInsight> = emptyList(),
     isLoadingInsights: Boolean = false,
     onNavigateToAnalytics: () -> Unit,
@@ -318,3 +320,4 @@ fun SimpleDashboardView(
         Spacer(modifier = Modifier.height(16.dp))*/
     }
 }
+

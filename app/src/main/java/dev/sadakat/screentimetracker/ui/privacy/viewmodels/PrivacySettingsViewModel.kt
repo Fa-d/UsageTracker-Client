@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.ui.privacy.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.PrivacySettings
+import dev.sadakat.screentimetracker.data.local.entities.PrivacySettings
 import dev.sadakat.screentimetracker.domain.usecases.DataExportUseCase
 import dev.sadakat.screentimetracker.domain.usecases.PrivacyManagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

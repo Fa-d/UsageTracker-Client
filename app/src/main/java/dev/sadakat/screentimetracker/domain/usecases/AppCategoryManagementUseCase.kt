@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.AppCategories
-import dev.sadakat.screentimetracker.data.local.AppCategory
+import dev.sadakat.screentimetracker.data.local.entities.AppCategories
+import dev.sadakat.screentimetracker.data.local.entities.AppCategory
 import dev.sadakat.screentimetracker.domain.categorization.AppCategorizer
 import dev.sadakat.screentimetracker.domain.repository.AppCategoryRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import dev.sadakat.screentimetracker.data.local.UserPreferences
+import dev.sadakat.screentimetracker.data.local.entities.UserPreferences
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

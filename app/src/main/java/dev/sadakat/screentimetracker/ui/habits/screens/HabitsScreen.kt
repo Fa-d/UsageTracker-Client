@@ -62,7 +62,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.sadakat.screentimetracker.data.local.HabitTracker
+import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.ui.habits.components.HabitCreationDialog
 import dev.sadakat.screentimetracker.ui.habits.viewmodels.CompletionCelebration
 import dev.sadakat.screentimetracker.ui.habits.viewmodels.HabitTrackerViewModel
