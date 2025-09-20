@@ -4,7 +4,7 @@ import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.first
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -31,16 +31,16 @@ class UpdateAchievementProgressUseCase @Inject constructor(
             val achievements = repository.getAllAchievements().first()
             
             achievements.forEach { achievement ->
-                when (achievement.achievementId) {
-                    DAILY_STREAK_3 -> updateDailyStreakProgress(achievement.achievementId)
-                    MINDFUL_MOMENTS_5 -> updateMindfulMomentsProgress(achievement.achievementId)
-                    FOCUS_CHAMPION_3 -> updateFocusChampionProgress(achievement.achievementId)
-                    APP_CLEANER_5 -> updateAppCleanerProgress(achievement.achievementId)
-                    WEEKEND_WARRIOR_2 -> updateWeekendWarriorProgress(achievement.achievementId)
-                    EARLY_BIRD_7 -> updateEarlyBirdProgress(achievement.achievementId)
-                    DIGITAL_SUNSET_5 -> updateDigitalSunsetProgress(achievement.achievementId)
+                when (achievement.id) {
+                    DAILY_STREAK_3 -> updateDailyStreakProgress(achievement.id)
+                    MINDFUL_MOMENTS_5 -> updateMindfulMomentsProgress(achievement.id)
+                    FOCUS_CHAMPION_3 -> updateFocusChampionProgress(achievement.id)
+                    APP_CLEANER_5 -> updateAppCleanerProgress(achievement.id)
+                    WEEKEND_WARRIOR_2 -> updateWeekendWarriorProgress(achievement.id)
+                    EARLY_BIRD_7 -> updateEarlyBirdProgress(achievement.id)
+                    DIGITAL_SUNSET_5 -> updateDigitalSunsetProgress(achievement.id)
                     else -> {
-                        appLogger.w(TAG, "Unknown achievement ID: ${achievement.achievementId}")
+                        appLogger.w(TAG, "Unknown achievement ID: ${achievement.id}")
                     }
                 }
             }

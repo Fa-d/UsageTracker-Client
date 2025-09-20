@@ -2,16 +2,15 @@ package dev.sadakat.screentimetracker.services.limiter
 
 import android.content.Context
 import android.content.pm.PackageManager
-import dev.sadakat.screentimetracker.domain.model.LimitedApp
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
+import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import dev.sadakat.screentimetracker.data.local.mappers.toDomain
-import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
-import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 
 @Singleton
 class AppUsageLimiter @Inject constructor(
@@ -37,7 +36,7 @@ class AppUsageLimiter @Inject constructor(
 
     suspend fun loadLimitedAppSettings() {
         try {
-            limitedAppSettings = repository.getAllLimitedAppsOnce().map { it.toDomain() }
+            limitedAppSettings = repository.getAllLimitedAppsOnce()
             appLogger.d(TAG, "Loaded limited app settings: ${limitedAppSettings.size} apps.")
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to load limited app settings", e)

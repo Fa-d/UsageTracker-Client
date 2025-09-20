@@ -1,54 +1,50 @@
 package dev.sadakat.screentimetracker.ui.dashboard.viewmodels
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import java.io.File
-import java.io.FileWriter
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.domain.usecases.GetDashboardDataUseCase
-import dev.sadakat.screentimetracker.domain.usecases.GetHistoricalDataUseCase
-import dev.sadakat.screentimetracker.domain.usecases.HistoricalData
-import dev.sadakat.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.GetAchievementsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
-import dev.sadakat.screentimetracker.domain.usecases.InitializeAchievementsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.ChallengeManagerUseCase
-import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
-import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
-import dev.sadakat.screentimetracker.domain.model.Achievement
-import dev.sadakat.screentimetracker.domain.model.WellnessScore
-import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
-import dev.sadakat.screentimetracker.ui.dashboard.state.AppUsageUIModel
-import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.sadakat.screentimetracker.core.domain.model.Achievement
+import dev.sadakat.screentimetracker.core.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
 import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
 import dev.sadakat.screentimetracker.data.local.entities.PetStats
-import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
+import dev.sadakat.screentimetracker.domain.usecases.ChallengeManagerUseCase
+import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
+import dev.sadakat.screentimetracker.domain.usecases.GetAchievementsUseCase
+import dev.sadakat.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
+import dev.sadakat.screentimetracker.domain.usecases.GetHistoricalDataUseCase
+import dev.sadakat.screentimetracker.domain.usecases.InitializeAchievementsUseCase
+import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
+import dev.sadakat.screentimetracker.ui.dashboard.state.AppUsageUIModel
+import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val getDashboardDataUseCase: GetDashboardDataUseCase,
+    private val getDashboardDataUseCase: dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase,
     private val getHistoricalDataUseCase: GetHistoricalDataUseCase,
     private val getAppSessionEventsUseCase: GetAppSessionEventsUseCase,
     private val getAchievementsUseCase: GetAchievementsUseCase,
-    private val calculateWellnessScoreUseCase: CalculateWellnessScoreUseCase,
+    private val calculateWellnessScoreUseCase: dev.sadakat.screentimetracker.core.domain.usecase.CalculateWellnessScoreUseCase,
     private val initializeAchievementsUseCase: InitializeAchievementsUseCase,
     val challengeManagerUseCase: ChallengeManagerUseCase,
     val focusSessionManagerUseCase: FocusSessionManagerUseCase,
@@ -97,31 +93,23 @@ class DashboardViewModel @Inject constructor(
         // Load dashboard data, achievements, wellness score, and digital pet
         viewModelScope.launch {
             combine(
-                getDashboardDataUseCase(),
-                getHistoricalDataUseCase(),
+                getDashboardDataUseCase.observeDashboardData(),
                 getAchievementsUseCase(),
                 digitalPetRepository.getPet()
-            ) { todayData, historicalData, achievements, digitalPet ->
-                val appUsageUIModels = todayData.appDetailsToday.map { detail ->
+            ) { todayData, achievements, digitalPet ->
+                val appUsageUIModels = todayData.topAppsToday.map { appSession ->
                     AppUsageUIModel(
-                        packageName = detail.packageName,
-                        appName = getAppName(detail.packageName),
-                        openCount = detail.sessionCount,
-                        lastOpenedTimestamp = detail.lastOpenedTimestamp,
-                        totalDurationMillisToday = detail.totalDurationMillis
+                        packageName = appSession.packageName,
+                        appName = getAppName(appSession.packageName),
+                        openCount = 1, // Sessions don't directly track open count
+                        lastOpenedTimestamp = appSession.timeRange.endMillis,
+                        totalDurationMillisToday = appSession.durationMillis
                     )
                 }
 
-                val avgScreenTime = if (historicalData.appSummaries.isNotEmpty()) {
-                    historicalData.appSummaries
-                        .groupBy { it.dateMillis } // Group by day
-                        .mapValues { entry -> entry.value.sumOf { it.totalDurationMillis } } // Sum durations for each day
-                        .values.average().toLong() // Average of daily sums
-                } else 0L
-
-                val avgUnlocks = if (historicalData.unlockSummaries.isNotEmpty()) {
-                    historicalData.unlockSummaries.map { it.unlockCount }.average().toInt()
-                } else 0
+                // TODO: Implement historical data retrieval through new clean architecture
+                val avgScreenTime = 0L // Placeholder - will be implemented with historical data service
+                val avgUnlocks = 0 // Placeholder - will be implemented with historical data service
 
                 // Update achievements state
                 _achievements.value = achievements
@@ -145,11 +133,11 @@ class DashboardViewModel @Inject constructor(
                         if (digitalPetRepository.shouldUpdatePetWellness()) {
                             val currentState = _uiState.value.copy(
                                 isLoading = false,
-                                totalScreenUnlocksToday = todayData.totalScreenUnlocksToday,
+                                totalScreenUnlocksToday = todayData.totalUnlocksToday,
                                 appUsagesToday = appUsageUIModels,
-                                totalScreenTimeTodayMillis = todayData.totalScreenTimeFromSessionsToday,
-                                historicalAppSummaries = historicalData.appSummaries,
-                                historicalUnlockSummaries = historicalData.unlockSummaries,
+                                totalScreenTimeTodayMillis = todayData.totalScreenTimeToday,
+                                historicalAppSummaries = emptyList(), // TODO: Implement historical data
+                                historicalUnlockSummaries = emptyList(), // TODO: Implement historical data
                                 averageDailyScreenTimeMillisLastWeek = avgScreenTime,
                                 averageDailyUnlocksLastWeek = avgUnlocks,
                                 error = null
@@ -171,11 +159,11 @@ class DashboardViewModel @Inject constructor(
 
                 _uiState.value.copy(
                     isLoading = false,
-                    totalScreenUnlocksToday = todayData.totalScreenUnlocksToday,
+                    totalScreenUnlocksToday = todayData.totalUnlocksToday,
                     appUsagesToday = appUsageUIModels,
-                    totalScreenTimeTodayMillis = todayData.totalScreenTimeFromSessionsToday,
-                    historicalAppSummaries = historicalData.appSummaries,
-                    historicalUnlockSummaries = historicalData.unlockSummaries,
+                    totalScreenTimeTodayMillis = todayData.totalScreenTimeToday,
+                    historicalAppSummaries = emptyList(), // TODO: Implement historical data
+                    historicalUnlockSummaries = emptyList(), // TODO: Implement historical data
                     averageDailyScreenTimeMillisLastWeek = avgScreenTime,
                     averageDailyUnlocksLastWeek = avgUnlocks,
                     error = null

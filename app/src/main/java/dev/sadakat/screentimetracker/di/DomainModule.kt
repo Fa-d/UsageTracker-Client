@@ -4,7 +4,7 @@ import android.app.Application // Needed for GetInstalledAppsUseCase
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.AddLimitedAppUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetAllLimitedAppsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.GetDashboardDataUseCase
+// GetDashboardDataUseCase provided by CoreUseCaseModule
 import dev.sadakat.screentimetracker.domain.usecases.GetHistoricalDataUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetInstalledAppsUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetLimitedAppUseCase
@@ -15,7 +15,7 @@ import dev.sadakat.screentimetracker.domain.usecases.RemoveLimitedAppUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetAppSessionEventsUseCase
 import dev.sadakat.screentimetracker.domain.usecases.UpdateLimitedAppUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetAchievementsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.CalculateWellnessScoreUseCase
+// CalculateWellnessScoreUseCase provided by CoreUseCaseModule
 import dev.sadakat.screentimetracker.domain.usecases.InitializeAchievementsUseCase
 import dev.sadakat.screentimetracker.domain.usecases.UpdateAchievementProgressUseCase
 import dev.sadakat.screentimetracker.domain.usecases.ProgressiveLimitsUseCase
@@ -35,11 +35,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class) // All these are stateless or app-scoped
 object DomainModule {
 
-    @Provides
-    @Singleton
-    fun provideGetDashboardDataUseCase(repository: TrackerRepository): GetDashboardDataUseCase {
-        return GetDashboardDataUseCase(repository)
-    }
+    // GetDashboardDataUseCase is now provided by CoreUseCaseModule for clean architecture
 
     @Provides
     @Singleton
@@ -114,11 +110,7 @@ object DomainModule {
         return GetAchievementsUseCase(repository)
     }
 
-    @Provides
-    @Singleton
-    fun provideCalculateWellnessScoreUseCase(repository: TrackerRepository): CalculateWellnessScoreUseCase {
-        return CalculateWellnessScoreUseCase(repository)
-    }
+    // CalculateWellnessScoreUseCase is now provided by CoreUseCaseModule for clean architecture
 
     @Provides
     @Singleton

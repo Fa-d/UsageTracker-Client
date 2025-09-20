@@ -42,6 +42,7 @@ class WellnessCalculationServiceImpl : WellnessCalculationService {
         val overall = (screenTimeScore + unlockScore + goalScore + productivityScore + consistencyScore) / 5
 
         return WellnessScore(
+            date = System.currentTimeMillis(),
             overall = overall,
             screenTime = screenTimeScore,
             unlocks = unlockScore,

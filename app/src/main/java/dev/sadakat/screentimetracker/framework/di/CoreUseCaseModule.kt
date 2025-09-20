@@ -30,12 +30,14 @@ object CoreUseCaseModule {
     fun provideGetDashboardDataUseCase(
         screenTimeRepository: ScreenTimeRepository,
         userGoalRepository: UserGoalRepository,
+        achievementRepository: AchievementRepository,
         wellnessService: WellnessCalculationService,
         achievementService: AchievementService
     ): GetDashboardDataUseCase {
         return GetDashboardDataUseCase(
             screenTimeRepository,
             userGoalRepository,
+            achievementRepository,
             wellnessService,
             achievementService
         )

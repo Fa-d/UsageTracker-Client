@@ -1,12 +1,17 @@
 package dev.sadakat.screentimetracker.core.domain.model
 
 data class WellnessScore(
+    val date: Long,
     val overall: Int,
     val screenTime: Int,
     val unlocks: Int,
     val goals: Int,
     val productivity: Int = 0,
     val consistency: Int = 0,
+    val timeLimitScore: Int = screenTime,
+    val focusSessionScore: Int = productivity,
+    val breaksScore: Int = unlocks,
+    val sleepHygieneScore: Int = consistency,
     val calculatedAt: Long = System.currentTimeMillis()
 ) {
     init {
@@ -51,6 +56,7 @@ data class WellnessScore(
 
     companion object {
         fun default(): WellnessScore = WellnessScore(
+            date = System.currentTimeMillis(),
             overall = 50,
             screenTime = 50,
             unlocks = 50,
@@ -60,6 +66,7 @@ data class WellnessScore(
         )
 
         fun excellent(): WellnessScore = WellnessScore(
+            date = System.currentTimeMillis(),
             overall = 95,
             screenTime = 95,
             unlocks = 95,

@@ -1,6 +1,5 @@
 package dev.sadakat.screentimetracker.utils.ui
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,12 +9,12 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.sadakat.screentimetracker.R
-import dev.sadakat.screentimetracker.domain.model.Achievement
-import dev.sadakat.screentimetracker.domain.model.LimitedApp
+import dev.sadakat.screentimetracker.core.domain.model.Achievement
+import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.ui.MainActivity
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -2,10 +2,11 @@ package dev.sadakat.screentimetracker.data.local.dao
 
 import androidx.room.Dao
 import dev.sadakat.screentimetracker.data.local.entities.*
-import dev.sadakat.screentimetracker.data.local.dto.*
+// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.*
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import dev.sadakat.screentimetracker.data.local.dto.AppOpenData
 import kotlinx.coroutines.flow.Flow
 
 @Dao

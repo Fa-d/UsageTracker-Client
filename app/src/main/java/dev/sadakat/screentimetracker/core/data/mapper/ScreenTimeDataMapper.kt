@@ -1,8 +1,10 @@
 package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.model.*
-import dev.sadakat.screentimetracker.data.local.entities.*
 import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.data.local.entities.*
+
+// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
 
 // Type aliases to resolve ambiguity
 typealias DomainWellnessScore = dev.sadakat.screentimetracker.core.domain.model.WellnessScore
@@ -98,7 +100,11 @@ class ScreenTimeDataMapper {
             goals = entity.focusSessionScore,
             productivity = 50, // Default value, would need separate tracking
             consistency = entity.sleepHygieneScore,
-            calculatedAt = entity.calculatedAt
+            calculatedAt = entity.calculatedAt,
+            breaksScore = entity.breaksScore,
+            focusSessionScore = entity.focusSessionScore,
+            timeLimitScore = entity.timeLimitScore,
+            date = entity.date
         )
     }
 

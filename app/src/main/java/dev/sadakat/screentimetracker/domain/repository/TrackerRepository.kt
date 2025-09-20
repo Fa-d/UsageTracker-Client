@@ -1,20 +1,22 @@
 package dev.sadakat.screentimetracker.domain.repository
 
-import dev.sadakat.screentimetracker.data.local.dto.AppOpenData
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppOpenData
+// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.domain.model.Achievement
+import dev.sadakat.screentimetracker.core.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.domain.model.AppOpenData
+import dev.sadakat.screentimetracker.domain.model.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
 import dev.sadakat.screentimetracker.data.local.entities.AppUsageEvent
+import dev.sadakat.screentimetracker.data.local.entities.Challenge
 import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary
-import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
-import dev.sadakat.screentimetracker.data.local.entities.ScreenUnlockEvent
-import dev.sadakat.screentimetracker.domain.model.Achievement
-import dev.sadakat.screentimetracker.domain.model.WellnessScore
-import dev.sadakat.screentimetracker.data.local.entities.UserGoal
-import dev.sadakat.screentimetracker.data.local.entities.Challenge
 import dev.sadakat.screentimetracker.data.local.entities.FocusSession
 import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
+import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
+import dev.sadakat.screentimetracker.data.local.entities.ScreenUnlockEvent
 import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
+import dev.sadakat.screentimetracker.data.local.entities.UserGoal
 import kotlinx.coroutines.flow.Flow
 
 interface TrackerRepository {

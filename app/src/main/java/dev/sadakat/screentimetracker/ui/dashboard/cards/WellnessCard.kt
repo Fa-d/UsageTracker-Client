@@ -35,8 +35,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.domain.model.WellnessLevel
-import dev.sadakat.screentimetracker.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.core.domain.model.WellnessLevel
+import dev.sadakat.screentimetracker.core.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.ui.dashboard.viewmodels.DashboardViewModel
 import dev.sadakat.screentimetracker.ui.theme.PlayfulAccent
@@ -51,8 +51,8 @@ fun WellnessCard(
 
     val wellnessScore by viewModel.wellnessScore.collectAsState()
 
-    val score = wellnessScore?.totalScore ?: 0
-    val level = wellnessScore?.level ?: WellnessLevel.DIGITAL_SPROUT
+    val score = wellnessScore?.overall ?: 0
+    val level = wellnessScore?.wellnessLevel ?: WellnessLevel.DIGITAL_SPROUT
     
     // Animation for the progress ring
     val animatedScore by animateFloatAsState(

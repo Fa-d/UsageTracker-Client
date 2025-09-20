@@ -1,9 +1,9 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.domain.categorization.AppCategorizer
-import dev.sadakat.screentimetracker.domain.model.WellnessScore
+import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
@@ -53,7 +53,7 @@ class WeeklyInsightsUseCase @Inject constructor(
                 .take(5)
             
             val averageWellnessScore = if (wellnessScores.isNotEmpty()) {
-                wellnessScores.map { it.totalScore }.average().toInt()
+                wellnessScores.map { it.overall }.average().toInt()
             } else 0
             
             val totalUnlocks = unlockCounts

@@ -1,4 +1,5 @@
 package dev.sadakat.screentimetracker.domain.usecases
+import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 
 import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
@@ -316,11 +317,11 @@ class HabitTrackerUseCase @Inject constructor(
             // If it's past 8 AM, check if there was usage in the first hour
             val now = System.currentTimeMillis()
             if (now >= firstHourEnd) {
-                val dashboardData = getDashboardDataUseCase().first()
+                val dashboardData = getDashboardDataUseCase()
                 
                 // Check if any app was used between 7-8 AM
-                val hadMorningUsage = dashboardData.appDetailsToday.any { appData ->
-                    appData.lastOpenedTimestamp in wakeTime..firstHourEnd && appData.totalDurationMillis > 0
+                val hadMorningUsage = dashboardData.topAppsToday.any { appSession ->
+                    appSession.timeRange.startMillis in wakeTime..firstHourEnd && appSession.durationMillis > 0
                 }
                 
                 if (!hadMorningUsage) {
@@ -346,11 +347,11 @@ class HabitTrackerUseCase @Inject constructor(
             // If it's past bedtime, check if there was usage in the hour before
             val now = System.currentTimeMillis()
             if (now >= bedtime) {
-                val dashboardData = getDashboardDataUseCase().first()
+                val dashboardData = getDashboardDataUseCase()
                 
                 // Check if any app was used between 9-10 PM
-                val hadPreBedtimeUsage = dashboardData.appDetailsToday.any { appData ->
-                    appData.lastOpenedTimestamp in digitalSunsetStart..bedtime && appData.totalDurationMillis > 0
+                val hadPreBedtimeUsage = dashboardData.topAppsToday.any { appSession ->
+                    appSession.timeRange.startMillis in digitalSunsetStart..bedtime && appSession.durationMillis > 0
                 }
                 
                 if (!hadPreBedtimeUsage) {
@@ -375,9 +376,9 @@ class HabitTrackerUseCase @Inject constructor(
             // Only check after 5 PM to see full day pattern
             val afternoonCheck = today + (17 * 60 * 60 * 1000L) // 5 PM
             if (now >= afternoonCheck) {
-                val dashboardData = getDashboardDataUseCase().first()
-                val totalUsageTime = dashboardData.totalScreenTimeFromSessionsToday
-                val totalAppsUsed = dashboardData.appDetailsToday.size
+                val dashboardData = getDashboardDataUseCase()
+                val totalUsageTime = dashboardData.totalScreenTimeToday
+                val totalAppsUsed = dashboardData.topAppsToday.size
                 
                 // Heuristic: If total usage < 6 hours and used multiple apps (indicating breaks)
                 // This is simplified - real implementation would analyze session gaps
@@ -401,7 +402,7 @@ class HabitTrackerUseCase @Inject constructor(
             // Check after dinner time (8 PM) to see if all meals were phone-free
             val dinnerEnd = today + (20 * 60 * 60 * 1000L) // 8 PM
             if (now >= dinnerEnd) {
-                val dashboardData = getDashboardDataUseCase().first()
+                val dashboardData = getDashboardDataUseCase()
                 
                 // Define meal time ranges (could be made configurable)
                 val breakfastRange = (today + 8 * 60 * 60 * 1000L) to (today + 9 * 60 * 60 * 1000L) // 8-9 AM
@@ -411,9 +412,9 @@ class HabitTrackerUseCase @Inject constructor(
                 val mealRanges = listOf(breakfastRange, lunchRange, dinnerRange)
                 
                 // Check if any app was used during meal times
-                val hadMealTimeUsage = dashboardData.appDetailsToday.any { appData ->
+                val hadMealTimeUsage = dashboardData.topAppsToday.any { appSession ->
                     mealRanges.any { (start, end) ->
-                        appData.lastOpenedTimestamp in start..end && appData.totalDurationMillis > 0
+                        appSession.timeRange.startMillis in start..end && appSession.durationMillis > 0
                     }
                 }
                 

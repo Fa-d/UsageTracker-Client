@@ -1,9 +1,13 @@
 package dev.sadakat.screentimetracker.ui.dashboard.viewmodels
+import dev.sadakat.screentimetracker.core.domain.usecase.CalculateWellnessScoreUseCase
+import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.sadakat.screentimetracker.core.domain.model.WellnessLevel
+import dev.sadakat.screentimetracker.core.domain.model.WellnessScore
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,29 +38,16 @@ class QuickActionsViewModel @Inject constructor(
         _isEmergencyBlockActive,
         _activeTimerMinutes,
         _isBreakReminderActive,
-        getDashboardDataUseCase()
+getDashboardDataUseCase.observeDashboardData()
     ) { focusMode, emergencyBlock, timer, breakReminder, dashboardData ->
-        val wellnessScore = try {
-            calculateWellnessScoreUseCase(System.currentTimeMillis())
-        } catch (e: Exception) {
-            dev.sadakat.screentimetracker.domain.model.WellnessScore(
-                date = System.currentTimeMillis(),
-                totalScore = 0,
-                timeLimitScore = 0,
-                focusSessionScore = 0,
-                breaksScore = 0,
-                sleepHygieneScore = 0,
-                level = dev.sadakat.screentimetracker.domain.model.WellnessLevel.DIGITAL_SPROUT,
-                calculatedAt = System.currentTimeMillis()
-            )
-        }
+        val wellnessScore = dashboardData.wellnessScore
         
         QuickActionsUiState(
             isFocusModeActive = focusMode,
             isEmergencyBlockActive = emergencyBlock,
             activeTimerMinutes = timer,
-            todayUsageHours = formatUsageTime(dashboardData.totalScreenTimeFromSessionsToday),
-            wellnessScore = wellnessScore.totalScore,
+            todayUsageHours = formatUsageTime(dashboardData.totalScreenTimeToday),
+            wellnessScore = wellnessScore.overall,
             isBreakReminderActive = breakReminder
         )
     }.stateIn(

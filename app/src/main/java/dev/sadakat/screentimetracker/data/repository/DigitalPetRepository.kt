@@ -46,7 +46,7 @@ class DigitalPetRepository @Inject constructor(
     suspend fun updatePetWithWellness(
         dashboardState: DashboardState,
         targetScreenTimeHours: Float = 4f,
-        wellnessScore: dev.sadakat.screentimetracker.domain.model.WellnessScore? = null
+        wellnessScore: dev.sadakat.screentimetracker.core.domain.model.WellnessScore? = null
     ): DigitalPet {
         var pet = getPetSync()
         

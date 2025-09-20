@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.domain.model.Achievement
+import dev.sadakat.screentimetracker.core.domain.model.Achievement
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
