@@ -5,15 +5,10 @@ import dev.sadakat.screentimetracker.core.data.local.entities.UserGoal
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SmartGoalSettingUseCase @Inject constructor(
+class SmartGoalSettingUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger

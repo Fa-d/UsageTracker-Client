@@ -5,11 +5,8 @@ import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class GoalProgressTrackingUseCase @Inject constructor(
+class GoalProgressTrackingUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger

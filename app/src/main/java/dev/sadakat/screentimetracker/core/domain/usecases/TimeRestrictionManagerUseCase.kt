@@ -5,12 +5,9 @@ import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.Flow
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+import java.util.Calendar
 
-@Singleton
-class TimeRestrictionManagerUseCase @Inject constructor(
+class TimeRestrictionManagerUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger

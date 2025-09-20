@@ -1,18 +1,15 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
-import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 
 import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+import java.util.Calendar
 
-@Singleton
-class HabitTrackerUseCase @Inject constructor(
+class HabitTrackerUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger,

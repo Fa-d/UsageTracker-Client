@@ -5,9 +5,8 @@ import dev.sadakat.screentimetracker.core.data.local.entities.DailyScreenUnlockS
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import java.util.Calendar
-import javax.inject.Inject
 
-class AggregateDailyUsageUseCase @Inject constructor(
+class AggregateDailyUsageUseCase(
     private val repository: TrackerRepository,
     private val appLogger: AppLogger
 ) {

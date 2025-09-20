@@ -5,9 +5,7 @@ import dev.sadakat.screentimetracker.core.data.local.entities.DailyScreenUnlockS
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import java.util.Calendar
-import javax.inject.Inject
 
 data class HistoricalData(
     val appSummaries: List<DailyAppSummary>,
@@ -15,7 +13,7 @@ data class HistoricalData(
     // We can add more processed data here, like overall daily screen time
 )
 
-class GetHistoricalDataUseCase @Inject constructor(
+class GetHistoricalDataUseCase(
     private val repository: TrackerRepository
 ) {
     operator fun invoke(daysAgo: Int = 7): Flow<HistoricalData> {

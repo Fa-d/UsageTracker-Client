@@ -2,9 +2,8 @@ package dev.sadakat.screentimetracker.core.domain.usecases
 
 import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
-import javax.inject.Inject
 
-class RecordAppSessionUseCase @Inject constructor(
+class RecordAppSessionUseCase(
     private val repository: TrackerRepository
 ) {
     /**

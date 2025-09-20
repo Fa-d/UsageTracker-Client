@@ -5,11 +5,8 @@ import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class FocusSessionManagerUseCase @Inject constructor(
+class FocusSessionManagerUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger

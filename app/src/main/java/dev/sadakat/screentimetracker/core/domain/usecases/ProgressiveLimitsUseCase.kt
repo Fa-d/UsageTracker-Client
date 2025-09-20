@@ -1,15 +1,14 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveLimit
 import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveLimitDao
-import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveMilestone
 import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveMilestoneDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveLimit
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveMilestone
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
-import javax.inject.Inject
 
-class ProgressiveLimitsUseCase @Inject constructor(
+class ProgressiveLimitsUseCase(
     private val progressiveLimitDao: ProgressiveLimitDao,
     private val progressiveMilestoneDao: ProgressiveMilestoneDao,
     private val trackerRepository: TrackerRepository

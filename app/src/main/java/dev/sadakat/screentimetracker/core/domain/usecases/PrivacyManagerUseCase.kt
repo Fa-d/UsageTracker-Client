@@ -1,13 +1,12 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.PrivacySettings
 import dev.sadakat.screentimetracker.core.data.local.dao.PrivacySettingsDao
+import dev.sadakat.screentimetracker.core.data.local.entities.PrivacySettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.security.MessageDigest
-import javax.inject.Inject
 
-class PrivacyManagerUseCase @Inject constructor(
+class PrivacyManagerUseCase(
     private val privacySettingsDao: PrivacySettingsDao
 ) {
     

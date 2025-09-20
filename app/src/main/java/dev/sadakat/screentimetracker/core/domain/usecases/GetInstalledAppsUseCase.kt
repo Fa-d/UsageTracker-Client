@@ -1,13 +1,11 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import android.app.Application // For PackageManager
+import android.app.Application
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 data class AppInfo(
     val packageName: String,
@@ -15,7 +13,7 @@ data class AppInfo(
     // val icon: Drawable? // Icon loading can be complex and resource-intensive here, usually done async in UI
 )
 
-class GetInstalledAppsUseCase @Inject constructor(
+class GetInstalledAppsUseCase(
     private val application: Application // Inject Application context
 ) {
     suspend operator fun invoke(): List<AppInfo> = withContext(Dispatchers.IO) {

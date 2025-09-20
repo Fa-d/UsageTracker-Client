@@ -1,14 +1,11 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.ReplacementActivity
 import dev.sadakat.screentimetracker.core.data.local.dao.ReplacementActivityDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ReplacementActivity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
-import java.time.ZoneId
-import javax.inject.Inject
 
-class ReplacementActivitiesUseCase @Inject constructor(
+class ReplacementActivitiesUseCase(
     private val replacementActivityDao: ReplacementActivityDao
 ) {
     

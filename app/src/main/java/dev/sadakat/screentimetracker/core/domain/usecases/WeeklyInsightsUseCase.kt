@@ -1,20 +1,15 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
 // REMOVED: import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.core.domain.categorization.AppCategorizer
-import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.first
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class WeeklyInsightsUseCase @Inject constructor(
+class WeeklyInsightsUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger,

@@ -1,9 +1,12 @@
 package dev.sadakat.screentimetracker.di
 
+import android.app.Application
 import android.content.Context
+import androidx.work.WorkManager
 import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
 import dev.sadakat.screentimetracker.core.domain.service.ServiceManager
 import dev.sadakat.screentimetracker.core.domain.categorization.AppCategorizer
+import dev.sadakat.screentimetracker.core.domain.usecases.InitializeAppUseCase
 import dev.sadakat.screentimetracker.core.presentation.temp.TempPermissionManager
 import dev.sadakat.screentimetracker.core.presentation.temp.TempServiceManager
 import dev.sadakat.screentimetracker.core.presentation.temp.TempAppCategorizer
@@ -38,5 +41,14 @@ object ArchitectureModule {
     @Singleton
     fun provideAppCategorizer(): AppCategorizer {
         return TempAppCategorizer()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitializeAppUseCase(
+        application: Application,
+        workManager: WorkManager
+    ): InitializeAppUseCase {
+        return InitializeAppUseCase(application, workManager)
     }
 }

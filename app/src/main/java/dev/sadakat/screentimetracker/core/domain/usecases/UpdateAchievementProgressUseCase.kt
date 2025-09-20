@@ -6,9 +6,8 @@ import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import kotlinx.coroutines.flow.first
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class UpdateAchievementProgressUseCase @Inject constructor(
+class UpdateAchievementProgressUseCase(
     private val repository: TrackerRepository,
     private val notificationManager: AppNotificationManager,
     private val appLogger: AppLogger

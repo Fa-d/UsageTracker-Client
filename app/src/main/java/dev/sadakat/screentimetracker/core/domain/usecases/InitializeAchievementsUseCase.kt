@@ -4,9 +4,8 @@ import dev.sadakat.screentimetracker.core.domain.model.Achievement
 import dev.sadakat.screentimetracker.core.domain.model.AchievementCategory
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class InitializeAchievementsUseCase @Inject constructor(
+class InitializeAchievementsUseCase(
     private val repository: TrackerRepository
 ) {
     suspend operator fun invoke() {

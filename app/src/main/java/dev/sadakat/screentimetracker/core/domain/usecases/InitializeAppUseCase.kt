@@ -6,11 +6,8 @@ import androidx.core.content.edit
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import dev.sadakat.screentimetracker.framework.workers.HistoricalDataWorker
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class InitializeAppUseCase @Inject constructor(
+class InitializeAppUseCase(
     private val application: Application,
     private val workManager: WorkManager
 ) {

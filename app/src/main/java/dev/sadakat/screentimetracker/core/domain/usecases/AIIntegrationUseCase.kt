@@ -1,19 +1,18 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
+import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsight
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsightSeverity
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsightType
-import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
-import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 /**
  * Integration layer between main app and AI module.
  * Handles data conversion and AI feature availability.
  */
-class AIIntegrationUseCase @Inject constructor() {
+class AIIntegrationUseCase() {
 
     data class AIRecommendation(
         val id: String,

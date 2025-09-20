@@ -7,11 +7,8 @@ import dev.sadakat.screentimetracker.core.domain.error.DomainResult
 import dev.sadakat.screentimetracker.core.domain.repository.AppCategoryRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AppCategoryManagementUseCase @Inject constructor(
+class AppCategoryManagementUseCase(
     private val appCategorizer: AppCategorizer,
     private val appCategoryRepository: AppCategoryRepository,
     private val appLogger: AppLogger

@@ -1,14 +1,13 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.core.data.local.dao.UserPreferencesDao
-import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme
+import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class UserPreferencesUseCase @Inject constructor(
+class UserPreferencesUseCase(
     private val userPreferencesDao: UserPreferencesDao
 ) {
     

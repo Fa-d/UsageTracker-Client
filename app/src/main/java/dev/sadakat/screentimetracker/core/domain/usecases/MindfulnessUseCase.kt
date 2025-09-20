@@ -1,13 +1,12 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.MindfulnessSession
 import dev.sadakat.screentimetracker.core.data.local.dao.MindfulnessSessionDao
+import dev.sadakat.screentimetracker.core.data.local.entities.MindfulnessSession
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.ZoneId
-import javax.inject.Inject
 
-class MindfulnessUseCase @Inject constructor(
+class MindfulnessUseCase(
     private val mindfulnessSessionDao: MindfulnessSessionDao
 ) {
     
