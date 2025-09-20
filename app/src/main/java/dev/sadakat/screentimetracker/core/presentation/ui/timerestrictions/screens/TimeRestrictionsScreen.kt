@@ -55,7 +55,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.compo
 import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.viewmodels.RestrictionStatusPreview
 import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.viewmodels.TimeRestrictionsUiEvent
 import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
-import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

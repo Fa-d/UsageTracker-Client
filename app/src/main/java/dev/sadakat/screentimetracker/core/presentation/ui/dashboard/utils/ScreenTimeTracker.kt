@@ -42,7 +42,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.replacementactivities.
 import dev.sadakat.screentimetracker.core.presentation.ui.smartgoals.screens.SmartGoalsScreen
 import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.screens.TimeRestrictionsScreen
 import dev.sadakat.screentimetracker.core.presentation.ui.wellness.WellnessScreen
-import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 
 val LocalDashboardViewModel = staticCompositionLocalOf<DashboardViewModel> { error("No DashboardViewModel provided") }
 

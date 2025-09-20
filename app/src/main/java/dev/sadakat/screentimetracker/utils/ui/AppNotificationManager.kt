@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.sadakat.screentimetracker.R
 import dev.sadakat.screentimetracker.core.domain.model.Achievement
 import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
-import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
+import dev.sadakat.screentimetracker.core.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

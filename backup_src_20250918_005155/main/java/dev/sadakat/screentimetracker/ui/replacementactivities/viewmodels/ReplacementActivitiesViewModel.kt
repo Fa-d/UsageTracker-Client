@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.ui.replacementactivities.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.ReplacementActivity
+import dev.sadakat.screentimetracker.core.data.local.ReplacementActivity
 import dev.sadakat.screentimetracker.domain.usecases.ActivityStats
 import dev.sadakat.screentimetracker.domain.usecases.ReplacementActivitiesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

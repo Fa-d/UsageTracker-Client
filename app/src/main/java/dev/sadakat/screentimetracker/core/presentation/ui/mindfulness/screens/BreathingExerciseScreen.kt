@@ -62,7 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.sadakat.screentimetracker.core.presentation.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.core.presentation.ui.mindfulness.viewmodels.MindfulnessUiState
 import dev.sadakat.screentimetracker.core.presentation.ui.mindfulness.viewmodels.MindfulnessViewModel
-import dev.sadakat.screentimetracker.data.local.entities.MindfulnessSession
+import dev.sadakat.screentimetracker.core.data.local.entities.MindfulnessSession
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+// REMOVED: import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.domain.categorization.AppCategorizer
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository

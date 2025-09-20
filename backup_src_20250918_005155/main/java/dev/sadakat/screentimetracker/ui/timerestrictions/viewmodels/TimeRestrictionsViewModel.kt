@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.TimeRestriction
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

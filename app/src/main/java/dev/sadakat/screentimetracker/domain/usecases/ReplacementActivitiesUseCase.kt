@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.entities.ReplacementActivity
-import dev.sadakat.screentimetracker.data.local.dao.ReplacementActivityDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ReplacementActivity
+import dev.sadakat.screentimetracker.core.data.local.dao.ReplacementActivityDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate

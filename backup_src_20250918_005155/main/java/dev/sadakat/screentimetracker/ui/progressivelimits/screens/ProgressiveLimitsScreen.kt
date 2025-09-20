@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.sadakat.screentimetracker.data.local.ProgressiveLimit
+import dev.sadakat.screentimetracker.core.data.local.ProgressiveLimit
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.ui.progressivelimits.viewmodels.ProgressiveLimitsViewModel
 import java.util.concurrent.TimeUnit

@@ -175,7 +175,7 @@ fun AnalyticsScreen(
 }
 
 @Composable
-fun WeeklyTrendChart(historicalAppSummaries: List<dev.sadakat.screentimetracker.data.local.DailyAppSummary>) {
+fun WeeklyTrendChart(historicalAppSummaries: List<dev.sadakat.screentimetracker.core.data.local.DailyAppSummary>) {
     val dailyData = historicalAppSummaries
         .groupBy { it.dateMillis }
         .mapValues { entry -> entry.value.sumOf { it.totalDurationMillis } }

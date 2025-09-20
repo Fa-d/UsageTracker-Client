@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.sadakat.screentimetracker.core.presentation.ui.habits.viewmodels.HabitTrackerViewModel
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.ColorfulPrimary
-import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
+import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
 
 
 @Composable

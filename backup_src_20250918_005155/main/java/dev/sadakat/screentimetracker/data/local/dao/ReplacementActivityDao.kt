@@ -1,5 +1,5 @@
-package dev.sadakat.screentimetracker.data.local.dao
-import dev.sadakat.screentimetracker.data.local.entities.*
+package dev.sadakat.screentimetracker.core.data.local.dao
+import dev.sadakat.screentimetracker.core.data.local.entities.*
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow

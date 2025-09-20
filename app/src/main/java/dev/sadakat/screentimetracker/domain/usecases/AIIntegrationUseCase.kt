@@ -3,8 +3,8 @@ package dev.sadakat.screentimetracker.domain.usecases
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsight
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsightSeverity
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsightType
-import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
-import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

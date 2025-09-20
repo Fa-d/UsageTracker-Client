@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.validation
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase

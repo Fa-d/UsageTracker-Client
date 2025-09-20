@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.TimeRestriction
 import dev.sadakat.screentimetracker.ui.theme.ColorfulPrimary
 import dev.sadakat.screentimetracker.ui.theme.ColorfulSecondary
 import kotlinx.coroutines.delay

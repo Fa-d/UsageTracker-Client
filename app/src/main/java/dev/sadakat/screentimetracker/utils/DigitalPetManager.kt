@@ -3,10 +3,10 @@ package dev.sadakat.screentimetracker.utils
 import dev.sadakat.screentimetracker.core.domain.service.DigitalPetService
 import dev.sadakat.screentimetracker.core.domain.service.impl.DigitalPetServiceImpl
 import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.state.DashboardState
-import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
-import dev.sadakat.screentimetracker.data.local.entities.PetStats
-import dev.sadakat.screentimetracker.data.local.entities.PetType
-import dev.sadakat.screentimetracker.data.local.entities.WellnessFactors
+import dev.sadakat.screentimetracker.core.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.data.local.entities.PetStats
+import dev.sadakat.screentimetracker.core.data.local.entities.PetType
+import dev.sadakat.screentimetracker.core.data.local.entities.WellnessFactors
 import dev.sadakat.screentimetracker.core.domain.model.WellnessFactors as DomainWellnessFactors
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 
@@ -89,7 +89,7 @@ object DigitalPetManager {
             health = domainStats.health,
             happiness = domainStats.happiness,
             energy = domainStats.energy,
-            mood = dev.sadakat.screentimetracker.data.local.entities.PetMood.valueOf(domainStats.mood.name),
+            mood = dev.sadakat.screentimetracker.core.data.local.entities.PetMood.valueOf(domainStats.mood.name),
             wellnessScore = domainStats.wellnessScore,
             evolutionStage = domainStats.evolutionStage,
             daysSinceCreated = domainStats.daysSinceCreated

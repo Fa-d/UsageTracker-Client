@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
-import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyScreenUnlockSummary
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import java.util.Calendar

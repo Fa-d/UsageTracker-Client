@@ -1,40 +1,40 @@
-package dev.sadakat.screentimetracker.data.repository
+package dev.sadakat.screentimetracker.core.data.repository
 
-import dev.sadakat.screentimetracker.data.local.database.AppDatabase
-import dev.sadakat.screentimetracker.data.local.dto.AppOpenData
-import dev.sadakat.screentimetracker.data.local.dao.AppSessionDao
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
-import dev.sadakat.screentimetracker.data.local.dao.AppUsageDao
-import dev.sadakat.screentimetracker.data.local.entities.AppUsageEvent
-import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
-import dev.sadakat.screentimetracker.data.local.dao.DailyAppSummaryDao
-import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary
-import dev.sadakat.screentimetracker.data.local.dao.DailyScreenUnlockSummaryDao
-import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
-import dev.sadakat.screentimetracker.data.local.dao.LimitedAppDao
-import dev.sadakat.screentimetracker.data.local.dao.ScreenUnlockDao
-import dev.sadakat.screentimetracker.data.local.entities.ScreenUnlockEvent
-import dev.sadakat.screentimetracker.data.local.entities.Achievement
-import dev.sadakat.screentimetracker.data.local.dao.AchievementDao
-import dev.sadakat.screentimetracker.data.local.entities.WellnessScore
-import dev.sadakat.screentimetracker.data.local.dao.WellnessScoreDao
-import dev.sadakat.screentimetracker.data.local.entities.UserGoal
-import dev.sadakat.screentimetracker.data.local.dao.UserGoalDao
-import dev.sadakat.screentimetracker.data.local.entities.Challenge
-import dev.sadakat.screentimetracker.data.local.dao.ChallengeDao
-import dev.sadakat.screentimetracker.data.local.entities.FocusSession
-import dev.sadakat.screentimetracker.data.local.dao.FocusSessionDao
-import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
-import dev.sadakat.screentimetracker.data.local.dao.HabitTrackerDao
-import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
-import dev.sadakat.screentimetracker.data.local.dao.TimeRestrictionDao
+import dev.sadakat.screentimetracker.core.data.local.database.AppDatabase
+import dev.sadakat.screentimetracker.core.data.local.dto.AppOpenData
+import dev.sadakat.screentimetracker.core.data.local.dao.AppSessionDao
+import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.dao.AppUsageDao
+import dev.sadakat.screentimetracker.core.data.local.entities.AppUsageEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.dao.DailyAppSummaryDao
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyScreenUnlockSummary
+import dev.sadakat.screentimetracker.core.data.local.dao.DailyScreenUnlockSummaryDao
+import dev.sadakat.screentimetracker.core.data.local.entities.LimitedApp
+import dev.sadakat.screentimetracker.core.data.local.dao.LimitedAppDao
+import dev.sadakat.screentimetracker.core.data.local.dao.ScreenUnlockDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ScreenUnlockEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.Achievement
+import dev.sadakat.screentimetracker.core.data.local.dao.AchievementDao
+import dev.sadakat.screentimetracker.core.data.local.entities.WellnessScore
+import dev.sadakat.screentimetracker.core.data.local.dao.WellnessScoreDao
+import dev.sadakat.screentimetracker.core.data.local.entities.UserGoal
+import dev.sadakat.screentimetracker.core.data.local.dao.UserGoalDao
+import dev.sadakat.screentimetracker.core.data.local.entities.Challenge
+import dev.sadakat.screentimetracker.core.data.local.dao.ChallengeDao
+import dev.sadakat.screentimetracker.core.data.local.entities.FocusSession
+import dev.sadakat.screentimetracker.core.data.local.dao.FocusSessionDao
+import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
+import dev.sadakat.screentimetracker.core.data.local.dao.HabitTrackerDao
+import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.dao.TimeRestrictionDao
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import dev.sadakat.screentimetracker.data.local.mappers.toDomainModel
-import dev.sadakat.screentimetracker.data.local.mappers.toDataModel
+import dev.sadakat.screentimetracker.core.data.local.mappers.toDomainModel
+import dev.sadakat.screentimetracker.core.data.local.mappers.toDataModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -116,13 +116,13 @@ class TrackerRepositoryImpl @Inject constructor(
 
     override suspend fun getLastOpenedTimestampsForAppsInRange(
         startTime: Long, endTime: Long
-    ): List<dev.sadakat.screentimetracker.data.local.dto.AppLastOpenedData> {
+    ): List<dev.sadakat.screentimetracker.core.data.local.dto.AppLastOpenedData> {
         return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime).first()
     }
 
     override fun getLastOpenedTimestampsForAppsInRangeFlow(
         startTime: Long, endTime: Long
-    ): Flow<List<dev.sadakat.screentimetracker.data.local.dto.AppLastOpenedData>> {
+    ): Flow<List<dev.sadakat.screentimetracker.core.data.local.dto.AppLastOpenedData>> {
         return appSessionDao.getLastOpenedTimestampsForAppsInRange(startTime, endTime)
     }
 

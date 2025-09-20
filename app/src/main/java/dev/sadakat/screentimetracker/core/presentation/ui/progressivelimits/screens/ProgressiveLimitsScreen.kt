@@ -33,7 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.sadakat.screentimetracker.core.presentation.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.core.presentation.ui.progressivelimits.viewmodels.ProgressiveLimitsViewModel
-import dev.sadakat.screentimetracker.data.local.entities.ProgressiveLimit
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveLimit
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -3,8 +3,8 @@ package dev.sadakat.screentimetracker.core.data.repository
 import dev.sadakat.screentimetracker.core.domain.repository.UsageLimitRepository
 import dev.sadakat.screentimetracker.core.domain.repository.*
 import dev.sadakat.screentimetracker.core.domain.service.*
-import dev.sadakat.screentimetracker.data.local.dao.ProgressiveLimitDao
-import dev.sadakat.screentimetracker.data.local.entities.ProgressiveLimit
+import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveLimitDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveLimit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull

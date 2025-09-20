@@ -43,10 +43,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
-import dev.sadakat.screentimetracker.data.local.entities.PetMood
-import dev.sadakat.screentimetracker.data.local.entities.PetStats
-import dev.sadakat.screentimetracker.data.local.entities.PetType
+import dev.sadakat.screentimetracker.core.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.data.local.entities.PetMood
+import dev.sadakat.screentimetracker.core.data.local.entities.PetStats
+import dev.sadakat.screentimetracker.core.data.local.entities.PetType
 import dev.sadakat.screentimetracker.utils.DigitalPetManager
 
 @Composable

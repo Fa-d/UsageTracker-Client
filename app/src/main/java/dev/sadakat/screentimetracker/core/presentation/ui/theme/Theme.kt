@@ -9,8 +9,8 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.ColorScheme
-import dev.sadakat.screentimetracker.data.local.entities.ColorScheme as AppColorScheme
-import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme as AppColorScheme
+import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb

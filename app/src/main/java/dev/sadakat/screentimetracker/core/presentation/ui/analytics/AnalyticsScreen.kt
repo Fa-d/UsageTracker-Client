@@ -46,7 +46,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.utils.getCat
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.LimeGreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.PlayfulPrimary
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.VibrantOrange
-import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.utils.millisToReadableTime
 import java.text.SimpleDateFormat
 import java.util.Locale

@@ -62,7 +62,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.habits.viewmodels.Comp
 import dev.sadakat.screentimetracker.core.presentation.ui.habits.viewmodels.HabitTrackerViewModel
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.ColorfulPrimary
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.ColorfulTertiary
-import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
+import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

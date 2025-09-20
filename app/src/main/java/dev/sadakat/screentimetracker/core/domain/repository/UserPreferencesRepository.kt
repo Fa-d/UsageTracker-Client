@@ -1,5 +1,6 @@
 package dev.sadakat.screentimetracker.core.domain.repository
 
+import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.core.domain.service.InsightPreferences
 import dev.sadakat.screentimetracker.core.domain.service.UserBehaviorProfile
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface UserPreferencesRepository {
 
+    fun getUserPreferences(): Flow<UserPreferences?>
     /**
      * Gets user's insight generation preferences
      */
@@ -94,6 +96,13 @@ interface UserPreferencesRepository {
      * Imports preferences from backup
      */
     suspend fun importPreferences(backup: PreferencesBackup)
+
+    suspend fun updateAIFeaturesEnabled(enabled: Boolean)
+    suspend fun updateAIModuleDownloaded(downloaded: Boolean)
+    suspend fun updateAIInsightsEnabled(enabled: Boolean)
+    suspend fun updateAIGoalRecommendationsEnabled(enabled: Boolean)
+    suspend fun updateAIPredictiveCoachingEnabled(enabled: Boolean)
+    suspend fun updateAIUsagePredictionsEnabled(enabled: Boolean)
 }
 
 /**

@@ -63,7 +63,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.sadakat.screentimetracker.core.presentation.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.core.presentation.ui.replacementactivities.viewmodels.ReplacementActivitiesViewModel
-import dev.sadakat.screentimetracker.data.local.entities.ReplacementActivity
+import dev.sadakat.screentimetracker.core.data.local.entities.ReplacementActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

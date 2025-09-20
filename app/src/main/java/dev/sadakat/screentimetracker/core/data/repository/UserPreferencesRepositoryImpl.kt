@@ -1,18 +1,20 @@
 package dev.sadakat.screentimetracker.core.data.repository
 
-import dev.sadakat.screentimetracker.core.domain.repository.*
-import dev.sadakat.screentimetracker.core.domain.service.*
+import dev.sadakat.screentimetracker.core.data.local.dao.UserPreferencesDao
 import dev.sadakat.screentimetracker.core.data.mapper.UserPreferencesDataMapper
-import dev.sadakat.screentimetracker.data.local.dao.UserPreferencesDao
+import dev.sadakat.screentimetracker.core.domain.repository.AppearanceSettings
+import dev.sadakat.screentimetracker.core.domain.repository.FocusSessionSettings
+import dev.sadakat.screentimetracker.core.domain.repository.NotificationSettings
+import dev.sadakat.screentimetracker.core.domain.repository.PreferencesBackup
+import dev.sadakat.screentimetracker.core.domain.repository.PrivacySettings
+import dev.sadakat.screentimetracker.core.domain.repository.UserPreferencesRepository
+import dev.sadakat.screentimetracker.core.domain.service.InsightPreferences
+import dev.sadakat.screentimetracker.core.domain.service.UserBehaviorProfile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Implementation of UserPreferencesRepository using Room database.
- * Maps between domain preference models and single UserPreferences entity.
- */
 @Singleton
 class UserPreferencesRepositoryImpl @Inject constructor(
     private val userPreferencesDao: UserPreferencesDao,
@@ -50,16 +52,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateUserBehaviorProfile(profile: UserBehaviorProfile) {
-        // UserBehaviorProfile updates would require tracking additional data
-        // For now, we update related preferences based on the profile
         val currentEntity = userPreferencesDao.getUserPreferencesSync()
             ?: dataMapper.createDefaultEntity()
 
-        val updatedEntity = currentEntity.copy(
-            motivationalMessagesEnabled = profile.motivationLevel != MotivationLevel.LOW,
-            wellnessCoachingEnabled = profile.preferredEnforcementStyle == EnforcementStyle.GENTLE_NUDGES,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updatedEntity = dataMapper.updateEntityWithUserBehaviorProfile(currentEntity, profile)
 
         if (dataMapper.validateEntity(updatedEntity)) {
             userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
@@ -117,13 +113,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         val currentEntity = userPreferencesDao.getUserPreferencesSync()
             ?: dataMapper.createDefaultEntity()
 
-        // Update related fields based on privacy settings
-        val updatedEntity = currentEntity.copy(
-            aiFeaturesEnabled = settings.analyticsEnabled,
-            aiInsightsEnabled = settings.personalizedRecommendationsEnabled,
-            aiGoalRecommendationsEnabled = settings.personalizedRecommendationsEnabled,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updatedEntity = dataMapper.updateEntityWithPrivacySettings(currentEntity, settings)
 
         if (dataMapper.validateEntity(updatedEntity)) {
             userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
@@ -155,15 +145,13 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     override suspend fun exportPreferences(): PreferencesBackup {
         val entity = userPreferencesDao.getUserPreferencesSync()
             ?: dataMapper.createDefaultEntity()
-
-        return dataMapper.mapToPreferencesBackup(entity, "1.0.0") // Would get actual app version
+        return dataMapper.mapToPreferencesBackup(entity, "1.0.0") // Placeholder version
     }
 
     override suspend fun importPreferences(backup: PreferencesBackup) {
         val currentEntity = userPreferencesDao.getUserPreferencesSync()
             ?: dataMapper.createDefaultEntity()
 
-        // Apply backup settings to entity
         var updatedEntity = dataMapper.updateEntityWithInsightPreferences(
             currentEntity, backup.insightPreferences
         )
@@ -176,9 +164,61 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         updatedEntity = dataMapper.updateEntityWithFocusSessionSettings(
             updatedEntity, backup.focusSessionSettings
         )
+        updatedEntity = dataMapper.updateEntityWithPrivacySettings(
+            updatedEntity, backup.privacySettings
+        )
+        updatedEntity = dataMapper.updateEntityWithUserBehaviorProfile(
+            updatedEntity, backup.userBehaviorProfile
+        )
 
         if (dataMapper.validateEntity(updatedEntity)) {
             userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
         }
+    }
+
+    override fun getUserPreferences(): Flow<dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences?> {
+        return userPreferencesDao.getUserPreferences()
+    }
+
+    override suspend fun updateAIFeaturesEnabled(enabled: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiFeaturesEnabled = enabled)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
+    }
+
+    override suspend fun updateAIModuleDownloaded(downloaded: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiModuleDownloaded = downloaded)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
+    }
+
+    override suspend fun updateAIInsightsEnabled(enabled: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiInsightsEnabled = enabled)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
+    }
+
+    override suspend fun updateAIGoalRecommendationsEnabled(enabled: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiGoalRecommendationsEnabled = enabled)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
+    }
+
+    override suspend fun updateAIPredictiveCoachingEnabled(enabled: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiPredictiveCoachingEnabled = enabled)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
+    }
+
+    override suspend fun updateAIUsagePredictionsEnabled(enabled: Boolean) {
+        val currentEntity = userPreferencesDao.getUserPreferencesSync()
+            ?: dataMapper.createDefaultEntity()
+        val updatedEntity = currentEntity.copy(aiUsagePredictionsEnabled = enabled)
+        userPreferencesDao.insertOrUpdateUserPreferences(updatedEntity)
     }
 }

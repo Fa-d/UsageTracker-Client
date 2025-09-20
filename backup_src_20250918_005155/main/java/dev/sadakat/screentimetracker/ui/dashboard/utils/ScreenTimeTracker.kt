@@ -118,7 +118,7 @@ fun ScreenTimeTracker(viewModel: DashboardViewModel) {
                         }
                         composable("settings_route") {
                             SimpleSettingsView(
-                                currentThemeMode = dev.sadakat.screentimetracker.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
+                                currentThemeMode = dev.sadakat.screentimetracker.core.data.local.ThemeMode.valueOf(personalizationState.preferences.themeMode),
                                 onThemeModeChange = personalizationViewModel::updateThemeMode,
                                 preferences = personalizationState.preferences,
                                 onColorSchemeChanged = personalizationViewModel::updateColorScheme,

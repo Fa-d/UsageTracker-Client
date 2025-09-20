@@ -31,8 +31,8 @@ import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.state.Dashbo
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.LimeGreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.PlayfulPrimary
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.VibrantOrange
-import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
-import dev.sadakat.screentimetracker.data.local.entities.PetStats
+import dev.sadakat.screentimetracker.core.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.data.local.entities.PetStats
 import dev.sadakat.screentimetracker.utils.millisToReadableTime
 
 @Composable

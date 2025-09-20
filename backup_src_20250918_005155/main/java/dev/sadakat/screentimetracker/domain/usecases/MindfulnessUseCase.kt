@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.MindfulnessSession
-import dev.sadakat.screentimetracker.data.local.MindfulnessSessionDao
+import dev.sadakat.screentimetracker.core.data.local.MindfulnessSession
+import dev.sadakat.screentimetracker.core.data.local.MindfulnessSessionDao
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.ZoneId

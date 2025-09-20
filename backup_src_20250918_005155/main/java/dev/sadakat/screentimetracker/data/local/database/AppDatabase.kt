@@ -1,12 +1,12 @@
-package dev.sadakat.screentimetracker.data.local.database
+package dev.sadakat.screentimetracker.core.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import dev.sadakat.screentimetracker.data.local.entities.*
-import dev.sadakat.screentimetracker.data.local.dao.*
+import dev.sadakat.screentimetracker.core.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.dao.*
 
 @Database(
     entities = [

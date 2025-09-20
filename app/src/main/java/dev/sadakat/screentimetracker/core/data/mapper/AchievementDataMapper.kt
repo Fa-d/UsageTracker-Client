@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.model.*
-import dev.sadakat.screentimetracker.data.local.entities.Achievement as AchievementEntity
+import dev.sadakat.screentimetracker.core.data.local.entities.Achievement as AchievementEntity
 
 /**
  * Bidirectional mapper between Achievement domain models and data entities.

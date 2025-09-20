@@ -59,7 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.sadakat.screentimetracker.data.local.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.TimeRestriction
 import dev.sadakat.screentimetracker.ui.timerestrictions.components.TimeRestrictionCreateDialog
 import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsUiEvent
 import dev.sadakat.screentimetracker.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel

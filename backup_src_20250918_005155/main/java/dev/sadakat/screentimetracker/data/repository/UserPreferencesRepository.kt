@@ -1,7 +1,7 @@
-package dev.sadakat.screentimetracker.data.repository
+package dev.sadakat.screentimetracker.core.data.repository
 
-import dev.sadakat.screentimetracker.data.local.entities.UserPreferences
-import dev.sadakat.screentimetracker.data.local.dao.UserPreferencesDao
+import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
+import dev.sadakat.screentimetracker.core.data.local.dao.UserPreferencesDao
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

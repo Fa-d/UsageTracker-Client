@@ -3,7 +3,7 @@ package dev.sadakat.screentimetracker.core.data.repository
 import dev.sadakat.screentimetracker.core.domain.model.*
 import dev.sadakat.screentimetracker.core.domain.repository.*
 import dev.sadakat.screentimetracker.core.data.mapper.UserGoalDataMapper
-import dev.sadakat.screentimetracker.data.local.dao.UserGoalDao
+import dev.sadakat.screentimetracker.core.data.local.dao.UserGoalDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first

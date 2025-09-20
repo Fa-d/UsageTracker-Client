@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 
-import dev.sadakat.screentimetracker.data.local.entities.HabitTracker
+import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager

@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import dev.sadakat.screentimetracker.data.local.entities.LimitedApp as DataLimitedApp
+import dev.sadakat.screentimetracker.core.data.local.entities.LimitedApp as DataLimitedApp
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 import java.lang.reflect.Field

@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
 import android.content.Context
-import dev.sadakat.screentimetracker.data.local.*
+import dev.sadakat.screentimetracker.core.data.local.*
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import io.mockk.*
 import kotlinx.coroutines.test.runTest

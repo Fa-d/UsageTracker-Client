@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.PrivacySettings
-import dev.sadakat.screentimetracker.data.local.PrivacySettingsDao
+import dev.sadakat.screentimetracker.core.data.local.PrivacySettings
+import dev.sadakat.screentimetracker.core.data.local.PrivacySettingsDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.security.MessageDigest

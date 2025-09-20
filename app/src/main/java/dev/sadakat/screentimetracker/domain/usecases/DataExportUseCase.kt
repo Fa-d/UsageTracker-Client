@@ -1,8 +1,8 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
 import android.content.Context
-import dev.sadakat.screentimetracker.data.local.entities.*
-import dev.sadakat.screentimetracker.data.local.dao.*
+import dev.sadakat.screentimetracker.core.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.dao.*
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

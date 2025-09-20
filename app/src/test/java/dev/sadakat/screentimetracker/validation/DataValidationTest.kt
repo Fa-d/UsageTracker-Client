@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.validation
 
-import dev.sadakat.screentimetracker.data.local.*
+import dev.sadakat.screentimetracker.core.data.local.*
 import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
 import org.junit.Assert.*

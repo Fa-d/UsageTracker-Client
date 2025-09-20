@@ -1,5 +1,6 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
+import dev.sadakat.screentimetracker.core.domain.usecase.wellness.CalculateWellnessScoreUseCase
 import dev.sadakat.screentimetracker.domain.model.WellnessLevel
 import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository

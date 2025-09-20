@@ -1,10 +1,10 @@
 package dev.sadakat.screentimetracker.utils
 
-import dev.sadakat.screentimetracker.data.local.DigitalPet
-import dev.sadakat.screentimetracker.data.local.entities.PetMood
-import dev.sadakat.screentimetracker.data.local.PetStats
-import dev.sadakat.screentimetracker.data.local.PetType
-import dev.sadakat.screentimetracker.data.local.WellnessFactors
+import dev.sadakat.screentimetracker.core.data.local.DigitalPet
+import dev.sadakat.screentimetracker.core.data.local.entities.PetMood
+import dev.sadakat.screentimetracker.core.data.local.PetStats
+import dev.sadakat.screentimetracker.core.data.local.PetType
+import dev.sadakat.screentimetracker.core.data.local.WellnessFactors
 import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
 import kotlin.math.max
 import kotlin.math.min

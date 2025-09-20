@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

@@ -1,6 +1,6 @@
 package dev.sadakat.screentimetracker.domain.repository
 
-import dev.sadakat.screentimetracker.data.local.entities.AppCategory
+import dev.sadakat.screentimetracker.core.data.local.entities.AppCategory
 import kotlinx.coroutines.flow.Flow
 
 interface AppCategoryRepository {

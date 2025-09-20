@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.model.*
-import dev.sadakat.screentimetracker.data.local.entities.UserGoal as UserGoalEntity
+import dev.sadakat.screentimetracker.core.data.local.entities.UserGoal as UserGoalEntity
 
 /**
  * Bidirectional mapper between UserGoal domain models and data entities.

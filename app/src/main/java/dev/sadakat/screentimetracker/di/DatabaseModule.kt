@@ -2,11 +2,10 @@ package dev.sadakat.screentimetracker.di
 
 import android.app.Application
 import androidx.room.Room
-import dev.sadakat.screentimetracker.data.local.database.AppDatabase
-import dev.sadakat.screentimetracker.data.local.dao.*
-import dev.sadakat.screentimetracker.data.repository.TrackerRepositoryImpl
-import dev.sadakat.screentimetracker.data.repository.AppCategoryRepositoryImpl
-import dev.sadakat.screentimetracker.data.repository.UserPreferencesRepository
+import dev.sadakat.screentimetracker.core.data.local.database.AppDatabase
+import dev.sadakat.screentimetracker.core.data.local.dao.*
+import dev.sadakat.screentimetracker.core.data.repository.TrackerRepositoryImpl
+import dev.sadakat.screentimetracker.core.data.repository.AppCategoryRepositoryImpl
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.repository.AppCategoryRepository
 import dagger.Module
@@ -165,13 +164,6 @@ object DatabaseModule {
         return db.digitalPetDao()
     }
     
-    @Provides
-    @Singleton
-    fun provideUserPreferencesRepository(
-        userPreferencesDao: UserPreferencesDao
-    ): UserPreferencesRepository {
-        return UserPreferencesRepository(userPreferencesDao)
-    }
     
     @Provides
     @Singleton

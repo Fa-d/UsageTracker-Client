@@ -47,15 +47,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.data.local.ThemeMode
-import dev.sadakat.screentimetracker.data.local.UserPreferences
+import dev.sadakat.screentimetracker.core.data.local.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.UserPreferences
 import dev.sadakat.screentimetracker.ui.components.PlayfulCard
 import dev.sadakat.screentimetracker.ui.components.ModernCard
 import dev.sadakat.screentimetracker.ui.components.ActionCard
 import dev.sadakat.screentimetracker.ui.components.CardVariant
 import dev.sadakat.screentimetracker.ui.components.StatisticsCard
 import dev.sadakat.screentimetracker.ui.personalization.PersonalizationScreen
-import dev.sadakat.screentimetracker.data.local.entities.ColorScheme as AppColorScheme
+import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme as AppColorScheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

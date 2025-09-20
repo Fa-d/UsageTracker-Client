@@ -426,7 +426,7 @@ private fun BreathingSessionControls(
 
 @Composable
 private fun SessionCompletionDialog(
-    sessionData: dev.sadakat.screentimetracker.data.local.MindfulnessSession,
+    sessionData: dev.sadakat.screentimetracker.core.data.local.MindfulnessSession,
     onDismiss: () -> Unit,
     onRatingSubmitted: (Int, String) -> Unit
 ) {

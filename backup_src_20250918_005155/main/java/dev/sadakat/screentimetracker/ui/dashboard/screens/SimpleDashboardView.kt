@@ -39,8 +39,8 @@ import dev.sadakat.screentimetracker.ui.ai.components.AIInsight
 @Composable
 fun SimpleDashboardView(
     state: DashboardState,
-    digitalPet: dev.sadakat.screentimetracker.data.local.DigitalPet?,
-    petStats: dev.sadakat.screentimetracker.data.local.PetStats?,
+    digitalPet: dev.sadakat.screentimetracker.core.data.local.DigitalPet?,
+    petStats: dev.sadakat.screentimetracker.core.data.local.PetStats?,
     aiInsights: List<AIInsight> = emptyList(),
     isLoadingInsights: Boolean = false,
     onNavigateToAnalytics: () -> Unit,

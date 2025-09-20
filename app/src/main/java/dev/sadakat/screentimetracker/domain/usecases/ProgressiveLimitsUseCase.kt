@@ -1,9 +1,9 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.entities.ProgressiveLimit
-import dev.sadakat.screentimetracker.data.local.dao.ProgressiveLimitDao
-import dev.sadakat.screentimetracker.data.local.entities.ProgressiveMilestone
-import dev.sadakat.screentimetracker.data.local.dao.ProgressiveMilestoneDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveLimit
+import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveLimitDao
+import dev.sadakat.screentimetracker.core.data.local.entities.ProgressiveMilestone
+import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveMilestoneDao
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate

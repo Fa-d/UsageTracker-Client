@@ -20,9 +20,9 @@ import dev.sadakat.screentimetracker.domain.usecases.InitializeAchievementsUseCa
 import dev.sadakat.screentimetracker.domain.usecases.UpdateAchievementProgressUseCase
 import dev.sadakat.screentimetracker.domain.usecases.ProgressiveLimitsUseCase
 import dev.sadakat.screentimetracker.domain.usecases.UserPreferencesUseCase
-import dev.sadakat.screentimetracker.data.local.dao.ProgressiveLimitDao
-import dev.sadakat.screentimetracker.data.local.dao.ProgressiveMilestoneDao
-import dev.sadakat.screentimetracker.data.local.dao.UserPreferencesDao
+import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveLimitDao
+import dev.sadakat.screentimetracker.core.data.local.dao.ProgressiveMilestoneDao
+import dev.sadakat.screentimetracker.core.data.local.dao.UserPreferencesDao
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.Module

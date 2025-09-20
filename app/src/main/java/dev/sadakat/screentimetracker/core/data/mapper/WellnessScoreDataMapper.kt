@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 import dev.sadakat.screentimetracker.core.domain.model.WellnessLevel
-import dev.sadakat.screentimetracker.data.local.entities.WellnessScore as EntityWellnessScore
+import dev.sadakat.screentimetracker.core.data.local.entities.WellnessScore as EntityWellnessScore
 
 /**
  * Mapper for converting between domain WellnessScore and data layer entity

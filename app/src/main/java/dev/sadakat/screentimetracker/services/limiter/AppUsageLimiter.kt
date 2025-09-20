@@ -3,7 +3,7 @@ package dev.sadakat.screentimetracker.services.limiter
 import android.content.Context
 import android.content.pm.PackageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.sadakat.screentimetracker.data.local.entities.LimitedApp
+import dev.sadakat.screentimetracker.core.data.local.entities.LimitedApp
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager

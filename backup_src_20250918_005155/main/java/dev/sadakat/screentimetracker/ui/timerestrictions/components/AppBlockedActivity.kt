@@ -74,7 +74,7 @@ class AppBlockedActivity : ComponentActivity() {
         }
     }
 
-    private fun calculateTimeUntilUnblocked(activeRestrictions: List<dev.sadakat.screentimetracker.data.local.TimeRestriction>): String? {
+    private fun calculateTimeUntilUnblocked(activeRestrictions: List<dev.sadakat.screentimetracker.core.data.local.TimeRestriction>): String? {
         if (activeRestrictions.isEmpty()) return null
         
         // Get the earliest end time from active restrictions

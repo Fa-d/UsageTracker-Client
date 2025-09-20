@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.repository.*
 import dev.sadakat.screentimetracker.core.domain.service.*
-import dev.sadakat.screentimetracker.data.local.entities.UserPreferences as EntityUserPreferences
+import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences as EntityUserPreferences
 
 /**
  * Maps between UserPreferences entity and domain preference models.
@@ -188,6 +188,29 @@ class UserPreferencesDataMapper {
             defaultFocusDurationMinutes = settings.defaultSessionDurationMinutes,
             focusModeEnabled = settings.focusRemindersEnabled,
             notificationSound = if (settings.focusSessionSoundEnabled) "DEFAULT" else "NONE",
+            updatedAt = System.currentTimeMillis()
+        )
+    }
+
+    fun updateEntityWithUserBehaviorProfile(
+        entity: EntityUserPreferences,
+        profile: UserBehaviorProfile
+    ): EntityUserPreferences {
+        return entity.copy(
+            motivationalMessagesEnabled = profile.motivationLevel != MotivationLevel.LOW,
+            wellnessCoachingEnabled = profile.preferredEnforcementStyle == EnforcementStyle.GENTLE_NUDGES,
+            updatedAt = System.currentTimeMillis()
+        )
+    }
+
+    fun updateEntityWithPrivacySettings(
+        entity: EntityUserPreferences,
+        settings: PrivacySettings
+    ): EntityUserPreferences {
+        return entity.copy(
+            aiFeaturesEnabled = settings.analyticsEnabled,
+            aiInsightsEnabled = settings.personalizedRecommendationsEnabled,
+            aiGoalRecommendationsEnabled = settings.personalizedRecommendationsEnabled,
             updatedAt = System.currentTimeMillis()
         )
     }

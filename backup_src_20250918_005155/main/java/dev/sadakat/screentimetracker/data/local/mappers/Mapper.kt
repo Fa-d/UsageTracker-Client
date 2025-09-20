@@ -1,6 +1,6 @@
-package dev.sadakat.screentimetracker.data.local.mappers
+package dev.sadakat.screentimetracker.core.data.local.mappers
 
-import dev.sadakat.screentimetracker.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.entities.*
 import dev.sadakat.screentimetracker.domain.model.LimitedApp as DomainLimitedApp
 
 fun LimitedApp.toDomain() = DomainLimitedApp(

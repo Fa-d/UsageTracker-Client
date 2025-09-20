@@ -1,9 +1,9 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.UserPreferences
-import dev.sadakat.screentimetracker.data.local.UserPreferencesDao
-import dev.sadakat.screentimetracker.data.local.ThemeMode
-import dev.sadakat.screentimetracker.data.local.ColorScheme
+import dev.sadakat.screentimetracker.core.data.local.UserPreferences
+import dev.sadakat.screentimetracker.core.data.local.UserPreferencesDao
+import dev.sadakat.screentimetracker.core.data.local.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.ColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

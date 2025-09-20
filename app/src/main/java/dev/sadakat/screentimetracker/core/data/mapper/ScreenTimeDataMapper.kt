@@ -1,16 +1,16 @@
 package dev.sadakat.screentimetracker.core.data.mapper
 
 import dev.sadakat.screentimetracker.core.domain.model.*
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.data.local.entities.*
 
-// REMOVED: import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+// REMOVED: import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
 
 // Type aliases to resolve ambiguity
 typealias DomainWellnessScore = dev.sadakat.screentimetracker.core.domain.model.WellnessScore
-typealias EntityWellnessScore = dev.sadakat.screentimetracker.data.local.entities.WellnessScore
+typealias EntityWellnessScore = dev.sadakat.screentimetracker.core.data.local.entities.WellnessScore
 typealias DomainAppCategory = dev.sadakat.screentimetracker.core.domain.model.AppCategory
-typealias EntityAppCategory = dev.sadakat.screentimetracker.data.local.entities.AppCategory
+typealias EntityAppCategory = dev.sadakat.screentimetracker.core.data.local.entities.AppCategory
 
 /**
  * Bidirectional mapper between domain models and data entities for screen time tracking.

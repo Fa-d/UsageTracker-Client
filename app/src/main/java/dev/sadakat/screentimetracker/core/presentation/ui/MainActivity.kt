@@ -21,8 +21,8 @@ import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.viewmodels.D
 import dev.sadakat.screentimetracker.core.presentation.ui.permissions.PermissionScreen
 import dev.sadakat.screentimetracker.core.presentation.ui.personalization.PersonalizationViewModel
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.ScreenTimeTrackerTheme
-import dev.sadakat.screentimetracker.data.local.entities.ColorScheme
-import dev.sadakat.screentimetracker.data.local.entities.ThemeMode
+import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme
+import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import dev.sadakat.screentimetracker.domain.permissions.PermissionManager
 import dev.sadakat.screentimetracker.domain.service.ServiceManager
 import javax.inject.Inject

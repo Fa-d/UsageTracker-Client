@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.AppSessionEvent
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.DailyAppSummary
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsight
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsightSeverity
 import dev.sadakat.screentimetracker.ui.ai.components.AIInsightType

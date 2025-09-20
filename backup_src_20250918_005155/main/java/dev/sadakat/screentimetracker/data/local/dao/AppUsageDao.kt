@@ -1,8 +1,8 @@
-package dev.sadakat.screentimetracker.data.local.dao
+package dev.sadakat.screentimetracker.core.data.local.dao
 
 import androidx.room.Dao
-import dev.sadakat.screentimetracker.data.local.entities.*
-import dev.sadakat.screentimetracker.data.local.dto.*
+import dev.sadakat.screentimetracker.core.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.dto.*
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query

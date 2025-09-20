@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.AppSessionDataAggregate
-import dev.sadakat.screentimetracker.data.local.DailyAppSummary
+import dev.sadakat.screentimetracker.core.data.local.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.data.local.DailyAppSummary
 import dev.sadakat.screentimetracker.domain.categorization.AppCategorizer
 import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository

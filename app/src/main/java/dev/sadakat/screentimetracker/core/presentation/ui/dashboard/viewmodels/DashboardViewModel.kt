@@ -14,10 +14,10 @@ import dev.sadakat.screentimetracker.core.domain.model.Achievement
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.state.AppUsageUIModel
 import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.state.DashboardState
-import dev.sadakat.screentimetracker.data.local.entities.AppSessionEvent
-import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
-import dev.sadakat.screentimetracker.data.local.entities.PetStats
-import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
+import dev.sadakat.screentimetracker.core.data.local.entities.AppSessionEvent
+import dev.sadakat.screentimetracker.core.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.data.local.entities.PetStats
+import dev.sadakat.screentimetracker.core.data.repository.DigitalPetRepository
 import dev.sadakat.screentimetracker.domain.usecases.ChallengeManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.GetAchievementsUseCase

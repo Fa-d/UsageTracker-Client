@@ -6,8 +6,8 @@ import dev.sadakat.screentimetracker.core.domain.repository.AppUsageSummary
 import dev.sadakat.screentimetracker.core.domain.repository.UsagePatterns
 import dev.sadakat.screentimetracker.core.domain.repository.UnlockFrequency
 import dev.sadakat.screentimetracker.core.data.mapper.ScreenTimeDataMapper
-import dev.sadakat.screentimetracker.data.local.dao.*
-import dev.sadakat.screentimetracker.data.local.entities.*
+import dev.sadakat.screentimetracker.core.data.local.dao.*
+import dev.sadakat.screentimetracker.core.data.local.entities.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flowOf

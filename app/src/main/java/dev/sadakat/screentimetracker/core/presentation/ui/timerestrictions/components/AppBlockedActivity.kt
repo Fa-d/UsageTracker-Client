@@ -15,7 +15,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
 import dev.sadakat.screentimetracker.core.presentation.ui.replacementactivities.screens.ReplacementActivitiesScreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.ScreenTimeTrackerTheme
 import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.viewmodels.TimeRestrictionsViewModel
-import dev.sadakat.screentimetracker.data.local.entities.TimeRestriction
+import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.services.AppBlockingService
 import kotlinx.coroutines.launch
 

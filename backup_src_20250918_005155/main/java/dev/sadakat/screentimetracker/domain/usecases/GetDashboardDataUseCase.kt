@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
-import dev.sadakat.screentimetracker.data.local.AppLastOpenedData
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.data.local.AppLastOpenedData
+import dev.sadakat.screentimetracker.core.data.local.dto.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
