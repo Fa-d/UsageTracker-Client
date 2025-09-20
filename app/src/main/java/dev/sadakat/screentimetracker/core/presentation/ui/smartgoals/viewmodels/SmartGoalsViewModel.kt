@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.*
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

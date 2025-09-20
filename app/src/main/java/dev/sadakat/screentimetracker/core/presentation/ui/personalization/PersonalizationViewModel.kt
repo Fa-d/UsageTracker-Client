@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme as AppColorScheme
-import dev.sadakat.screentimetracker.domain.usecases.UserPreferencesUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.UserPreferencesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

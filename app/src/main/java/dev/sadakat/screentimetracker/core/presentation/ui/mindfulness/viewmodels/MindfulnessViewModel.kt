@@ -3,7 +3,7 @@ package dev.sadakat.screentimetracker.core.presentation.ui.mindfulness.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.core.data.local.entities.MindfulnessSession
-import dev.sadakat.screentimetracker.domain.usecases.MindfulnessUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.MindfulnessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -7,7 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.sadakat.screentimetracker.core.presentation.ui.ai.components.AIInsight
 import dev.sadakat.screentimetracker.core.data.local.entities.UserPreferences
 import dev.sadakat.screentimetracker.core.domain.repository.UserPreferencesRepository
-import dev.sadakat.screentimetracker.domain.usecases.AIIntegrationUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.AIIntegrationUseCase
 import dev.sadakat.screentimetracker.utils.AIAvailabilityStatus
 import dev.sadakat.screentimetracker.utils.AIDownloadManager
 import dev.sadakat.screentimetracker.utils.AIDownloadProgress

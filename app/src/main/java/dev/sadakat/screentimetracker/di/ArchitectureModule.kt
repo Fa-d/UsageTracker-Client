@@ -1,10 +1,10 @@
 package dev.sadakat.screentimetracker.di
 
 import android.content.Context
-import dev.sadakat.screentimetracker.domain.permissions.AppPermissionManager
-import dev.sadakat.screentimetracker.domain.permissions.PermissionManager
-import dev.sadakat.screentimetracker.domain.service.ScreenTimeServiceManager
-import dev.sadakat.screentimetracker.domain.service.ServiceManager
+import dev.sadakat.screentimetracker.core.domain.permissions.AppPermissionManager
+import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
+import dev.sadakat.screentimetracker.core.domain.service.ScreenTimeServiceManager
+import dev.sadakat.screentimetracker.core.domain.service.ServiceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

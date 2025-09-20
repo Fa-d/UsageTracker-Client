@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.sadakat.screentimetracker.core.data.local.entities.Challenge
-import dev.sadakat.screentimetracker.domain.usecases.ChallengeManagerUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.ChallengeManagerUseCase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.core.data.local.entities.UserGoal
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch

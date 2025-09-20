@@ -4,7 +4,7 @@ import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.sadakat.screentimetracker.domain.usecases.*
+import dev.sadakat.screentimetracker.core.domain.usecases.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.sadakat.screentimetracker.core.domain.model.WellnessLevel
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore

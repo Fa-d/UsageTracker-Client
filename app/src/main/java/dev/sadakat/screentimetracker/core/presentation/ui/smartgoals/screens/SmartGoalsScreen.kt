@@ -44,7 +44,7 @@ import dev.sadakat.screentimetracker.core.presentation.ui.smartgoals.viewmodels.
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.LimeGreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.PlayfulAccent
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.SkyBlue
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.GoalContext
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.GoalContext
 
 @Composable
 fun SmartGoalsScreen(

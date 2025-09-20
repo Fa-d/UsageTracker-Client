@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.work.*
-import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.WeeklyInsightsUseCase
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

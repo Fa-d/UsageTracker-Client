@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.sadakat.screentimetracker.core.data.local.entities.LimitedApp
-import dev.sadakat.screentimetracker.domain.usecases.AddLimitedAppUseCase
-import dev.sadakat.screentimetracker.domain.usecases.GetAllLimitedAppsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.GetInstalledAppsUseCase
-import dev.sadakat.screentimetracker.domain.usecases.RemoveLimitedAppUseCase
-import dev.sadakat.screentimetracker.domain.usecases.UpdateLimitedAppUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.AddLimitedAppUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.GetAllLimitedAppsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.GetInstalledAppsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.RemoveLimitedAppUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.UpdateLimitedAppUseCase
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject

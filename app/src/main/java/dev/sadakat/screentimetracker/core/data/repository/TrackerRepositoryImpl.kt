@@ -29,7 +29,7 @@ import dev.sadakat.screentimetracker.core.data.local.entities.HabitTracker
 import dev.sadakat.screentimetracker.core.data.local.dao.HabitTrackerDao
 import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.core.data.local.dao.TimeRestrictionDao
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -37,8 +37,8 @@ import dev.sadakat.screentimetracker.core.data.local.mappers.toDomainModel
 import dev.sadakat.screentimetracker.core.data.local.mappers.toDataModel
 import dev.sadakat.screentimetracker.core.data.local.mappers.toAppOpenData
 import dev.sadakat.screentimetracker.core.data.local.mappers.toAppSessionDataAggregate
-import dev.sadakat.screentimetracker.domain.model.AppOpenData
-import dev.sadakat.screentimetracker.domain.model.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.domain.model.AppOpenData
+import dev.sadakat.screentimetracker.core.domain.model.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.core.domain.model.Achievement as DomainAchievement
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
 import javax.inject.Inject

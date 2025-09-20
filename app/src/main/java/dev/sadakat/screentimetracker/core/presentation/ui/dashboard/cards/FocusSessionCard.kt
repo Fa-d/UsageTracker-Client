@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.FocusSessionManagerUseCase
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

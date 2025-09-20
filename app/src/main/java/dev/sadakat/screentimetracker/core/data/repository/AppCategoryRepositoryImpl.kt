@@ -2,7 +2,7 @@ package dev.sadakat.screentimetracker.core.data.repository
 
 import dev.sadakat.screentimetracker.core.data.local.entities.AppCategory
 import dev.sadakat.screentimetracker.core.data.local.dao.AppCategoryDao
-import dev.sadakat.screentimetracker.domain.repository.AppCategoryRepository
+import dev.sadakat.screentimetracker.core.domain.repository.AppCategoryRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

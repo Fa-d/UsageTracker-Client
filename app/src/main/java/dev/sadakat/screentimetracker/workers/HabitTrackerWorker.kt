@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import dev.sadakat.screentimetracker.domain.usecases.HabitTrackerUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.HabitTrackerUseCase
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

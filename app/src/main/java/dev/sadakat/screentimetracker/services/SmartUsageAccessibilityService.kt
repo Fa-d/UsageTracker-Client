@@ -4,8 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.domain.usecases.RecordAppSessionUseCase
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.usecases.RecordAppSessionUseCase
 import dev.sadakat.screentimetracker.services.content.ContentBlockingManager
 import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
 import dev.sadakat.screentimetracker.utils.logger.AppLogger

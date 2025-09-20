@@ -4,8 +4,8 @@ import dev.sadakat.screentimetracker.core.data.local.entities.Achievement as Ent
 import dev.sadakat.screentimetracker.core.data.local.entities.WellnessScore as EntityWellnessScore
 import dev.sadakat.screentimetracker.core.domain.model.Achievement as DomainAchievement
 import dev.sadakat.screentimetracker.core.domain.model.WellnessScore as DomainWellnessScore
-import dev.sadakat.screentimetracker.domain.model.AppOpenData
-import dev.sadakat.screentimetracker.domain.model.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.core.domain.model.AppOpenData
+import dev.sadakat.screentimetracker.core.domain.model.AppSessionDataAggregate
 
 /**
  * Temporary mapper functions to restore build compatibility

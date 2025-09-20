@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.R
 import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope

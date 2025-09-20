@@ -6,8 +6,8 @@ import dev.sadakat.screentimetracker.core.data.local.database.AppDatabase
 import dev.sadakat.screentimetracker.core.data.local.dao.*
 import dev.sadakat.screentimetracker.core.data.repository.TrackerRepositoryImpl
 import dev.sadakat.screentimetracker.core.data.repository.AppCategoryRepositoryImpl
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.domain.repository.AppCategoryRepository
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.repository.AppCategoryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

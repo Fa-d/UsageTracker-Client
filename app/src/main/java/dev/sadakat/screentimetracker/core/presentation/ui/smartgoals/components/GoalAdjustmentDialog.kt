@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.sp
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.LimeGreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.PlayfulAccent
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.VibrantOrange
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.AdjustmentType
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.GoalAdjustment
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.AdjustmentType
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.GoalAdjustment
 import java.util.concurrent.TimeUnit
 
 @Composable

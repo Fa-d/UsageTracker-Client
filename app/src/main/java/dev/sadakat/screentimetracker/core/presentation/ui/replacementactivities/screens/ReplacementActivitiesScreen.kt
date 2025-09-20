@@ -262,7 +262,7 @@ private fun AppBlockNotificationCard(
 @Composable
 private fun ActivityStatsCard(
     todayCount: Int,
-    weeklyStats: dev.sadakat.screentimetracker.domain.usecases.ActivityStats
+    weeklyStats: dev.sadakat.screentimetracker.core.domain.usecases.ActivityStats
 ) {
     PlayfulCard(modifier = Modifier.fillMaxWidth()) {
         Row(

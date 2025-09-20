@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.WeeklyInsightsUseCase
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

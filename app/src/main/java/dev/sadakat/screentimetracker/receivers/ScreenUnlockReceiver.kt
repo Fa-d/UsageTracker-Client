@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
 import dev.sadakat.screentimetracker.core.data.local.entities.ScreenUnlockEvent
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

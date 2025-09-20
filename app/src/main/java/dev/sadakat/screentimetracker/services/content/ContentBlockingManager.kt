@@ -3,7 +3,7 @@ package dev.sadakat.screentimetracker.services.content
 import android.content.Context
 import android.content.Intent
 import android.view.accessibility.AccessibilityNodeInfo
-import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager

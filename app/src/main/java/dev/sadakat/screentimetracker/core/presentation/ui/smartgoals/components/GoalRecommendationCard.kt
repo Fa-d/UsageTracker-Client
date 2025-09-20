@@ -40,9 +40,9 @@ import dev.sadakat.screentimetracker.core.presentation.ui.theme.LimeGreen
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.PlayfulAccent
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.SkyBlue
 import dev.sadakat.screentimetracker.core.presentation.ui.theme.VibrantOrange
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.DifficultyLevel
-import dev.sadakat.screentimetracker.domain.usecases.SmartGoalSettingUseCase.GoalRecommendation
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.DifficultyLevel
+import dev.sadakat.screentimetracker.core.domain.usecases.SmartGoalSettingUseCase.GoalRecommendation
 import java.util.concurrent.TimeUnit
 
 @Composable

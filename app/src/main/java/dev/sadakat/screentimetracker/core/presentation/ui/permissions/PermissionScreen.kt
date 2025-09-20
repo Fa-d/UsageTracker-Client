@@ -18,8 +18,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.ErrorSnackbar
-import dev.sadakat.screentimetracker.domain.permissions.PermissionManager
-import dev.sadakat.screentimetracker.domain.permissions.PermissionState
+import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
+import dev.sadakat.screentimetracker.core.domain.permissions.PermissionState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

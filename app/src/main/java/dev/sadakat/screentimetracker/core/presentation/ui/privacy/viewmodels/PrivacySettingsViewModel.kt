@@ -3,8 +3,8 @@ package dev.sadakat.screentimetracker.core.presentation.ui.privacy.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.sadakat.screentimetracker.core.data.local.entities.PrivacySettings
-import dev.sadakat.screentimetracker.domain.usecases.DataExportUseCase
-import dev.sadakat.screentimetracker.domain.usecases.PrivacyManagerUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.DataExportUseCase
+import dev.sadakat.screentimetracker.core.domain.usecases.PrivacyManagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
