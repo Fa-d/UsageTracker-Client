@@ -1,79 +1,34 @@
 package dev.sadakat.screentimetracker.core.domain.service
 
-import android.content.Context
-import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
-import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
-import dev.sadakat.screentimetracker.framework.services.AppUsageTrackingService
+import dev.sadakat.screentimetracker.core.domain.error.DomainResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asStateFlow
+
+/**
+ * Domain service for managing app services.
+ * This is now just an alias to PlatformServiceManager for backward compatibility.
+ * Use PlatformServiceManager directly in new code.
+ *
+ * @deprecated Use PlatformServiceManager instead
+ */
+@Deprecated(
+    message = "Use PlatformServiceManager instead",
+    replaceWith = ReplaceWith("PlatformServiceManager")
+)
+interface ServiceManager : PlatformServiceManager
 
 /**
  * Service states that the app can be in
+ * This is moved to PlatformServiceManager.kt
+ *
+ * @deprecated Use ServiceState from PlatformServiceManager instead
  */
-sealed class ServiceState {
-    object Stopped : ServiceState()
-    object Starting : ServiceState()
-    object Running : ServiceState()
-    object Error : ServiceState()
-}
-
-/**
- * Abstract interface for managing app services
- */
-interface ServiceManager {
-    val serviceState: Flow<ServiceState>
-
-    suspend fun startTrackingService(): Result<Unit>
-    suspend fun stopTrackingService(): Result<Unit>
-    suspend fun restartTrackingService(): Result<Unit>
-
-    fun isServiceRunning(): Boolean
-}
-
-/**
- * Implementation of ServiceManager that handles the app's tracking services
- */
-class ScreenTimeServiceManager(
-    private val context: Context
-) : ServiceManager {
-
-    private val _serviceState = kotlinx.coroutines.flow.MutableStateFlow<ServiceState>(ServiceState.Stopped)
-    override val serviceState: Flow<ServiceState> = _serviceState.asStateFlow()
-
-    override suspend fun startTrackingService(): Result<Unit> {
-        return try {
-            _serviceState.value = ServiceState.Starting
-
-            val intent = android.content.Intent(context, AppUsageTrackingService::class.java)
-            context.startService(intent)
-
-            _serviceState.value = ServiceState.Running
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            _serviceState.value = ServiceState.Error
-            Result.Error(AppError.ServiceError("Failed to start tracking service", e))
-        }
-    }
-
-    override suspend fun stopTrackingService(): Result<Unit> {
-        return try {
-            val intent = android.content.Intent(context, AppUsageTrackingService::class.java)
-            context.stopService(intent)
-
-            _serviceState.value = ServiceState.Stopped
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            _serviceState.value = ServiceState.Error
-            Result.Error(AppError.ServiceError("Failed to stop tracking service", e))
-        }
-    }
-
-    override suspend fun restartTrackingService(): Result<Unit> {
-        stopTrackingService()
-        return startTrackingService()
-    }
-
-    override fun isServiceRunning(): Boolean {
-        return _serviceState.value == ServiceState.Running
-    }
+@Deprecated(
+    message = "Use ServiceState from PlatformServiceManager instead",
+    replaceWith = ReplaceWith("ServiceState", "dev.sadakat.screentimetracker.core.domain.service.ServiceState")
+)
+sealed class LegacyServiceState {
+    object Stopped : LegacyServiceState()
+    object Starting : LegacyServiceState()
+    object Running : LegacyServiceState()
+    object Error : LegacyServiceState()
 }

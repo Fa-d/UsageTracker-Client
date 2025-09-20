@@ -1,8 +1,9 @@
 package dev.sadakat.screentimetracker.core.domain.usecases
 
-import dev.sadakat.screentimetracker.core.data.local.entities.AppCategories
 import dev.sadakat.screentimetracker.core.data.local.entities.AppCategory
 import dev.sadakat.screentimetracker.core.domain.categorization.AppCategorizer
+import dev.sadakat.screentimetracker.core.domain.categorization.DomainAppCategories
+import dev.sadakat.screentimetracker.core.domain.error.DomainResult
 import dev.sadakat.screentimetracker.core.domain.repository.AppCategoryRepository
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.flow.Flow
@@ -20,16 +21,24 @@ class AppCategoryManagementUseCase @Inject constructor(
     }
     
     suspend fun categorizeApp(packageName: String): String {
-        return appCategorizer.categorizeApp(packageName)
+        return when (val result = appCategorizer.categorizeApp(packageName)) {
+            is DomainResult.Success -> result.data
+            is DomainResult.Failure -> {
+                appLogger.e(TAG, "Failed to categorize app $packageName", result.error)
+                DomainAppCategories.OTHER
+            }
+        }
     }
     
     suspend fun updateCategoryManually(packageName: String, category: String) {
-        try {
-            appCategorizer.updateCategoryManually(packageName, category)
-            appLogger.d(TAG, "Updated category for $packageName to $category")
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Failed to update category for $packageName", e)
-            throw e
+        when (val result = appCategorizer.updateCategoryManually(packageName, category)) {
+            is DomainResult.Success -> {
+                appLogger.d(TAG, "Updated category for $packageName to $category")
+            }
+            is DomainResult.Failure -> {
+                appLogger.e(TAG, "Failed to update category for $packageName", result.error)
+                throw result.error
+            }
         }
     }
     
@@ -56,15 +65,16 @@ class AppCategoryManagementUseCase @Inject constructor(
     }
     
     suspend fun getAllAvailableCategories(): List<String> {
-        return AppCategories.ALL_CATEGORIES
+        return DomainAppCategories.ALL_CATEGORIES
     }
     
     suspend fun getCategoryStats(): Map<String, Int> {
-        return try {
-            appCategorizer.getCategoryStats()
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Failed to get category stats", e)
-            emptyMap()
+        return when (val result = appCategorizer.getCategoryStats()) {
+            is DomainResult.Success -> result.data
+            is DomainResult.Failure -> {
+                appLogger.e(TAG, "Failed to get category stats", result.error)
+                emptyMap()
+            }
         }
     }
     
@@ -78,11 +88,13 @@ class AppCategoryManagementUseCase @Inject constructor(
     }
     
     suspend fun cleanupStaleCategories() {
-        try {
-            appCategorizer.cleanStaleCache()
-            appLogger.d(TAG, "Cleaned up stale categories")
-        } catch (e: Exception) {
-            appLogger.e(TAG, "Failed to clean up stale categories", e)
+        when (val result = appCategorizer.cleanStaleCache()) {
+            is DomainResult.Success -> {
+                appLogger.d(TAG, "Cleaned up stale categories")
+            }
+            is DomainResult.Failure -> {
+                appLogger.e(TAG, "Failed to clean up stale categories", result.error)
+            }
         }
     }
     
@@ -91,21 +103,30 @@ class AppCategoryManagementUseCase @Inject constructor(
             // Delete existing category to force re-categorization
             appCategoryRepository.deleteCategoryByPackage(packageName)
             // Re-categorize the app
-            appCategorizer.categorizeApp(packageName)
+            when (val result = appCategorizer.categorizeApp(packageName)) {
+                is DomainResult.Success -> result.data
+                is DomainResult.Failure -> {
+                    appLogger.e(TAG, "Failed to recategorize app $packageName", result.error)
+                    DomainAppCategories.OTHER
+                }
+            }
         } catch (e: Exception) {
             appLogger.e(TAG, "Failed to recategorize app $packageName", e)
-            AppCategories.OTHER
+            DomainAppCategories.OTHER
         }
     }
     
     suspend fun bulkCategorizeApps(packageNames: List<String>): Map<String, String> {
         val results = mutableMapOf<String, String>()
         packageNames.forEach { packageName ->
-            try {
-                results[packageName] = appCategorizer.categorizeApp(packageName)
-            } catch (e: Exception) {
-                appLogger.e(TAG, "Failed to categorize $packageName", e)
-                results[packageName] = AppCategories.OTHER
+            when (val result = appCategorizer.categorizeApp(packageName)) {
+                is DomainResult.Success -> {
+                    results[packageName] = result.data
+                }
+                is DomainResult.Failure -> {
+                    appLogger.e(TAG, "Failed to categorize $packageName", result.error)
+                    results[packageName] = DomainAppCategories.OTHER
+                }
             }
         }
         return results

@@ -25,6 +25,7 @@ import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme
 import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
 import dev.sadakat.screentimetracker.core.domain.service.ServiceManager
+import dev.sadakat.screentimetracker.core.domain.service.PermissionState
 import dev.sadakat.screentimetracker.framework.services.SmartUsageTrackingService
 import javax.inject.Inject
 
@@ -69,7 +70,7 @@ private fun AppContent(
     serviceManager: ServiceManager
 ) {
     val permissionState by permissionManager.permissionState.collectAsState(
-        initial = dev.sadakat.screentimetracker.core.domain.permissions.PermissionState()
+        initial = PermissionState()
     )
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
 

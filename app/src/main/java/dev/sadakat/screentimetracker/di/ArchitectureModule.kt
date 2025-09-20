@@ -1,10 +1,12 @@
 package dev.sadakat.screentimetracker.di
 
 import android.content.Context
-import dev.sadakat.screentimetracker.core.domain.permissions.AppPermissionManager
 import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
-import dev.sadakat.screentimetracker.core.domain.service.ScreenTimeServiceManager
 import dev.sadakat.screentimetracker.core.domain.service.ServiceManager
+import dev.sadakat.screentimetracker.core.domain.categorization.AppCategorizer
+import dev.sadakat.screentimetracker.core.presentation.temp.TempPermissionManager
+import dev.sadakat.screentimetracker.core.presentation.temp.TempServiceManager
+import dev.sadakat.screentimetracker.core.presentation.temp.TempAppCategorizer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +23,7 @@ object ArchitectureModule {
     fun providePermissionManager(
         @ApplicationContext context: Context
     ): PermissionManager {
-        return AppPermissionManager(context)
+        return TempPermissionManager(context)
     }
 
     @Provides
@@ -29,6 +31,12 @@ object ArchitectureModule {
     fun provideServiceManager(
         @ApplicationContext context: Context
     ): ServiceManager {
-        return ScreenTimeServiceManager(context)
+        return TempServiceManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppCategorizer(): AppCategorizer {
+        return TempAppCategorizer()
     }
 }

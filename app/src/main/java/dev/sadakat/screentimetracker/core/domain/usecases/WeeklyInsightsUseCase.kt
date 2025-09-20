@@ -143,7 +143,10 @@ class WeeklyInsightsUseCase @Inject constructor(
             
             // Process each app and categorize it dynamically
             for (appSummary in appSummaries) {
-                val category = appCategorizer.categorizeApp(appSummary.packageName)
+                val category = when (val result = appCategorizer.categorizeApp(appSummary.packageName)) {
+                    is dev.sadakat.screentimetracker.core.domain.error.DomainResult.Success -> result.data
+                    is dev.sadakat.screentimetracker.core.domain.error.DomainResult.Failure -> "Other" // Default fallback
+                }
                 categoryUsageMap[category] = categoryUsageMap.getOrDefault(category, 0L) + appSummary.totalDurationMillis
             }
             

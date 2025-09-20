@@ -19,7 +19,8 @@ import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.ErrorSnackbar
 import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
-import dev.sadakat.screentimetracker.core.domain.permissions.PermissionState
+import dev.sadakat.screentimetracker.core.domain.service.PermissionState
+import dev.sadakat.screentimetracker.core.domain.error.DomainResult
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,9 +106,13 @@ fun PermissionScreen(
                 isRequired = true,
                 onRequestPermission = {
                     coroutineScope.launch {
-                        val result = permissionManager.requestUsageStatsPermission()
-                        result.onError { error ->
-                            currentError = error
+                        when (val result = permissionManager.requestUsageStatsPermission()) {
+                            is DomainResult.Failure -> {
+                                currentError = AppError.PermissionError("Failed to request usage stats permission", result.error)
+                            }
+                            is DomainResult.Success -> {
+                                // Permission request succeeded
+                            }
                         }
                         // Recheck permissions after request
                         permissionManager.checkAllPermissions()
@@ -123,9 +128,13 @@ fun PermissionScreen(
                 isRequired = true,
                 onRequestPermission = {
                     coroutineScope.launch {
-                        val result = permissionManager.requestNotificationPermission()
-                        result.onError { error ->
-                            currentError = error
+                        when (val result = permissionManager.requestNotificationPermission()) {
+                            is DomainResult.Failure -> {
+                                currentError = AppError.PermissionError("Failed to request notification permission", result.error)
+                            }
+                            is DomainResult.Success -> {
+                                // Permission request succeeded
+                            }
                         }
                         // Recheck permissions after request
                         permissionManager.checkAllPermissions()
@@ -141,9 +150,13 @@ fun PermissionScreen(
                 isRequired = false,
                 onRequestPermission = {
                     coroutineScope.launch {
-                        val result = permissionManager.requestAccessibilityPermission()
-                        result.onError { error ->
-                            currentError = error
+                        when (val result = permissionManager.requestAccessibilityPermission()) {
+                            is DomainResult.Failure -> {
+                                currentError = AppError.PermissionError("Failed to request accessibility permission", result.error)
+                            }
+                            is DomainResult.Success -> {
+                                // Permission request succeeded
+                            }
                         }
                         // Recheck permissions after request
                         permissionManager.checkAllPermissions()
