@@ -3,12 +3,19 @@ package dev.sadakat.screentimetracker.framework.di
 import dev.sadakat.screentimetracker.core.domain.repository.ScreenTimeRepository
 import dev.sadakat.screentimetracker.core.domain.repository.UserGoalRepository
 import dev.sadakat.screentimetracker.core.domain.repository.AchievementRepository
+import dev.sadakat.screentimetracker.core.domain.repository.UserPreferencesRepository
+import dev.sadakat.screentimetracker.core.domain.repository.InsightRepository
+import dev.sadakat.screentimetracker.core.domain.repository.UsageLimitRepository
 import dev.sadakat.screentimetracker.core.data.repository.ScreenTimeRepositoryImpl
 import dev.sadakat.screentimetracker.core.data.repository.UserGoalRepositoryImpl
 import dev.sadakat.screentimetracker.core.data.repository.AchievementRepositoryImpl
+import dev.sadakat.screentimetracker.core.data.repository.UserPreferencesRepositoryImpl
+import dev.sadakat.screentimetracker.core.data.repository.InsightRepositoryImpl
+import dev.sadakat.screentimetracker.core.data.repository.UsageLimitRepositoryImpl
 import dev.sadakat.screentimetracker.core.data.mapper.ScreenTimeDataMapper
 import dev.sadakat.screentimetracker.core.data.mapper.UserGoalDataMapper
 import dev.sadakat.screentimetracker.core.data.mapper.AchievementDataMapper
+import dev.sadakat.screentimetracker.core.data.mapper.UserPreferencesDataMapper
 import dev.sadakat.screentimetracker.data.local.dao.*
 import dagger.Module
 import dagger.Provides
@@ -42,6 +49,12 @@ object CoreDataModule {
     @Singleton
     fun provideAchievementDataMapper(): AchievementDataMapper {
         return AchievementDataMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesDataMapper(): UserPreferencesDataMapper {
+        return UserPreferencesDataMapper()
     }
 
     // ==================== Repository Implementations ====================
@@ -80,5 +93,28 @@ object CoreDataModule {
         dataMapper: AchievementDataMapper
     ): AchievementRepository {
         return AchievementRepositoryImpl(achievementDao, dataMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(
+        userPreferencesDao: UserPreferencesDao,
+        dataMapper: UserPreferencesDataMapper
+    ): UserPreferencesRepository {
+        return UserPreferencesRepositoryImpl(userPreferencesDao, dataMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInsightRepository(): InsightRepository {
+        return InsightRepositoryImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUsageLimitRepository(
+        progressiveLimitDao: ProgressiveLimitDao
+    ): UsageLimitRepository {
+        return UsageLimitRepositoryImpl(progressiveLimitDao)
     }
 }
