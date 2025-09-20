@@ -1,14 +1,14 @@
-package dev.sadakat.screentimetracker.services.content
+package dev.sadakat.screentimetracker.framework.services.content
 
 import android.content.Context
 import android.content.Intent
 import android.view.accessibility.AccessibilityNodeInfo
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
+import dev.sadakat.screentimetracker.core.presentation.ui.blocking.ContentBlockingActivity
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.sadakat.screentimetracker.core.presentation.ui.blocking.ContentBlockingActivity
 import javax.inject.Inject
 import javax.inject.Singleton
 

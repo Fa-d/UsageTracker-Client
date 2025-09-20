@@ -14,7 +14,7 @@ import dev.sadakat.screentimetracker.domain.model.WellnessScore
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
-import dev.sadakat.screentimetracker.services.NotificationScheduler
+import dev.sadakat.screentimetracker.framework.services.NotificationScheduler
 import dev.sadakat.screentimetracker.ui.dashboard.cards.TimeRestrictionCard
 import dev.sadakat.screentimetracker.ui.dashboard.cards.WeeklyInsightsCard
 import dev.sadakat.screentimetracker.ui.timerestrictions.screens.TimeRestrictionsScreen

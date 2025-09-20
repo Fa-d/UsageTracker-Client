@@ -1,8 +1,9 @@
-package dev.sadakat.screentimetracker.services
+package dev.sadakat.screentimetracker.framework.services
 
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.os.Build
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,7 +14,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import dev.sadakat.screentimetracker.utils.logger.AppLogger
 
 @Singleton
 class UsageStatsPoller @Inject constructor(

@@ -5,12 +5,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import dev.sadakat.screentimetracker.workers.HistoricalDataWorker
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import io.mockk.*
-import io.mockk.impl.annotations.MockK
 
 class InitializeAppUseCaseTest {
 

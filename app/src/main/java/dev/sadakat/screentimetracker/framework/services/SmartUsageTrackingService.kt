@@ -1,18 +1,19 @@
-package dev.sadakat.screentimetracker.services
+package dev.sadakat.screentimetracker.framework.services
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.R
-import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
+import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
+import dev.sadakat.screentimetracker.framework.services.limiter.AppUsageLimiter
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -230,21 +231,21 @@ class SmartUsageTrackingService : Service() {
 
     // Static methods for easy service control
     object ServiceController {
-        fun startSmartTracking(context: android.content.Context) {
+        fun startSmartTracking(context: Context) {
             val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
                 action = ACTION_START_SMART_TRACKING
             }
             context.startService(intent)
         }
 
-        fun stopSmartTracking(context: android.content.Context) {
+        fun stopSmartTracking(context: Context) {
             val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
                 action = ACTION_STOP_SMART_TRACKING
             }
             context.startService(intent)
         }
 
-        fun checkLimits(context: android.content.Context) {
+        fun checkLimits(context: Context) {
             val intent = Intent(context, SmartUsageTrackingService::class.java).apply {
                 action = ACTION_CHECK_LIMITS
             }

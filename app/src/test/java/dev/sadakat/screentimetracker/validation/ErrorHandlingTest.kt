@@ -6,7 +6,7 @@ import dev.sadakat.screentimetracker.core.data.local.entities.TimeRestriction
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
 import dev.sadakat.screentimetracker.domain.usecases.WeeklyInsightsUseCase
-import dev.sadakat.screentimetracker.services.NotificationScheduler
+import dev.sadakat.screentimetracker.framework.services.NotificationScheduler
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import io.mockk.*
@@ -22,7 +22,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class ErrorHandlingTest {

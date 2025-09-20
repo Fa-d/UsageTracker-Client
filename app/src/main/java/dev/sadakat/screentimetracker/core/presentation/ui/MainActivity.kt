@@ -25,6 +25,7 @@ import dev.sadakat.screentimetracker.core.data.local.entities.ColorScheme
 import dev.sadakat.screentimetracker.core.data.local.entities.ThemeMode
 import dev.sadakat.screentimetracker.core.domain.permissions.PermissionManager
 import dev.sadakat.screentimetracker.core.domain.service.ServiceManager
+import dev.sadakat.screentimetracker.framework.services.SmartUsageTrackingService
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -84,7 +85,7 @@ private fun AppContent(
         if (permissionState.allRequiredPermissionsGranted && !serviceManager.isServiceRunning()) {
             serviceManager.startTrackingService()
             // Also start the smart tracking service for usage limits
-            dev.sadakat.screentimetracker.services.SmartUsageTrackingService.ServiceController.startSmartTracking(context)
+            SmartUsageTrackingService.ServiceController.startSmartTracking(context)
         }
     }
 

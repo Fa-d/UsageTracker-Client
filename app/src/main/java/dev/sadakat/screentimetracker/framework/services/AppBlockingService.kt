@@ -1,4 +1,4 @@
-package dev.sadakat.screentimetracker.services
+package dev.sadakat.screentimetracker.framework.services
 
 import android.app.ActivityManager
 import android.app.Service
@@ -10,9 +10,9 @@ import android.os.Looper
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.R
-import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.components.AppBlockedActivity
 import dev.sadakat.screentimetracker.core.domain.usecases.FocusSessionManagerUseCase
 import dev.sadakat.screentimetracker.core.domain.usecases.TimeRestrictionManagerUseCase
+import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.components.AppBlockedActivity
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -162,7 +162,7 @@ class AppBlockingService : Service() {
 
     private fun getCurrentForegroundApp(): String? {
         return try {
-            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
             val runningApps = activityManager.runningAppProcesses
 
             runningApps?.firstOrNull {

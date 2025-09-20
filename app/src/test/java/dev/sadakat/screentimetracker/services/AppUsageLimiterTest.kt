@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import dev.sadakat.screentimetracker.domain.model.LimitedApp
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
+import dev.sadakat.screentimetracker.framework.services.limiter.AppUsageLimiter
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

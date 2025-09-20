@@ -1,15 +1,15 @@
 package dev.sadakat.screentimetracker.framework.di
 
-import dev.sadakat.screentimetracker.core.domain.service.WellnessCalculationService
-import dev.sadakat.screentimetracker.core.domain.service.GoalProgressService
-import dev.sadakat.screentimetracker.core.domain.service.AchievementService
-import dev.sadakat.screentimetracker.core.domain.service.impl.WellnessCalculationServiceImpl
-import dev.sadakat.screentimetracker.core.domain.service.impl.GoalProgressServiceImpl
-import dev.sadakat.screentimetracker.core.domain.service.impl.AchievementServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.sadakat.screentimetracker.core.domain.service.AchievementService
+import dev.sadakat.screentimetracker.core.domain.service.GoalProgressService
+import dev.sadakat.screentimetracker.core.domain.service.WellnessCalculationService
+import dev.sadakat.screentimetracker.core.domain.service.impl.AchievementServiceImpl
+import dev.sadakat.screentimetracker.core.domain.service.impl.GoalProgressServiceImpl
+import dev.sadakat.screentimetracker.core.domain.service.impl.WellnessCalculationServiceImpl
 import javax.inject.Singleton
 
 /**

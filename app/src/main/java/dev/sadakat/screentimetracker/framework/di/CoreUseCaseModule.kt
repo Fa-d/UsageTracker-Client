@@ -1,20 +1,20 @@
 package dev.sadakat.screentimetracker.framework.di
 
-import dev.sadakat.screentimetracker.core.domain.repository.ScreenTimeRepository
-import dev.sadakat.screentimetracker.core.domain.repository.UserGoalRepository
-import dev.sadakat.screentimetracker.core.domain.repository.AchievementRepository
-import dev.sadakat.screentimetracker.core.domain.service.WellnessCalculationService
-import dev.sadakat.screentimetracker.core.domain.service.GoalProgressService
-import dev.sadakat.screentimetracker.core.domain.service.AchievementService
-import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
-import dev.sadakat.screentimetracker.core.domain.usecase.TrackAppUsageUseCase
-import dev.sadakat.screentimetracker.core.domain.usecase.CalculateWellnessScoreUseCase
-import dev.sadakat.screentimetracker.core.domain.usecase.ManageUsageLimitsUseCase
-import dev.sadakat.screentimetracker.core.domain.usecase.ProcessAchievementsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.sadakat.screentimetracker.core.domain.repository.AchievementRepository
+import dev.sadakat.screentimetracker.core.domain.repository.ScreenTimeRepository
+import dev.sadakat.screentimetracker.core.domain.repository.UserGoalRepository
+import dev.sadakat.screentimetracker.core.domain.service.AchievementService
+import dev.sadakat.screentimetracker.core.domain.service.GoalProgressService
+import dev.sadakat.screentimetracker.core.domain.service.WellnessCalculationService
+import dev.sadakat.screentimetracker.core.domain.usecase.CalculateWellnessScoreUseCase
+import dev.sadakat.screentimetracker.core.domain.usecase.GetDashboardDataUseCase
+import dev.sadakat.screentimetracker.core.domain.usecase.ManageUsageLimitsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecase.ProcessAchievementsUseCase
+import dev.sadakat.screentimetracker.core.domain.usecase.TrackAppUsageUseCase
 import javax.inject.Singleton
 
 /**

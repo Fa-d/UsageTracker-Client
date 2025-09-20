@@ -1,10 +1,10 @@
-package dev.sadakat.screentimetracker.receivers
+package dev.sadakat.screentimetracker.framework.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import dev.sadakat.screentimetracker.services.AppUsageTrackingService
+import dev.sadakat.screentimetracker.framework.services.AppUsageTrackingService
 
 class ScreenStateReceiver : BroadcastReceiver() {
     companion object {

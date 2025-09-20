@@ -1,15 +1,14 @@
-package dev.sadakat.screentimetracker.services
+package dev.sadakat.screentimetracker.framework.services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
+import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.core.domain.usecases.RecordAppSessionUseCase
-import dev.sadakat.screentimetracker.services.content.ContentBlockingManager
-import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
+import dev.sadakat.screentimetracker.framework.services.content.ContentBlockingManager
+import dev.sadakat.screentimetracker.framework.services.limiter.AppUsageLimiter
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

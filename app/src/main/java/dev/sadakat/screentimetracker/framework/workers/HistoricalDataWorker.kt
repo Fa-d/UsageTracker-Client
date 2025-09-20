@@ -1,4 +1,4 @@
-package dev.sadakat.screentimetracker.workers
+package dev.sadakat.screentimetracker.framework.workers
 
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
@@ -7,15 +7,14 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import dev.sadakat.screentimetracker.core.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.core.data.local.entities.DailyScreenUnlockSummary
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Calendar
-import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class HistoricalDataWorker @AssistedInject constructor(

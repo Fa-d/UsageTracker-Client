@@ -1,10 +1,9 @@
 package dev.sadakat.screentimetracker.services
 
 import android.content.Context
+import dev.sadakat.screentimetracker.framework.services.NotificationScheduler
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
-import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert.*

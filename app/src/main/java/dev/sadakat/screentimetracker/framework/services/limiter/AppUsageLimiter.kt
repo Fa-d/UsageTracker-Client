@@ -1,4 +1,4 @@
-package dev.sadakat.screentimetracker.services.limiter
+package dev.sadakat.screentimetracker.framework.services.limiter
 
 import android.content.Context
 import android.content.pm.PackageManager

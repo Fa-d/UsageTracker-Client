@@ -7,12 +7,12 @@ import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import dev.sadakat.screentimetracker.core.domain.usecases.InitializeAppUseCase
-import dev.sadakat.screentimetracker.receivers.ScreenUnlockReceiver
-import dev.sadakat.screentimetracker.services.NotificationScheduler
-import dev.sadakat.screentimetracker.workers.DailyAggregationWorker
-import dev.sadakat.screentimetracker.workers.HabitTrackerWorker
 import dagger.hilt.android.HiltAndroidApp
+import dev.sadakat.screentimetracker.core.domain.usecases.InitializeAppUseCase
+import dev.sadakat.screentimetracker.framework.receivers.ScreenUnlockReceiver
+import dev.sadakat.screentimetracker.framework.services.NotificationScheduler
+import dev.sadakat.screentimetracker.framework.workers.DailyAggregationWorker
+import dev.sadakat.screentimetracker.framework.workers.HabitTrackerWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

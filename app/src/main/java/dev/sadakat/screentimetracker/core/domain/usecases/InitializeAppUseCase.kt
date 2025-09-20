@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import dev.sadakat.screentimetracker.workers.HistoricalDataWorker
+import dev.sadakat.screentimetracker.framework.workers.HistoricalDataWorker
 import javax.inject.Inject
 import javax.inject.Singleton
 

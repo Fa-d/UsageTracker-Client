@@ -3,6 +3,7 @@ package dev.sadakat.screentimetracker.core.domain.service
 import android.content.Context
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
 import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
+import dev.sadakat.screentimetracker.framework.services.AppUsageTrackingService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -43,7 +44,7 @@ class ScreenTimeServiceManager(
         return try {
             _serviceState.value = ServiceState.Starting
 
-            val intent = android.content.Intent(context, dev.sadakat.screentimetracker.services.AppUsageTrackingService::class.java)
+            val intent = android.content.Intent(context, AppUsageTrackingService::class.java)
             context.startService(intent)
 
             _serviceState.value = ServiceState.Running
@@ -56,7 +57,7 @@ class ScreenTimeServiceManager(
 
     override suspend fun stopTrackingService(): Result<Unit> {
         return try {
-            val intent = android.content.Intent(context, dev.sadakat.screentimetracker.services.AppUsageTrackingService::class.java)
+            val intent = android.content.Intent(context, AppUsageTrackingService::class.java)
             context.stopService(intent)
 
             _serviceState.value = ServiceState.Stopped

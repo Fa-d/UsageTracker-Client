@@ -1,4 +1,4 @@
--keep class dev.sadakat.screentimetracker.workers.DailyAggregationWorker {
+-keep class dev.sadakat.screentimetracker.framework.workers.DailyAggregationWorker {
     <init>(android.content.Context, androidx.work.WorkerParameters);
 }
 

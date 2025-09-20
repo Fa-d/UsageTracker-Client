@@ -1,13 +1,13 @@
-package dev.sadakat.screentimetracker.receivers
+package dev.sadakat.screentimetracker.framework.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.core.data.local.entities.ScreenUnlockEvent
 import dev.sadakat.screentimetracker.core.domain.repository.TrackerRepository
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

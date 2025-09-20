@@ -40,7 +40,7 @@
 
         <!-- Screen Unlock Receiver -->
         <receiver
-            android:name=".receivers.ScreenUnlockReceiver"
+            android:name=".framework.receivers.ScreenUnlockReceiver"
             android:enabled="true"
             android:exported="false"> <!-- Set exported to false if only used by the app -->
             <intent-filter>
@@ -50,21 +50,21 @@
 
         <!-- Legacy service - can be deprecated in favor of smart services -->
         <service
-            android:name=".services.AppUsageTrackingService"
+            android:name=".framework.services.AppUsageTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <!-- New Smart Tracking Service -->
         <service
-            android:name=".services.SmartUsageTrackingService"
+            android:name=".framework.services.SmartUsageTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <!-- Smart Accessibility Service for content blocking -->
         <service
-            android:name=".services.SmartUsageAccessibilityService"
+            android:name=".framework.services.SmartUsageAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -76,7 +76,7 @@
         </service>
 
         <receiver
-            android:name=".receivers.BootCompletedReceiver"
+            android:name=".framework.receivers.BootCompletedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -95,7 +95,7 @@
         </provider>
 
         <receiver
-            android:name=".receivers.ScreenStateReceiver"
+            android:name=".framework.receivers.ScreenStateReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
