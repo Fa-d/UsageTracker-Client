@@ -1,12 +1,11 @@
 package dev.sadakat.screentimetracker.domain.permissions
 
 import android.content.Context
-import dev.sadakat.screentimetracker.ui.common.error.AppError
-import dev.sadakat.screentimetracker.ui.common.error.Result
+import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
+import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
 import dev.sadakat.screentimetracker.utils.PermissionUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 
 /**

@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.utils
 
 import android.content.Context
-import dev.sadakat.screentimetracker.ui.ai.AIDownloadState
+import dev.sadakat.screentimetracker.core.presentation.ui.ai.AIDownloadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

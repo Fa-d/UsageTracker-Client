@@ -5,9 +5,9 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import dev.sadakat.screentimetracker.ui.MainActivity
-import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import javax.inject.Inject
 import javax.inject.Singleton
 

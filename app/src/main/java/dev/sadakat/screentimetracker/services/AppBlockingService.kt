@@ -8,12 +8,12 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
-import dev.sadakat.screentimetracker.R
-import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
-import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
-import dev.sadakat.screentimetracker.ui.timerestrictions.components.AppBlockedActivity
-import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dagger.hilt.android.AndroidEntryPoint
+import dev.sadakat.screentimetracker.R
+import dev.sadakat.screentimetracker.core.presentation.ui.timerestrictions.components.AppBlockedActivity
+import dev.sadakat.screentimetracker.domain.usecases.FocusSessionManagerUseCase
+import dev.sadakat.screentimetracker.domain.usecases.TimeRestrictionManagerUseCase
+import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.view.accessibility.AccessibilityNodeInfo
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
-import dev.sadakat.screentimetracker.ui.blocking.ContentBlockingActivity
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
 import dev.sadakat.screentimetracker.utils.ui.AppNotificationManager
 import dev.sadakat.screentimetracker.utils.ui.AppToastManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dev.sadakat.screentimetracker.core.presentation.ui.blocking.ContentBlockingActivity
 import javax.inject.Inject
 import javax.inject.Singleton
 

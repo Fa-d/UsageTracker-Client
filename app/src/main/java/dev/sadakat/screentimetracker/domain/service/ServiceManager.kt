@@ -1,8 +1,8 @@
 package dev.sadakat.screentimetracker.domain.service
 
 import android.content.Context
-import dev.sadakat.screentimetracker.ui.common.error.AppError
-import dev.sadakat.screentimetracker.ui.common.error.Result
+import dev.sadakat.screentimetracker.core.presentation.ui.common.error.AppError
+import dev.sadakat.screentimetracker.core.presentation.ui.common.error.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asStateFlow
 

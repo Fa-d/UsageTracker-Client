@@ -1,11 +1,11 @@
 package dev.sadakat.screentimetracker.data.repository
 
-import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
+import dev.sadakat.screentimetracker.core.presentation.ui.dashboard.state.DashboardState
 import dev.sadakat.screentimetracker.data.local.dao.DigitalPetDao
+import dev.sadakat.screentimetracker.data.local.entities.DigitalPet
 import dev.sadakat.screentimetracker.data.local.entities.PetStats
 import dev.sadakat.screentimetracker.data.local.entities.PetType
 import dev.sadakat.screentimetracker.data.local.entities.WellnessFactors
-import dev.sadakat.screentimetracker.ui.dashboard.state.DashboardState
 import dev.sadakat.screentimetracker.utils.DigitalPetManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

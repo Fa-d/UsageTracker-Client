@@ -2,10 +2,8 @@ package dev.sadakat.screentimetracker.utils
 
 import android.content.Context
 import android.util.Log
-import dev.sadakat.screentimetracker.ui.ai.AIDownloadState
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.sadakat.screentimetracker.data.repository.DigitalPetRepository
-import dev.sadakat.screentimetracker.utils.AIUtils
+import dev.sadakat.screentimetracker.core.presentation.ui.ai.AIDownloadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

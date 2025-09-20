@@ -8,14 +8,14 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import dagger.hilt.android.AndroidEntryPoint
 import dev.sadakat.screentimetracker.R
+import dev.sadakat.screentimetracker.core.presentation.ui.MainActivity
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
 import dev.sadakat.screentimetracker.domain.usecases.RecordAppSessionUseCase
 import dev.sadakat.screentimetracker.domain.usecases.RecordAppUsageEventUseCase
 import dev.sadakat.screentimetracker.services.limiter.AppUsageLimiter
-import dev.sadakat.screentimetracker.ui.MainActivity
 import dev.sadakat.screentimetracker.utils.logger.AppLogger
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

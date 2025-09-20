@@ -1,7 +1,7 @@
 package dev.sadakat.screentimetracker.domain.usecases
 
 
-import dev.sadakat.screentimetracker.data.local.dto.AppSessionDataAggregate
+import dev.sadakat.screentimetracker.domain.model.AppSessionDataAggregate
 import dev.sadakat.screentimetracker.data.local.entities.DailyAppSummary
 import dev.sadakat.screentimetracker.data.local.entities.DailyScreenUnlockSummary
 import dev.sadakat.screentimetracker.domain.repository.TrackerRepository
@@ -40,8 +40,8 @@ class AggregateDailyUsageUseCaseTest {
         val endOfYesterdayMillis = calendar.timeInMillis
 
         val mockAppSessionAggregates = listOf(
-            AppSessionDataAggregate("com.app1", 10000L, 5),
-            AppSessionDataAggregate("com.app2", 20000L, 10)
+            AppSessionDataAggregate("com.app1", 10000L, 5, 0L, 10000L),
+            AppSessionDataAggregate("com.app2", 20000L, 10, 0L, 20000L)
         )
         coEvery {
             mockRepository.getAggregatedSessionDataForDay(
