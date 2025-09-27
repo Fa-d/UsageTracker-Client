@@ -38,3 +38,8 @@ include(":domain:domain-content")
 // Feature modules
 include(":feature:feature-login")
 include(":feature:feature-home")
+include(":feature:feature-dashboard")
+include(":feature:feature-analytics")
+include(":feature:feature-wellness")
+include(":feature:feature-goals")
+include(":feature:feature-settings")

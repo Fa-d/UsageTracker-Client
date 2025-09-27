@@ -109,6 +109,11 @@ dependencies {
     implementation(project(":data:data-content"))
     implementation(project(":feature:feature-login"))
     implementation(project(":feature:feature-home"))
+    implementation(project(":feature:feature-dashboard"))
+    implementation(project(":feature:feature-analytics"))
+    implementation(project(":feature:feature-wellness"))
+    implementation(project(":feature:feature-goals"))
+    implementation(project(":feature:feature-settings"))
 
     // Core Android
     implementation(libs.androidx.core.ktx)
