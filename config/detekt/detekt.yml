@@ -28,7 +28,7 @@ naming:
   ClassNaming:
     classPattern: '[A-Z][a-zA-Z0-9]*'
   FunctionNaming:
-    composablePattern: '[A-Z][a-zA-Z0-9]*'
+    ignoreAnnotated: ['Composable']
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '^.*Test$'
 
