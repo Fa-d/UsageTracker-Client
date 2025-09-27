@@ -31,38 +31,38 @@
             </intent-filter>
         </activity>
 
-        <activity
+  <!--      <activity
             android:name=".ui.blocking.ContentBlockingActivity"
             android:exported="false"
             android:theme="@style/Theme.ScreenTimeTracker"
             android:launchMode="singleTop"
             android:excludeFromRecents="true" />
 
-        <!-- Screen Unlock Receiver -->
+        &lt;!&ndash; Screen Unlock Receiver &ndash;&gt;
         <receiver
             android:name=".receivers.ScreenUnlockReceiver"
             android:enabled="true"
-            android:exported="false"> <!-- Set exported to false if only used by the app -->
+            android:exported="false"> &lt;!&ndash; Set exported to false if only used by the app &ndash;&gt;
             <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
 
-        <!-- Legacy service - can be deprecated in favor of smart services -->
+        &lt;!&ndash; Legacy service - can be deprecated in favor of smart services &ndash;&gt;
         <service
             android:name=".services.AppUsageTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <!-- New Smart Tracking Service -->
+        &lt;!&ndash; New Smart Tracking Service &ndash;&gt;
         <service
             android:name=".services.SmartUsageTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <!-- Smart Accessibility Service for content blocking -->
+        &lt;!&ndash; Smart Accessibility Service for content blocking &ndash;&gt;
         <service
             android:name=".services.SmartUsageAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -101,7 +101,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_OFF" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <!-- FileProvider for sharing exported files -->
         <provider
