@@ -24,8 +24,24 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
+            isShrinkResources = false
+        }
+        create("debugOptimized") {
+            initWith(getByName("debug"))
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -49,6 +65,19 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/LICENSE.txt"
+            excludes += "/META-INF/license.txt"
+            excludes += "/META-INF/NOTICE"
+            excludes += "/META-INF/NOTICE.txt"
+            excludes += "/META-INF/notice.txt"
+            excludes += "/META-INF/ASL2.0"
+            excludes += "/META-INF/*.kotlin_module"
+        }
+        jniLibs {
+            excludes += "/lib/mips/**"
+            excludes += "/lib/mips64/**"
         }
     }
 
@@ -60,13 +89,27 @@ android {
             enableSplit = true
         }
         language {
-            enableSplit = false
+            enableSplit = true
         }
+    }
+
+    // Additional size optimizations
+    androidResources {
+        generateLocaleConfig = false
     }
 
 }
 
 dependencies {
+    // Project modules
+    implementation(project(":core:core-ui"))
+    implementation(project(":core:core-common"))
+    implementation(project(":core:core-navigation"))
+    implementation(project(":data:data-user"))
+    implementation(project(":data:data-content"))
+    implementation(project(":feature:feature-login"))
+    implementation(project(":feature:feature-home"))
+
     // Core Android
     implementation(libs.androidx.core.ktx)
 
@@ -79,10 +122,16 @@ dependencies {
     implementation(libs.bundles.lifecycle)
     implementation(libs.androidx.activity.compose)
 
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
+
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.androidx.compose.material.icons.extended)
+    // Replace with core icons (much smaller)
+    // implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -108,6 +157,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     // Testing
+    testImplementation(project(":core:core-testing"))
     testImplementation(libs.bundles.testing.unit)
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)
