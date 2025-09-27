@@ -12,12 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.sadakat.screentimetracker.core.navigation.*
-import dev.sadakat.screentimetracker.feature.dashboard.DashboardScreen
+import dev.sadakat.screentimetracker.core.navigation.ScreenTimeBottomNavigationBar
+import dev.sadakat.screentimetracker.core.navigation.ScreenTimeNavigation
 import dev.sadakat.screentimetracker.feature.analytics.AnalyticsScreen
-import dev.sadakat.screentimetracker.feature.wellness.WellnessScreen
+import dev.sadakat.screentimetracker.feature.dashboard.DashboardScreen
 import dev.sadakat.screentimetracker.feature.goals.GoalsScreen
 import dev.sadakat.screentimetracker.feature.settings.SettingsScreen
+import dev.sadakat.screentimetracker.feature.wellness.WellnessScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
