@@ -29,7 +29,7 @@ naming:
     classPattern: '[A-Z][a-zA-Z0-9]*'
   FunctionNaming:
     functionPattern: '[a-z][a-zA-Z0-9]*'
-    composablePattern: '[A-Z][a-zA-Z0-9]*'
+    composableFunPattern: '[A-Z][a-zA-Z0-9]*'
     excludeClassPattern: '^.*Test$'
 
 style:
