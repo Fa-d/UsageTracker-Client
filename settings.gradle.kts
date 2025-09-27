@@ -43,3 +43,6 @@ include(":feature:feature-analytics")
 include(":feature:feature-wellness")
 include(":feature:feature-goals")
 include(":feature:feature-settings")
+
+// Architecture enforcement
+include(":architecture-rules")

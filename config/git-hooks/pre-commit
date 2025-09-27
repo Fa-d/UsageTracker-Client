@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "🎨 Running code formatting..."
+
+# Format staged Kotlin files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.kt[s]$')
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "Formatting Kotlin files..."
+    ./gradlew ktlintFormat --daemon
+
+    # Re-add formatted files
+    echo "$STAGED_FILES" | xargs git add
+    echo "✅ Code formatting complete"
+fi
+
+exit 0
