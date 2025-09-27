@@ -1,10 +1,7 @@
 package dev.sadakat.screentimetracker.feature.settings
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.sadakat.screentimetracker.core.ui.components.*
+import dev.sadakat.screentimetracker.core.ui.theme.CoreSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,20 +20,10 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(
+    ScreenContainer(
+        title = "Settings",
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
-            Text(
-                text = "Settings",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
         items(uiState.settingsSections) { section ->
             SettingsSection(
                 section = section,
@@ -52,53 +41,43 @@ private fun SettingsSection(
     onSettingClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth()
+    MetricCard(
+        title = section.title,
+        modifier = modifier
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = section.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            section.items.forEach { item ->
-                when (item.type) {
-                    SettingType.SWITCH -> {
-                        SwitchSettingItem(
-                            item = item,
-                            onChanged = { onSettingChanged(item.key, it) }
-                        )
-                    }
-                    SettingType.SLIDER -> {
-                        SliderSettingItem(
-                            item = item,
-                            onChanged = { onSettingChanged(item.key, it) }
-                        )
-                    }
-                    SettingType.DROPDOWN -> {
-                        DropdownSettingItem(
-                            item = item,
-                            onChanged = { onSettingChanged(item.key, it) }
-                        )
-                    }
-                    SettingType.ACTION -> {
-                        ActionSettingItem(
-                            item = item,
-                            onClick = { onSettingClicked(item.key) }
-                        )
-                    }
-                    SettingType.INFO -> {
-                        InfoSettingItem(item = item)
-                    }
+        section.items.forEach { item ->
+            when (item.type) {
+                SettingType.SWITCH -> {
+                    SwitchSettingItem(
+                        item = item,
+                        onChanged = { onSettingChanged(item.key, it) }
+                    )
                 }
-
-                if (item != section.items.last()) {
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                SettingType.SLIDER -> {
+                    SliderSettingItem(
+                        item = item,
+                        onChanged = { onSettingChanged(item.key, it) }
+                    )
                 }
+                SettingType.DROPDOWN -> {
+                    DropdownSettingItem(
+                        item = item,
+                        onChanged = { onSettingChanged(item.key, it) }
+                    )
+                }
+                SettingType.ACTION -> {
+                    ActionSettingItem(
+                        item = item,
+                        onClick = { onSettingClicked(item.key) }
+                    )
+                }
+                SettingType.INFO -> {
+                    InfoSettingItem(item = item)
+                }
+            }
+
+            if (item != section.items.last()) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = CoreSpacing.minorSpacing))
             }
         }
     }
@@ -113,7 +92,7 @@ private fun SwitchSettingItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = CoreSpacing.minorSpacing),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -291,7 +270,7 @@ private fun InfoSettingItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = CoreSpacing.minorSpacing),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

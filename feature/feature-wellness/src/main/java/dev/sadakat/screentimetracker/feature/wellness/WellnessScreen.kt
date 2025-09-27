@@ -1,17 +1,16 @@
 package dev.sadakat.screentimetracker.feature.wellness
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.sadakat.screentimetracker.core.ui.components.*
+import dev.sadakat.screentimetracker.core.ui.theme.CoreSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,19 +20,10 @@ fun WellnessScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(
+    ScreenContainer(
+        title = "Wellness",
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
-            Text(
-                text = "Wellness",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
 
         item {
             WellnessScoreCard(
@@ -44,11 +34,7 @@ fun WellnessScreen(
         }
 
         item {
-            Text(
-                text = "Wellness Metrics",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            SectionHeader("Wellness Metrics")
         }
 
         items(uiState.wellnessMetrics) { metric ->
@@ -59,11 +45,7 @@ fun WellnessScreen(
         }
 
         item {
-            Text(
-                text = "Digital Breaks",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            SectionHeader("Digital Breaks")
         }
 
         item {
@@ -76,11 +58,7 @@ fun WellnessScreen(
         }
 
         item {
-            Text(
-                text = "Mindfulness",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            SectionHeader("Mindfulness")
         }
 
         item {
@@ -101,67 +79,48 @@ private fun WellnessScoreCard(
     insights: List<String>,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth()
+    MetricCard(
+        title = "Wellness Score",
+        modifier = modifier
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Wellness Score",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = trend,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (trend.contains("up")) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.error
-                        }
-                    )
-                }
-
-                // Circular progress indicator for wellness score
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        progress = { score },
-                        modifier = Modifier.size(80.dp),
-                    )
-                    Text(
-                        text = "${(score * 100).toInt()}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Column {
+                Text(
+                    text = trend,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (trend.contains("up")) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.error
+                    }
+                )
             }
 
-            if (insights.isNotEmpty()) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+            CircularMetric(
+                value = "${(score * 100).toInt()}",
+                progress = score
+            )
+        }
+
+        if (insights.isNotEmpty()) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Insights",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                insights.forEach { insight ->
                     Text(
-                        text = "Insights",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
+                        text = "• $insight",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    insights.forEach { insight ->
-                        Text(
-                            text = "• $insight",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
             }
         }
@@ -263,24 +222,12 @@ private fun DigitalBreaksSection(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = onStartBreak,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Start Break Now")
-                }
-
-                OutlinedButton(
-                    onClick = onScheduleBreak,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Schedule Break")
-                }
-            }
+            ActionButtonRow(
+                buttons = listOf(
+                    ActionButtonConfig("Start Break Now", onStartBreak, isPrimary = true),
+                    ActionButtonConfig("Schedule Break", onScheduleBreak)
+                )
+            )
         }
     }
 }

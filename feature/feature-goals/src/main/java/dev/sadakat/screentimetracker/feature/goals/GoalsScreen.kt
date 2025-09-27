@@ -1,11 +1,9 @@
 package dev.sadakat.screentimetracker.feature.goals
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.sadakat.screentimetracker.core.ui.components.*
+import dev.sadakat.screentimetracker.core.ui.theme.CoreSpacing
+import dev.sadakat.screentimetracker.core.ui.theme.CoreTextStyles
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,29 +25,20 @@ fun GoalsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
+        ScreenContainer(
+            title = "Goals",
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = "Goals",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
                     FilledTonalButton(
                         onClick = viewModel::showCreateGoalDialog
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(CoreSpacing.minorSpacing))
                         Text("New Goal")
                     }
                 }
@@ -62,9 +54,12 @@ fun GoalsScreen(
             }
 
             item {
-                GoalCategoryTabs(
-                    selectedCategory = uiState.selectedCategory,
-                    onCategorySelected = viewModel::selectCategory
+                TabSelector(
+                    items = GoalCategory.values().map {
+                        SelectorItem(it, it.displayName)
+                    },
+                    selectedItem = uiState.selectedCategory,
+                    onItemSelected = viewModel::selectCategory
                 )
             }
 
@@ -104,63 +99,37 @@ private fun GoalsOverviewCard(
     weeklyProgress: Float,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth()
+    MetricCard(
+        title = "Goals Overview",
+        modifier = modifier
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "Goals Overview",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+            MetricItem(
+                label = "Total",
+                value = totalGoals.toString(),
+                valueColor = MaterialTheme.colorScheme.primary
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                GoalsStat(
-                    label = "Total",
-                    value = totalGoals.toString(),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                GoalsStat(
-                    label = "Completed",
-                    value = completedGoals.toString(),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                GoalsStat(
-                    label = "Active",
-                    value = activeGoals.toString(),
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-            }
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Weekly Progress",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = "${(weeklyProgress * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                LinearProgressIndicator(
-                    progress = { weeklyProgress },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            MetricItem(
+                label = "Completed",
+                value = completedGoals.toString(),
+                valueColor = MaterialTheme.colorScheme.secondary
+            )
+            MetricItem(
+                label = "Active",
+                value = activeGoals.toString(),
+                valueColor = MaterialTheme.colorScheme.tertiary
+            )
         }
+
+        ProgressCard(
+            title = "",
+            progress = weeklyProgress,
+            label = "Weekly Progress",
+            value = "${(weeklyProgress * 100).toInt()}%"
+        )
     }
 }
 
@@ -306,98 +275,55 @@ private fun GoalCard(
 private fun EmptyGoalsState(
     category: GoalCategory,
     onCreateGoal: () -> Unit,
-    modifier: Modifier = Modifier
+    @Suppress("UNUSED_PARAMETER") modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = "🎯",
-                style = MaterialTheme.typography.displayMedium
-            )
-
-            Text(
-                text = if (category == GoalCategory.ALL) {
-                    "No goals yet"
-                } else {
-                    "No ${category.displayName.lowercase()} goals"
-                },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium
-            )
-
-            Text(
-                text = "Create your first goal to start tracking your digital wellness journey",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Button(
-                onClick = onCreateGoal
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Create Goal")
-            }
-        }
-    }
+    EmptyStateCard(
+        emoji = "🎯",
+        title = if (category == GoalCategory.ALL) {
+            "No goals yet"
+        } else {
+            "No ${category.displayName.lowercase()} goals"
+        },
+        description = "Create your first goal to start tracking your digital wellness journey",
+        actionText = "Create Goal",
+        onActionClick = onCreateGoal
+    )
 }
 
 @Composable
 private fun CreateGoalDialog(
     onDismiss: () -> Unit,
     onCreateGoal: (String, String, GoalCategory) -> Unit,
-    modifier: Modifier = Modifier
+    @Suppress("UNUSED_PARAMETER") modifier: Modifier = Modifier
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(GoalCategory.SCREEN_TIME) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Create New Goal") },
-        text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Goal Title") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description (Optional)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
-                )
-
-                // Category selector could be added here
+    FormDialog(
+        title = "Create New Goal",
+        onDismiss = onDismiss,
+        onConfirm = {
+            if (title.isNotBlank()) {
+                onCreateGoal(title, description, selectedCategory)
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (title.isNotBlank()) {
-                        onCreateGoal(title, description, selectedCategory)
-                    }
-                }
-            ) {
-                Text("Create")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
+        confirmText = "Create",
+        confirmEnabled = title.isNotBlank()
+    ) {
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Goal Title") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description (Optional)") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 3
+        )
+    }
 }
