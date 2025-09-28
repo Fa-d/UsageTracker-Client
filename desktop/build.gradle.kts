@@ -13,6 +13,7 @@ kotlin {
                 implementation(project(":shared"))
                 implementation(compose.desktop.currentOs)
                 implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.kotlinx.coroutines.core)
