@@ -101,19 +101,8 @@ android {
 }
 
 dependencies {
-    // Project modules
-    implementation(project(":core:core-ui"))
-    implementation(project(":core:core-common"))
-    implementation(project(":core:core-navigation"))
-    implementation(project(":data:data-user"))
-    implementation(project(":data:data-content"))
-    implementation(project(":feature:feature-login"))
-    implementation(project(":feature:feature-home"))
-    implementation(project(":feature:feature-dashboard"))
-    implementation(project(":feature:feature-analytics"))
-    implementation(project(":feature:feature-wellness"))
-    implementation(project(":feature:feature-goals"))
-    implementation(project(":feature:feature-settings"))
+    // Shared KMP module
+    implementation(project(":shared"))
 
     // Core Android
     implementation(libs.androidx.core.ktx)
@@ -162,7 +151,6 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     // Testing
-    testImplementation(project(":core:core-testing"))
     testImplementation(libs.bundles.testing.unit)
     testImplementation(libs.androidx.work.testing)
     testImplementation(libs.hilt.android.testing)

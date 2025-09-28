@@ -10,6 +10,10 @@ kotlin = "2.1.20"
 ksp = "2.1.20-1.0.31"
 hilt = "2.56.2"
 
+# KMP Versions
+composeMultiplatform = "1.8.0"
+agp = "8.10.0"
+
 # Library Versions
 androidxCore = "1.16.0"
 androidxLifecycle = "2.9.2"
@@ -34,12 +38,17 @@ materialIcons = "1.7.8"
 playFeatureDelivery = "2.1.0"
 privacySandboxTools = "1.0.0-alpha13"
 kotlinxDatetime = "0.6.0"
+serialization = "1.7.3"
+ktor = "3.0.2"
+sqldelight = "2.0.2"
+koin = "4.1.0"
 
 # Testing
 junit = "4.13.2"
 mockk = "1.13.14"
 robolectric = "4.15.1"
 archunit = "1.3.0"
+kotlinTest = "2.1.20"
 
 [libraries]
 # Build Logic
@@ -96,6 +105,22 @@ play-feature-delivery = { group = "com.google.android.play", name = "feature-del
 play-feature-delivery-ktx = { group = "com.google.android.play", name = "feature-delivery-ktx", version.ref = "playFeatureDelivery" }
 androidx-privacysandbox-tools-core = { group = "androidx.privacysandbox.tools", name = "tools-core", version.ref = "privacySandboxTools" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+
+# KMP Libraries
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+sqldelight-driver-sqlite = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+sqldelight-driver-android = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-driver-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -109,6 +134,7 @@ mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "moc
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 archunit-junit4 = { group = "com.tngtech.archunit", name = "archunit-junit4", version.ref = "archunit" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
 
 [bundles]
 compose = [
@@ -165,6 +191,11 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+# KMP Plugins
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 # Custom convention plugins
 screentimetracker-android-application = { id = "screentimetracker.android.application" }
